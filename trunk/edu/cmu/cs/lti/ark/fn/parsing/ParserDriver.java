@@ -96,8 +96,8 @@ public class ParserDriver {
 				} else {
 					out.println(posLine);
 					conllParse = readCoNLLParse(in);
-					System.out.println(conllParse);
 				}				
+				System.out.println(conllParse);
 				count++;				
 			}
 		} catch (IOException e) {
@@ -135,28 +135,21 @@ public class ParserDriver {
 		}
 	}
 
-	public static ArrayList<String> readCoNLLParse(BufferedReader bReader)
-	{
+	public static ArrayList<String> readCoNLLParse(BufferedReader bReader) 	{
 		ArrayList<String> thisParse = new ArrayList<String>();
-		try
-		{
+		try {
 			String line=null;
-			while((line=bReader.readLine())!=null)
-			{
+			while((line=bReader.readLine())!=null) {
 				line=line.trim();
-				if(line.equals(""))
-				{
+				if(line.equals("")) {
 					break;
 				}
-				else
-				{
+				else {
 					thisParse.add(line);
 				}
 			}
-
 		}
-		catch(Exception e)
-		{
+		catch(Exception e) {
 			System.err.println("Could not read CoNLL parse reader. Exiting.");
 			System.exit(-1);
 		}
