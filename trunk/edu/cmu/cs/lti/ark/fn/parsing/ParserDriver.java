@@ -120,11 +120,15 @@ public class ParserDriver {
 		if (goldSegFile == null || goldSegFile.equals("null") || goldSegFile.equals("")) {
 			if (options.useRelaxedSegmentation.get().equals("yes")) {
 				segmentationMode = 2;
+				System.err.println("Using relaxed auto target identification.");
 			} else {
 				segmentationMode = 1;
+				System.err.println("Using strict auto target identification.");
 			}
+			
 		} else {
 			segmentationMode = 0;
+			System.err.println("Using gold targets from: " + goldSegFile);
 			try {
 				goldSegReader = new BufferedReader(new FileReader(goldSegFile));
 			} catch (IOException e) {
@@ -132,6 +136,7 @@ public class ParserDriver {
 				System.exit(-1);
 			}				
 		} 
+	
 		
 		try {
 			String posLine = null;
@@ -190,7 +195,17 @@ public class ParserDriver {
 				/* actual parsing */
 				// 1. getting segments
 				if (segmentationMode == 0) {
-					
+					int j = 0;
+					for (String seg: segLines) {
+						String[] toks=seg.trim().split("\\s");
+						String outSeg = "";
+						for (String tok: toks) {
+							outSeg += tok+"#true\t";
+						}
+						outSeg += tokenNums.get(j);
+						segs.add(outSeg.trim());
+						j++;
+					}
 				} else if (segmentationMode == 1) {
 					RoteSegmenter seg = new RoteSegmenter();
 					segs = seg.findSegmentationForTest(tokenNums, allLemmaTagsSentences, allRelatedWords);
