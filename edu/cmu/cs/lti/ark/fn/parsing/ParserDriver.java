@@ -41,6 +41,7 @@ public class ParserDriver {
 	 *  fnidreqdatafile
 	 *  goldsegfile
 	 *  userelaxed
+	 *  testtokenizedfile
 	 */
 	public static void main(String[] args) {
 		FNModelOptions options = new FNModelOptions(args);
@@ -141,6 +142,8 @@ public class ParserDriver {
 			ArrayList<String> tokenizedLines = new ArrayList<String>();
 			ArrayList<String> segLines = new ArrayList<String>();
 			ArrayList<ArrayList<String>> parseSets = new ArrayList<ArrayList<String>>();
+			ArrayList<String> tokenNums = new ArrayList<String>();
+			ArrayList<String> segs = new ArrayList<String>();
 			BufferedReader parseReader = null;
 			if (serverName == null) {
 				parseReader = new BufferedReader(new FileReader(options.testParseFile.get()));
@@ -150,6 +153,8 @@ public class ParserDriver {
 				posLines.clear();
 				segLines.clear();
 				tokenizedLines.clear();
+				tokenNums.clear();
+				segs.clear();
 				int size = parseSets.size();
 				for (int i = 0; i < size; i++) {
 					ArrayList<String> set = parseSets.get(0);
@@ -166,10 +171,14 @@ public class ParserDriver {
 					posLines.add(posLine);
 					tokenizedLine = tokenizedReader.readLine();
 					tokenizedLines.add(tokenizedLine);
+					if (goldSegReader != null) {
+						segLines.add(goldSegReader.readLine().trim());
+					}
 					if (serverName == null) {
 						ArrayList<String> parse = readCoNLLParse(parseReader);
 						parseSets.add(parse);
 					}
+					tokenNums.add(""+(count+index));
 				}
 				if (serverName != null) {
 					parseSets = getParsesFromServer(serverName,
@@ -178,8 +187,19 @@ public class ParserDriver {
 				}
 				ArrayList<String> allLemmaTagsSentences = 
 					getAllLemmaTagsSentences(tokenizedLines, parseSets, wnr);
-				for (String line: allLemmaTagsSentences) {
-					System.out.println(line);
+				/* actual parsing */
+				// 1. getting segments
+				if (segmentationMode == 0) {
+					
+				} else if (segmentationMode == 1) {
+					RoteSegmenter seg = new RoteSegmenter();
+					segs = seg.findSegmentationForTest(tokenNums, allLemmaTagsSentences, allRelatedWords);
+				} else if (segmentationMode == 2) {
+					MoreRelaxedSegmenter seg = new MoreRelaxedSegmenter();
+					segs = seg.findSegmentationForTest(tokenNums, allLemmaTagsSentences, allRelatedWords);
+				}				
+				for (String seg: segs) {
+					System.out.println(seg);
 				}
 				count += index;
 			} while (posLine != null);
