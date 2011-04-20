@@ -120,6 +120,12 @@ public class ParserDriver {
 		// 0 == gold, 1 == strict, 2 == relaxed
 		int segmentationMode = -1;
 		if (goldSegFile == null || goldSegFile.equals("null") || goldSegFile.equals("")) {
+			if (options.useRelaxedSegmentation.get().equals("yes")) {
+				segmentationMode = 2;
+			} else {
+				segmentationMode = 1;
+			}
+		} else {
 			segmentationMode = 0;
 			try {
 				goldSegReader = new BufferedReader(new FileReader(goldSegFile));
@@ -127,14 +133,8 @@ public class ParserDriver {
 				System.err.println("Could not open gold segmentation file:" + goldSegFile);
 				System.exit(-1);
 			}				
-		} else {
-			if (options.useRelaxedSegmentation.get().equals("yes")) {
-				segmentationMode = 2;
-			} else {
-				segmentationMode = 1;
-			}
-		}
-
+		} 
+		
 		try {
 			String posLine = null;
 			int count = 0;
