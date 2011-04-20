@@ -1,0 +1,2 @@
+This is a test for SEMAFOR, a frame-semantic parser.
+This is just a dummy line.
