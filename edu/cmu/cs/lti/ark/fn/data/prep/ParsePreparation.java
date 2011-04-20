@@ -235,7 +235,6 @@ public class ParsePreparation
 					labels.add("SUB");
 				}
 				writeStuff(bWriter,words,pos,parents,labels);
-				System.out.println("Processed sentence:"+posSentence);
 			}
 			bWriter.close();
 		}
