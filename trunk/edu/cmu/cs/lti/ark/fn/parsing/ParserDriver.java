@@ -125,7 +125,7 @@ public class ParserDriver {
 				posLines.clear();
 				int size = parseSets.size();
 				for (int i = 0; i < size; i++) {
-					ArrayList<String> set = parseSets.get(i);
+					ArrayList<String> set = parseSets.get(0);
 					set.clear();
 					parseSets.remove(0);
 				}
