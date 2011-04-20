@@ -17,15 +17,15 @@ public class ParserDriver {
 	public static final String SERVER_FLAG = "server";
 	/*
 	 *  required flags:
-	 *  startIndex
-	 *  endIndex
-	 *  mstServerMode
-	 * 	mstServerName
-	 * 	mstServerPort
-	 *  posTaggedFile
-	 *  testParseFile
-	 *  stopWordsFile
-	 *  wnConfigFile
+	 *  startindex
+	 *  endindex
+	 *  mstmode
+	 * 	mstserver
+	 * 	mstport
+	 *  posfile
+	 *  test-parsefile
+	 *  stopwords-file
+	 *  wordnet-configfile
 	 */
 	public static void main(String[] args) {
 		FNModelOptions options = new FNModelOptions(args);
