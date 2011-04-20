@@ -54,7 +54,7 @@ public final class FNModelOptions extends CommandLineOptions
 	public StringOption devParseFile = new StringOption("dev-parsefile");
 	public StringOption devFrameFile = new StringOption("dev-framefile");
 	public StringOption testFrameFile = new StringOption("test-framefile");
-	public ExistingPathOption testParseFile = new ExistingPathOption("test-parsefile");
+	public StringOption testParseFile = new StringOption("test-parsefile");
 	public StringOption modelFile = new StringOption("model");
 	public StringOption m45InputDir = new StringOption("m45inputdir");
 	public StringOption m45OutputDir = new StringOption("m45outputdir");
