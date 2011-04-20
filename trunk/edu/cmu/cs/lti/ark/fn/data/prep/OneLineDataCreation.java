@@ -52,7 +52,7 @@ public class OneLineDataCreation
 			gatheredNESents.add(neTaggedSentences.get(i));
 			String oneLineParse=processGatheredSentences(gatheredSents,gatheredParses,gatheredNESents);
 			result.add(oneLineParse);
-			System.out.println("Processed "+i);
+			// System.out.println("Processed "+i);
 		}	
 		
 		return result;
