@@ -87,6 +87,7 @@ public class ParserDriver {
 					if (!mstServerMode.equals(SERVER_FLAG)) {
 						readCoNLLParse(in);
 					}
+					continue;
 				}
 				if (count >= end) {
 					break;
