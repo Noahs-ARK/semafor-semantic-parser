@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
@@ -94,7 +95,7 @@ public class ParserDriver {
 				if (!mstServerMode.equals(SERVER_FLAG)) {
 					conllParse = readCoNLLParse(in);
 				} else {
-					out.println(posLine);
+					out.println(posLine.trim() + "\n*");
 					conllParse = readCoNLLParse(in);
 				}				
 				System.out.println(conllParse);
