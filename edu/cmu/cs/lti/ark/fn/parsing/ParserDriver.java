@@ -41,9 +41,6 @@ public class ParserDriver {
 	public static void main(String[] args) {
 		FNModelOptions options = new FNModelOptions(args);
 		String mstServerMode = options.mstServerMode.get();	
-		Socket kkSocket = null;
-		PrintWriter out = null;
-		BufferedReader in = null;
 		String mstServer = null;
 		int mstPort = -1;
 
@@ -66,26 +63,6 @@ public class ParserDriver {
 			System.exit(-1);
 		}		
 		runParser(posReader, wnr, options, mstServer, mstPort);
-
-		if (in != null) {
-			try {
-				in.close();
-			} catch (IOException e) {
-				System.err.println("Could not close input stream. Exiting.");
-				System.exit(-1);
-			}
-		}
-		if (out != null) {
-			out.close();
-		}
-		if (kkSocket != null) {
-			try {
-				kkSocket.close();
-			} catch (IOException e) {
-				System.err.println("Could not close socket. Exiting.");
-				System.exit(-1);
-			}
-		}
 		if (posReader != null) {
 			try {
 				posReader.close();
@@ -93,7 +70,6 @@ public class ParserDriver {
 				System.err.println("Could not close POS input stream. Exiting.");
 				System.exit(-1);
 			}
-			out.close();
 		}
 	}
 
