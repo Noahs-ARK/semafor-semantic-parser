@@ -12,10 +12,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import edu.cmu.cs.lti.ark.fn.data.prep.AllAnnotationsMergingWithoutNE;
+import edu.cmu.cs.lti.ark.fn.data.prep.OneLineDataCreation;
+import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.fn.identification.RequiredDataForFrameIdentification;
 import edu.cmu.cs.lti.ark.fn.segmentation.MoreRelaxedSegmenter;
 import edu.cmu.cs.lti.ark.fn.segmentation.RoteSegmenter;
 import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
+import edu.cmu.cs.lti.ark.fn.utils.LemmatizeStuff;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import gnu.trove.THashMap;
@@ -55,14 +59,22 @@ public class ParserDriver {
 		WordNetRelations wnr = new WordNetRelations(stopWordsFile, wnConfigFile);		
 		/* Opening POS tagged file */
 		String posFile = options.posTaggedFile.get();
+		String tokenizedFile = options.testTokenizedFile.get();
 		BufferedReader posReader = null;
+		BufferedReader tokenizedReader = null;
 		try {
 			posReader = new BufferedReader(new FileReader(posFile));
 		} catch (IOException e) {
 			System.err.println("Could not open POS tagged file: " + posFile + ". Exiting.");
 			System.exit(-1);
-		}		
-		runParser(posReader, wnr, options, mstServer, mstPort);
+		}
+		try {
+			tokenizedReader = new BufferedReader(new FileReader(tokenizedFile));
+		} catch (IOException e) {
+			System.err.println("Could not open tokenized file: " + tokenizedFile + ". Exiting.");
+			System.exit(-1);
+		}
+		runParser(posReader, tokenizedReader, wnr, options, mstServer, mstPort);
 		if (posReader != null) {
 			try {
 				posReader.close();
@@ -71,9 +83,18 @@ public class ParserDriver {
 				System.exit(-1);
 			}
 		}
+		if (tokenizedReader != null) {
+			try {
+				tokenizedReader.close();
+			} catch (IOException e) {
+				System.err.println("Could not close tokenizedReader input stream. Exiting.");
+				System.exit(-1);
+			}
+		}
 	}
 
 	private static void runParser(BufferedReader posReader, 
+			BufferedReader tokenizedReader,
 			WordNetRelations wnr,
 			FNModelOptions options,
 			String serverName,
@@ -113,8 +134,12 @@ public class ParserDriver {
 		
 		try {
 			String posLine = null;
+			String tokenizedLine = null;
+			String segLine = null;
 			int count = 0;
 			ArrayList<String> posLines = new ArrayList<String>();
+			ArrayList<String> tokenizedLines = new ArrayList<String>();
+			ArrayList<String> segLines = new ArrayList<String>();
 			ArrayList<ArrayList<String>> parseSets = new ArrayList<ArrayList<String>>();
 			BufferedReader parseReader = null;
 			if (serverName == null) {
@@ -123,6 +148,8 @@ public class ParserDriver {
 			do {
 				int index = 0;
 				posLines.clear();
+				segLines.clear();
+				tokenizedLines.clear();
 				int size = parseSets.size();
 				for (int i = 0; i < size; i++) {
 					ArrayList<String> set = parseSets.get(0);
@@ -130,12 +157,15 @@ public class ParserDriver {
 					parseSets.remove(0);
 				}
 				parseSets.clear();
+				System.out.println("Processing batch of size:" + BATCH_SIZE + " starting from: " + count);
 				for (index = 0; index < BATCH_SIZE; index++) {
 					posLine = posReader.readLine();
 					if (posLine == null) {
 						break;
 					}
 					posLines.add(posLine);
+					tokenizedLine = tokenizedReader.readLine();
+					tokenizedLines.add(tokenizedLine);
 					if (serverName == null) {
 						ArrayList<String> parse = readCoNLLParse(parseReader);
 						parseSets.add(parse);
@@ -146,9 +176,10 @@ public class ParserDriver {
 													serverPort,
 													posLines);
 				}
-				System.out.println("Size of parse sets:" + parseSets.size());
-				for (ArrayList<String> set: parseSets) {
-					System.out.println(set);
+				ArrayList<String> allLemmaTagsSentences = 
+					getAllLemmaTagsSentences(tokenizedLines, parseSets, wnr);
+				for (String line: allLemmaTagsSentences) {
+					System.out.println(line);
 				}
 				count += index;
 			} while (posLine != null);
@@ -159,6 +190,29 @@ public class ParserDriver {
 			System.err.println("Could not read line from pos file. Exiting.");
 			System.exit(-1);
 		}		
+	}
+
+	private static ArrayList<String> getAllLemmaTagsSentences(
+			ArrayList<String> tokenizedLines, 
+			ArrayList<ArrayList<String>> parses,
+			WordNetRelations wnr) {
+		ArrayList<String> neSentences = 
+			AllAnnotationsMergingWithoutNE.findDummyNESentences(tokenizedLines);
+		ArrayList<String> perSentenceParses = 
+			OneLineDataCreation.getPerSentenceParses(parses, tokenizedLines, neSentences);
+		ArrayList<String> res = new ArrayList<String>();
+		for (String line: perSentenceParses){
+			String outLine = line+"\t";
+			String[] toks=line.trim().split("\\s");
+			int sentLen=Integer.parseInt(toks[0]);
+			for(int i=0;i<sentLen;i++){
+				String lemma=wnr.getLemmaForWord(toks[i+1].toLowerCase(), toks[i+1+sentLen]);
+				outLine += lemma+"\t";
+			}
+			outLine = outLine.trim();
+			res.add(outLine);
+		}
+		return res;
 	}
 
 	public static ArrayList<ArrayList<String>> 
