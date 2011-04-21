@@ -290,15 +290,14 @@ public class ParserDriver {
 					int sentNum = new Integer(toks[2]);	// offset of the sentence within the loaded data (relative to options.startIndex)
 					String bestFrame = null; 
 					if (sg == null) {
-						idModel.getBestFrame(input,allLemmaTagsSentences.get(sentNum));
+						bestFrame = idModel.getBestFrame(input,allLemmaTagsSentences.get(sentNum));
 					} else {
-						idModel.getBestFrame(input,allLemmaTagsSentences.get(sentNum),sg);
+						bestFrame = idModel.getBestFrame(input,allLemmaTagsSentences.get(sentNum),sg);
 					}
 					String tokenRepresentation = FrameIdentificationRelease.getTokenRepresentation(toks[1],allLemmaTagsSentences.get(sentNum));  
 					String[] split = tokenRepresentation.trim().split("\t");
 					idResult.add(1+"\t"+bestFrame+"\t"+split[0]+"\t"+toks[1]+"\t"+split[1]+"\t"+sentNum);	// BestFrame\tTargetTokenNum(s)\tSentenceOffset
 				}
-				
 				// 3. argument identification
 				CreateAlphabet.run(false, allLemmaTagsSentences, idResult, wnr);
 				LocalFeatureReading lfr = 
