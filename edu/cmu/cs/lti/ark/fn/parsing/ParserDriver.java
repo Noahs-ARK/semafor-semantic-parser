@@ -15,6 +15,9 @@ import java.util.StringTokenizer;
 import edu.cmu.cs.lti.ark.fn.data.prep.AllAnnotationsMergingWithoutNE;
 import edu.cmu.cs.lti.ark.fn.data.prep.OneLineDataCreation;
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
+import edu.cmu.cs.lti.ark.fn.evaluation.ParseUtils;
+import edu.cmu.cs.lti.ark.fn.identification.FastFrameIdentifier;
+import edu.cmu.cs.lti.ark.fn.identification.FrameIdentificationRelease;
 import edu.cmu.cs.lti.ark.fn.identification.RequiredDataForFrameIdentification;
 import edu.cmu.cs.lti.ark.fn.segmentation.MoreRelaxedSegmenter;
 import edu.cmu.cs.lti.ark.fn.segmentation.RoteSegmenter;
@@ -24,6 +27,7 @@ import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
+import gnu.trove.TObjectDoubleHashMap;
 
 public class ParserDriver {
 
@@ -42,6 +46,7 @@ public class ParserDriver {
 	 *  goldsegfile
 	 *  userelaxed
 	 *  testtokenizedfile
+	 *  idmodelfile
 	 */
 	public static void main(String[] args) {
 		FNModelOptions options = new FNModelOptions(args);
@@ -112,7 +117,20 @@ public class ParserDriver {
 			r.getRevisedRelMap();
 		wnr.setRelatedWordsForWord(relatedWordsForWord);
 		wnr.setWordNetMap(wordNetMap);
-
+		Map<String, String> hvLemmas = r.getHvLemmaCache();
+		TObjectDoubleHashMap<String> paramList = 
+			FrameIdentificationRelease.parseParamFile(options.idParamFile.get());
+		FastFrameIdentifier idModel = new FastFrameIdentifier(
+				paramList, 
+				"reg", 
+				0.0, 
+				frameMap, 
+				null, 
+				cMap,
+				relatedWordsForWord,
+				revisedRelationsMap,
+				hvLemmas);	
+		
 		String goldSegFile = options.goldSegFile.get();
 		BufferedReader goldSegReader = null;
 		// 0 == gold, 1 == strict, 2 == relaxed
@@ -135,8 +153,8 @@ public class ParserDriver {
 				System.err.println("Could not open gold segmentation file:" + goldSegFile);
 				System.exit(-1);
 			}				
-		} 
-	
+		}
+			
 		
 		try {
 			String posLine = null;
@@ -149,6 +167,9 @@ public class ParserDriver {
 			ArrayList<ArrayList<String>> parseSets = new ArrayList<ArrayList<String>>();
 			ArrayList<String> tokenNums = new ArrayList<String>();
 			ArrayList<String> segs = new ArrayList<String>();
+			ArrayList<String> inputForFrameId = new ArrayList<String>();
+			ArrayList<String> originalIndices = new ArrayList<String>();
+			ArrayList<String> idResult = new ArrayList<String>();
 			BufferedReader parseReader = null;
 			if (serverName == null) {
 				parseReader = new BufferedReader(new FileReader(options.testParseFile.get()));
@@ -160,6 +181,8 @@ public class ParserDriver {
 				tokenizedLines.clear();
 				tokenNums.clear();
 				segs.clear();
+				originalIndices.clear();
+				idResult.clear();
 				int size = parseSets.size();
 				for (int i = 0; i < size; i++) {
 					ArrayList<String> set = parseSets.get(0);
@@ -183,7 +206,12 @@ public class ParserDriver {
 						ArrayList<String> parse = readCoNLLParse(parseReader);
 						parseSets.add(parse);
 					}
-					tokenNums.add(""+(count+index));
+					tokenNums.add(""+index);
+					originalIndices.add(""+(count+index));
+				}
+				// breaking if the size of posLines is zero
+				if (posLines.size() == 0) {
+					break;
 				}
 				if (serverName != null) {
 					parseSets = getParsesFromServer(serverName,
@@ -213,9 +241,24 @@ public class ParserDriver {
 					MoreRelaxedSegmenter seg = new MoreRelaxedSegmenter();
 					segs = seg.findSegmentationForTest(tokenNums, allLemmaTagsSentences, allRelatedWords);
 				}				
-				for (String seg: segs) {
-					System.out.println(seg);
+				inputForFrameId.clear();
+				inputForFrameId = 
+					ParseUtils.getRightInputForFrameIdentification(segs);
+				
+				// 2. frame identification
+				for(String input: inputForFrameId)
+				{
+					String[] toks = input.split("\t");
+					int sentNum = new Integer(toks[2]);	// offset of the sentence within the loaded data (relative to options.startIndex)
+					String bestFrame = idModel.getBestFrame(input,allLemmaTagsSentences.get(sentNum));
+					String tokenRepresentation = FrameIdentificationRelease.getTokenRepresentation(toks[1],allLemmaTagsSentences.get(sentNum));  
+					String[] split = tokenRepresentation.trim().split("\t");
+					String sentCount = originalIndices.get(sentNum);
+					idResult.add(1+"\t"+bestFrame+"\t"+split[0]+"\t"+toks[1]+"\t"+split[1]+"\t"+sentCount);	// BestFrame\tTargetTokenNum(s)\tSentenceOffset
 				}
+				for (String result: idResult) {
+					System.out.println(result);
+				}				
 				count += index;
 			} while (posLine != null);
 			if (parseReader != null) {
