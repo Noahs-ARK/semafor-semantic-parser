@@ -495,8 +495,12 @@ public class DataPrep {
 		Scanner localsc = FileUtil.openInFile(alphabetFilename);
 		featIndex = new HashMap<String, Integer>();
 		localsc.nextLine();
+		int count = 0;
 		while (localsc.hasNextLine()) {
 			addFeature(localsc.nextLine(), featIndex);
+			if (count % 100000 == 0) {
+				System.out.println(count);
+			}
 		}
 		localsc.close();
 		genAlpha = false;
