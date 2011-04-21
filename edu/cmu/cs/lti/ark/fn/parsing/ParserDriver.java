@@ -281,6 +281,15 @@ public class ParserDriver {
 						new LocalFeatureReading(options.eventsFile.get(),
 												options.spansFile.get(),
 												idResult);
+				try
+				{
+					lfr.readLocalFeatures();
+				}
+				catch(Exception e)
+				{
+					System.err.println("Could not read local features. Exiting.");
+					System.exit(-1);
+				}
 				frList = lfr.getMFrameFeaturesList();
 				System.out.println("Size of frame list:" + frList.size());
 				decoding.setData(null, frList, idResult);
