@@ -29,6 +29,18 @@ public class LocalFeatureReading
 		mFrameFeaturesList = new ArrayList<FrameFeatures>();
 	}	
 	
+	public LocalFeatureReading(String eventsFile, 
+							   String spanFile, 
+							   ArrayList<String> frameLines)
+	{
+		mEventsFile=eventsFile;
+		mSpansFile=spanFile;
+		mFrameFile=null;
+		mFrameLines=frameLines;
+		mFrameFeaturesList = new ArrayList<FrameFeatures>();
+	}
+	
+	
 	public void readLocalFeatures() throws Exception
 	{
 		readSpansFile();
