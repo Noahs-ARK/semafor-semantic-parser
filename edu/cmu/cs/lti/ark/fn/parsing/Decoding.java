@@ -44,6 +44,21 @@ public class Decoding
 		mFrameLines=frameLines;
 	}
 	
+	
+	public void init(String modelFile, String alphabetFile) {
+		mLocalModelFile = modelFile;
+		mLocalAlphabetFile = alphabetFile;
+		readModel();
+	}
+	
+	public void setData(String predictionFile,
+					 ArrayList<FrameFeatures> list,
+					 ArrayList<String> frameLines) {
+		mFrameList=list;
+		mPredictionFile = predictionFile;
+		mFrameLines=frameLines;
+	}
+	
 	public void readModel() {	
 		Scanner localsc = FileUtil.openInFile(mLocalAlphabetFile);
 		Scanner paramsc = FileUtil.openInFile(mLocalModelFile);
