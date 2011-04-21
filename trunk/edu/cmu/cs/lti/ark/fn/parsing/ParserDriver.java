@@ -51,6 +51,7 @@ public class ParserDriver {
 	 *  framenet-femapfile
 	 *  eventsfile
 	 *  spansfile
+	 *  model
 	 */
 	public static void main(String[] args) {
 		FNModelOptions options = new FNModelOptions(args);
@@ -141,6 +142,9 @@ public class ParserDriver {
 										options.frameNetElementsMapFile.get(),
 										options.eventsFile.get(),
 										options.spansFile.get());		
+		Decoding decoding = new Decoding();
+		decoding.init(options.modelFile.get(), 
+					  options.alphabetFile.get());
 		
 		
 		String goldSegFile = options.goldSegFile.get();
@@ -182,6 +186,8 @@ public class ParserDriver {
 			ArrayList<String> inputForFrameId = new ArrayList<String>();
 			ArrayList<String> originalIndices = new ArrayList<String>();
 			ArrayList<String> idResult = new ArrayList<String>();
+			ArrayList<FrameFeatures> frList = new ArrayList<FrameFeatures>();
+			ArrayList<String> argResult = new ArrayList<String>();
 			BufferedReader parseReader = null;
 			if (serverName == null) {
 				parseReader = new BufferedReader(new FileReader(options.testParseFile.get()));
@@ -195,6 +201,7 @@ public class ParserDriver {
 				segs.clear();
 				originalIndices.clear();
 				idResult.clear();
+				frList.clear();
 				int size = parseSets.size();
 				for (int i = 0; i < size; i++) {
 					ArrayList<String> set = parseSets.get(0);
@@ -270,8 +277,14 @@ public class ParserDriver {
 				
 				// 3. argument identification
 				CreateAlphabet.run(false, allLemmaTagsSentences, idResult, wnr);
-				
-				for (String result: idResult) {
+				LocalFeatureReading lfr = 
+						new LocalFeatureReading(options.eventsFile.get(),
+												options.spansFile.get(),
+												idResult);
+				frList = lfr.getMFrameFeaturesList();
+				decoding.setData(null, frList, idResult);
+				argResult = decoding.decodeAll("overlapcheck");	
+				for (String result: argResult) {
 					System.out.println(result);
 				}				
 				count += index;

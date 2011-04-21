@@ -71,7 +71,7 @@ public class Decoding
 		}
 	}
 	
-	public void decodeAll(String overlapCheck)
+	public ArrayList<String> decodeAll(String overlapCheck)
 	{
 		int size = mFrameList.size();
 		ArrayList<String> result = new ArrayList<String>();
@@ -81,7 +81,10 @@ public class Decoding
 			String decisionLine = decode(i,overlapCheck);
 			result.add(decisionLine);
 		}
-		ParsePreparation.writeSentencesToTempFile(mPredictionFile, result);
+		if (mPredictionFile != null) {
+			ParsePreparation.writeSentencesToTempFile(mPredictionFile, result);
+		}
+		return result;
 	}
 	
 	public String decode(int index, String overlapCheck)
