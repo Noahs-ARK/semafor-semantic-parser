@@ -175,7 +175,7 @@ public class FrameIdentificationRelease
 		return startParamList;
 	}
 	
-	private static String getTokenRepresentation(String tokNum, String parse)
+	public static String getTokenRepresentation(String tokNum, String parse)
 	{
 		StringTokenizer st = new StringTokenizer(parse,"\t");
 		int tokensInFirstSent = new Integer(st.nextToken());
