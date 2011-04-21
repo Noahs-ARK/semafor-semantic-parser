@@ -499,9 +499,11 @@ public class DataPrep {
 		while (localsc.hasNextLine()) {
 			addFeature(localsc.nextLine(), featIndex);
 			if (count % 100000 == 0) {
-				System.out.println(count);
+				System.out.print(count + " ");
 			}
+			count++;
 		}
+		System.out.println();
 		localsc.close();
 		genAlpha = false;
 	}
