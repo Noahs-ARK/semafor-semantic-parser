@@ -34,6 +34,6 @@ public class DecodingMainArgs
 				list,
 				ParsePreparation.readSentencesFromFile(frFile)
 				);
-		bpd.decodeAll(overlap);		
+		bpd.decodeAll(overlap, 0);		
 	}		
 }

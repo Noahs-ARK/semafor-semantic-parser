@@ -71,14 +71,14 @@ public class Decoding
 		}
 	}
 	
-	public ArrayList<String> decodeAll(String overlapCheck)
+	public ArrayList<String> decodeAll(String overlapCheck, int offset)
 	{
 		int size = mFrameList.size();
 		ArrayList<String> result = new ArrayList<String>();
 		for(int i = 0; i < size; i ++)
 		{
 			System.out.println("Decoding index:"+i);
-			String decisionLine = decode(i,overlapCheck);
+			String decisionLine = decode(i,overlapCheck, offset);
 			result.add(decisionLine);
 		}
 		if (mPredictionFile != null) {
@@ -87,14 +87,14 @@ public class Decoding
 		return result;
 	}
 	
-	public String decode(int index, String overlapCheck)
+	public String decode(int index, String overlapCheck, int offset)
 	{
 		FrameFeatures f = mFrameList.get(index);
 		String dec = null;
 		if(overlapCheck.equals("overlapcheck"))
-			dec = getNonOverlappingDecision(f,mFrameLines.get(index));
+			dec = getNonOverlappingDecision(f,mFrameLines.get(index), offset);
 		else
-			dec = getDecision(f,mFrameLines.get(index));
+			dec = getDecision(f,mFrameLines.get(index), offset);
 		return dec;
 	}
 	
@@ -111,11 +111,11 @@ public class Decoding
 		return weightSum;
 	}
 	
-	public String getDecision(FrameFeatures mFF,String frameLine)
+	public String getDecision(FrameFeatures mFF,String frameLine, int offset)
 	{
 		String frameName = mFF.frameName;
 		System.out.println("Frame:"+frameName);
-		String decisionLine=getInitialDecisionLine(frameLine);
+		String decisionLine=getInitialDecisionLine(frameLine, offset);
 		if(mFF.fElements.size()==0)
 		{
 			decisionLine="0\t1"+"\t"+decisionLine.trim();
@@ -165,13 +165,19 @@ public class Decoding
 		return decisionLine;
 	}
 	
-	public String getInitialDecisionLine(String frameLine)
+	public String getInitialDecisionLine(String frameLine, int offset)
 	{
 		String[] frameToks = frameLine.split("\t");
 		String decisionLine="";
 		for(int i = 1; i <= 5; i ++)
 		{
-			decisionLine+=frameToks[i]+"\t";
+			String tok = frameToks[i];
+			if (i == 5) {
+				int num = new Integer(tok);
+				num = num + offset;
+				tok = ""+num;
+			}
+			decisionLine+=tok+"\t";
 		}	
 		return decisionLine;
 	}
@@ -349,11 +355,11 @@ public class Decoding
 	}
 	
 	
-	public String getNonOverlappingDecision(FrameFeatures mFF,String frameLine)
+	public String getNonOverlappingDecision(FrameFeatures mFF, String frameLine, int offset)
 	{
 		String frameName = mFF.frameName;
 		System.out.println("Frame:"+frameName);
-		String decisionLine=getInitialDecisionLine(frameLine);
+		String decisionLine=getInitialDecisionLine(frameLine, offset);
 		if(mFF.fElements.size()==0)
 		{
 			decisionLine="0\t1"+"\t"+decisionLine.trim();

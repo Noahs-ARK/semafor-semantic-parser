@@ -291,10 +291,8 @@ public class ParserDriver {
 					System.exit(-1);
 				}
 				frList = lfr.getMFrameFeaturesList();
-				System.out.println("Size of frame list:" + frList.size());
 				decoding.setData(null, frList, idResult);
-				argResult = decoding.decodeAll("overlapcheck");	
-				System.out.println("Size of argument results:" + argResult);
+				argResult = decoding.decodeAll("overlapcheck", count);	
 				for (String result: argResult) {
 					System.out.println(result);
 				}				
