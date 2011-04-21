@@ -35,7 +35,7 @@ import gnu.trove.TObjectDoubleHashMap;
 public class ParserDriver {
 
 	public static final String SERVER_FLAG = "server";
-	public static final int BATCH_SIZE = 100;
+	public static final int BATCH_SIZE = 50;
 	/*
 	 *  required flags:
 	 *  mstmode
