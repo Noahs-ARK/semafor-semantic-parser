@@ -68,16 +68,22 @@ public class DataPrep {
 	public DataPrep()
 	{
 		ps = FileUtil.openOutFile(FEFileName.spanfilename);
-		load();
+		load(null, null, null);
 	}
 	
 	public DataPrep(String spansFile)
 	{
 		ps = FileUtil.openOutFile(FEFileName.spanfilename);
-		load();
+		load(null, null, null);
 	}
 	
-	
+	public DataPrep(ArrayList<String> tL, 
+					ArrayList<String> fL,
+					WordNetRelations lwnr) {
+		// this model does not write span files
+		ps = FileUtil.openOutFile(FEFileName.spanfilename);
+		load(tL, fL, lwnr);		
+	}	
 	
 	private ArrayList<String >readLinesInFile(String filename){
 		ArrayList<String>lines=new ArrayList<String>();
@@ -186,12 +192,24 @@ public class DataPrep {
 	 * @brief load data needed for feature extraction
 	 * 
 	 */
-	private void load() {
-		fedict = new FEDict(FEFileName.fedictFilename1);
+	private void load(ArrayList<String> tL,
+					  ArrayList<String> fL,
+					  WordNetRelations lwnr) {
+		if (fedict == null) {
+			fedict = new FEDict(FEFileName.fedictFilename1);
+		}
 		// fedict.merge(FEFileName.fedictFilename2);
 		canLines = new ArrayList<int[][]>();
-		tagLines = readLinesInFile(FEFileName.tagFilename); 
-		feLines = readLinesInFile(FEFileName.feFilename);
+		if (fL == null) {
+			feLines = readLinesInFile(FEFileName.feFilename);
+		} else {
+			feLines = fL;
+		}
+		if (tL == null) {
+			tagLines = readLinesInFile(FEFileName.tagFilename);
+		} else {
+			tagLines = tL;
+		}		
 		
 		boolean hasCandidateFile = true;
 		
@@ -200,8 +218,12 @@ public class DataPrep {
 			hasCandidateFile = false;
 		}
 		if (wnr == null) {
-			wnr = new WordNetRelations(FEFileName.stopwordFilename,
-					FEFileName.wordnetFilename);
+			if (lwnr != null) {
+				wnr = lwnr;
+			} else {
+				wnr = new WordNetRelations(FEFileName.stopwordFilename,
+						FEFileName.wordnetFilename);
+			}
 		}
 		int span[];
 		System.out.println("Loading data....");
