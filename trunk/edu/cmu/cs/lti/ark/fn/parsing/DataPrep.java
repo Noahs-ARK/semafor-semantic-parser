@@ -257,7 +257,6 @@ public class DataPrep {
 			spans = new int[spanList.size()][];
 			spanList.toArray(spans);
 			canLines.add(spans);
-			System.out.println("Considered feLine:"+count);
 			count++;
 		}
 		reset();
