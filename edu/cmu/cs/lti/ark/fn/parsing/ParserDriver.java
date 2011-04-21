@@ -146,10 +146,7 @@ public class ParserDriver {
 		SmoothedGraph sg = null;
 		if (usegraph) {
 			sg = (SmoothedGraph)SerializedObjects.readSerializedObject(options.useGraph.get());
-			System.out.println("Read graph successfully from" + options.useGraph.get());
-		}
-		if (true) {
-			System.exit(-1);
+			System.out.println("Read graph successfully from: " + options.useGraph.get());
 		}
 		// initializing argument identification
 		System.out.println("Initializing alphabet for argument identification..");
