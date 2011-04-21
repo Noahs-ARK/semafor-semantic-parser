@@ -124,6 +124,7 @@ public class ParserDriver {
 		Map<String, String> hvLemmas = r.getHvLemmaCache();
 		TObjectDoubleHashMap<String> paramList = 
 			FrameIdentificationRelease.parseParamFile(options.idParamFile.get());
+		System.out.println("Initializing frame identification model...");
 		FastFrameIdentifier idModel = new FastFrameIdentifier(
 				paramList, 
 				"reg", 
@@ -135,6 +136,7 @@ public class ParserDriver {
 				revisedRelationsMap,
 				hvLemmas);	
 		// initializing argument identification
+		System.out.println("Initializing alphabet for argument identification..");
 		CreateAlphabet.setDataFileNames(options.alphabetFile.get(), 
 										options.frameNetElementsMapFile.get(),
 										options.eventsFile.get(),
