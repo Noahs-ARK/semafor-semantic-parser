@@ -1,7 +1,9 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -19,6 +21,7 @@ import edu.cmu.cs.lti.ark.fn.evaluation.ParseUtils;
 import edu.cmu.cs.lti.ark.fn.identification.FastFrameIdentifier;
 import edu.cmu.cs.lti.ark.fn.identification.FrameIdentificationRelease;
 import edu.cmu.cs.lti.ark.fn.identification.RequiredDataForFrameIdentification;
+import edu.cmu.cs.lti.ark.fn.identification.SmoothedGraph;
 import edu.cmu.cs.lti.ark.fn.segmentation.MoreRelaxedSegmenter;
 import edu.cmu.cs.lti.ark.fn.segmentation.RoteSegmenter;
 import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
@@ -52,7 +55,9 @@ public class ParserDriver {
 	 *  eventsfile
 	 *  spansfile
 	 *  model
+	 *  useGraph
 	 */
+	
 	public static void main(String[] args) {
 		FNModelOptions options = new FNModelOptions(args);
 		String mstServerMode = options.mstServerMode.get();	
@@ -136,6 +141,11 @@ public class ParserDriver {
 				relatedWordsForWord,
 				revisedRelationsMap,
 				hvLemmas);	
+		boolean usegraph = !options.useGraph.get().equals("null");
+		SmoothedGraph sg = null;
+		if (usegraph) {
+			sg = (SmoothedGraph)SerializedObjects.readSerializedObject(options.useGraph.get());
+		}
 		// initializing argument identification
 		System.out.println("Initializing alphabet for argument identification..");
 		CreateAlphabet.setDataFileNames(options.alphabetFile.get(), 
@@ -170,7 +180,14 @@ public class ParserDriver {
 				System.exit(-1);
 			}				
 		}
-			
+		
+		String outputFile = options.frameElementsOutputFile.get();
+		BufferedWriter bWriter = null;
+		try {
+			bWriter = new BufferedWriter(new FileWriter(outputFile));
+		} catch (IOException e) {
+			System.err.println("Could not open file to write: " + outputFile);
+		}
 		
 		try {
 			String posLine = null;
@@ -269,7 +286,12 @@ public class ParserDriver {
 				{
 					String[] toks = input.split("\t");
 					int sentNum = new Integer(toks[2]);	// offset of the sentence within the loaded data (relative to options.startIndex)
-					String bestFrame = idModel.getBestFrame(input,allLemmaTagsSentences.get(sentNum));
+					String bestFrame = null; 
+					if (sg == null) {
+						idModel.getBestFrame(input,allLemmaTagsSentences.get(sentNum));
+					} else {
+						idModel.getBestFrame(input,allLemmaTagsSentences.get(sentNum),sg);
+					}
 					String tokenRepresentation = FrameIdentificationRelease.getTokenRepresentation(toks[1],allLemmaTagsSentences.get(sentNum));  
 					String[] split = tokenRepresentation.trim().split("\t");
 					idResult.add(1+"\t"+bestFrame+"\t"+split[0]+"\t"+toks[1]+"\t"+split[1]+"\t"+sentNum);	// BestFrame\tTargetTokenNum(s)\tSentenceOffset
@@ -294,12 +316,15 @@ public class ParserDriver {
 				decoding.setData(null, frList, idResult);
 				argResult = decoding.decodeAll("overlapcheck", count);	
 				for (String result: argResult) {
-					System.out.println(result);
+					bWriter.write(result + "\n");
 				}				
 				count += index;
 			} while (posLine != null);
 			if (parseReader != null) {
 				parseReader.close();
+			}
+			if (bWriter != null) {
+				bWriter.close();
 			}
 		} catch (IOException e) {
 			System.err.println("Could not read line from pos file. Exiting.");
