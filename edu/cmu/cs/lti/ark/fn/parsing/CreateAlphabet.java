@@ -34,7 +34,7 @@ public class CreateAlphabet {
 		}
 		FEFileName.KBestParse = new Integer(args[7]);
 		FEFileName.KBestParseDirectory = args[8];
-		run(genAlpha, null, null);
+		run(genAlpha, null, null, null);
 	}	
 	
 	// Used during testing with minimal IO
