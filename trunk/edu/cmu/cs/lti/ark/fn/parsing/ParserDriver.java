@@ -56,6 +56,7 @@ public class ParserDriver {
 	 *  spansfile
 	 *  model
 	 *  useGraph
+	 *  frameelementsoutputfile
 	 */
 	
 	public static void main(String[] args) {
@@ -145,6 +146,10 @@ public class ParserDriver {
 		SmoothedGraph sg = null;
 		if (usegraph) {
 			sg = (SmoothedGraph)SerializedObjects.readSerializedObject(options.useGraph.get());
+			System.out.println("Read graph successfully from" + options.useGraph.get());
+		}
+		if (true) {
+			System.exit(-1);
 		}
 		// initializing argument identification
 		System.out.println("Initializing alphabet for argument identification..");
