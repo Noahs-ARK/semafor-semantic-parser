@@ -55,7 +55,7 @@ public class CreateAlphabet {
 							ArrayList<String> tL, 	
 							ArrayList<String> fL,
 							WordNetRelations lwnr) {
-		DataPrep dprep=new DataPrep();
+		DataPrep dprep=new DataPrep(tL, fL, lwnr);
 		long time=System.currentTimeMillis();
 		System.out.println("Reading alphabet...");
 		if(genAlpha){
