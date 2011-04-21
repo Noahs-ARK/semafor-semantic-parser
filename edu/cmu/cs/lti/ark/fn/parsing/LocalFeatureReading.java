@@ -231,12 +231,12 @@ public class LocalFeatureReading
 			{
 				System.out.println("Problem with line:"+lines.get(i));
 			}
-			System.out.print(i+" ");
-			if(i%100==0)
-				System.out.println();
+//			System.out.print(i+" ");
+//			if(i%100==0)
+//				System.out.println();
 			i++;
 		}
-		System.out.println();
+		// System.out.println();
 		int spanSize = spans.size();
 		int[][] spansArr = new int[spanSize][];
 		spans.toArray(spansArr);
