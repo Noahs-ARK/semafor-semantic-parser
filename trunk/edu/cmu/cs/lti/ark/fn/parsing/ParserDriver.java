@@ -47,6 +47,10 @@ public class ParserDriver {
 	 *  userelaxed
 	 *  testtokenizedfile
 	 *  idmodelfile
+	 *  alphabetfile
+	 *  framenet-femapfile
+	 *  eventsfile
+	 *  spansfile
 	 */
 	public static void main(String[] args) {
 		FNModelOptions options = new FNModelOptions(args);
@@ -130,6 +134,12 @@ public class ParserDriver {
 				relatedWordsForWord,
 				revisedRelationsMap,
 				hvLemmas);	
+		// initializing argument identification
+		CreateAlphabet.setDataFileNames(options.alphabetFile.get(), 
+										options.frameNetElementsMapFile.get(),
+										options.eventsFile.get(),
+										options.spansFile.get());		
+		
 		
 		String goldSegFile = options.goldSegFile.get();
 		BufferedReader goldSegReader = null;
@@ -253,9 +263,12 @@ public class ParserDriver {
 					String bestFrame = idModel.getBestFrame(input,allLemmaTagsSentences.get(sentNum));
 					String tokenRepresentation = FrameIdentificationRelease.getTokenRepresentation(toks[1],allLemmaTagsSentences.get(sentNum));  
 					String[] split = tokenRepresentation.trim().split("\t");
-					String sentCount = originalIndices.get(sentNum);
-					idResult.add(1+"\t"+bestFrame+"\t"+split[0]+"\t"+toks[1]+"\t"+split[1]+"\t"+sentCount);	// BestFrame\tTargetTokenNum(s)\tSentenceOffset
+					idResult.add(1+"\t"+bestFrame+"\t"+split[0]+"\t"+toks[1]+"\t"+split[1]+"\t"+sentNum);	// BestFrame\tTargetTokenNum(s)\tSentenceOffset
 				}
+				
+				// 3. argument identification
+				CreateAlphabet.run(false, allLemmaTagsSentences, idResult, wnr);
+				
 				for (String result: idResult) {
 					System.out.println(result);
 				}				

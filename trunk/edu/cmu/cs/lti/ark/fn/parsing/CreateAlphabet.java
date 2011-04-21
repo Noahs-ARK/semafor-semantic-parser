@@ -1,10 +1,12 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.cmu.cs.lti.ark.fn.clusters.ScrapTest;
 import edu.cmu.cs.lti.ark.fn.utils.BitOps;
+import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
 import edu.cmu.cs.lti.ark.util.FileUtil;
 
 public class CreateAlphabet {
@@ -32,10 +34,27 @@ public class CreateAlphabet {
 		}
 		FEFileName.KBestParse = new Integer(args[7]);
 		FEFileName.KBestParseDirectory = args[8];
-		run(genAlpha);
+		run(genAlpha, null, null);
+	}	
+	
+	// Used during testing with minimal IO
+	public static void setDataFileNames(String alphafilename,
+								   		String fedictFilename,
+								   		String eventsFile,
+								   		String spansFile) {
+		FEFileName.alphafilename = alphafilename;
+		FEFileName.fedictFilename1 = fedictFilename;
+		FEFileName.spanfilename = spansFile;
+		FEFileName.eventFilename = eventsFile;
+		DataPrep.readFeatureIndex(FEFileName.alphafilename);
+		DataPrep.fedict = new FEDict(FEFileName.fedictFilename1);
+		DataPrep.genAlpha = false;
 	}
 
-	public static void run(boolean genAlpha) {
+	public static void run(boolean genAlpha, 
+							ArrayList<String> tL, 	
+							ArrayList<String> fL,
+							WordNetRelations lwnr) {
 		DataPrep dprep=new DataPrep();
 		long time=System.currentTimeMillis();
 		System.out.println("Reading alphabet...");
@@ -44,9 +63,9 @@ public class CreateAlphabet {
 		}
 		if(DataPrep.featIndex==null){
 			DataPrep.readFeatureIndex(FEFileName.alphafilename);
+			System.out.println("Finished Reading alphabet..."+(System.currentTimeMillis()-time));
 		}
 		DataPrep.genAlpha=genAlpha;
-		System.out.println("Finished Reading alphabet..."+(System.currentTimeMillis()-time));
 		BufferedOutputStream bos=new BufferedOutputStream(FileUtil.openOutFile(FEFileName.eventFilename));
 		int fCount=0;
 		time=System.currentTimeMillis();
