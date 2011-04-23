@@ -57,6 +57,7 @@ public class ParserDriver {
 	 *  model
 	 *  useGraph
 	 *  frameelementsoutputfile
+	 *  alllemmatagsfile
 	 */
 	
 	public static void main(String[] args) {
@@ -190,11 +191,17 @@ public class ParserDriver {
 		} catch (IOException e) {
 			System.err.println("Could not open file to write: " + outputFile);
 		}
+		String allLemmaTagsOutputFile = options.outAllLemmaTagsFile.get();
+		BufferedWriter bWriter1 = null;
+		try {
+			bWriter1 = new BufferedWriter(new FileWriter(allLemmaTagsOutputFile));
+		} catch (IOException e) {
+			System.err.println("Could not open file to write: " + allLemmaTagsOutputFile);
+		}
 		
 		try {
 			String posLine = null;
 			String tokenizedLine = null;
-			String segLine = null;
 			int count = 0;
 			ArrayList<String> posLines = new ArrayList<String>();
 			ArrayList<String> tokenizedLines = new ArrayList<String>();
@@ -258,6 +265,9 @@ public class ParserDriver {
 				}
 				ArrayList<String> allLemmaTagsSentences = 
 					getAllLemmaTagsSentences(tokenizedLines, parseSets, wnr);
+				for (String outSent: allLemmaTagsSentences) {
+					bWriter1.write(outSent+"\n");
+				}
 				/* actual parsing */
 				// 1. getting segments
 				if (segmentationMode == 0) {
@@ -326,6 +336,9 @@ public class ParserDriver {
 			}
 			if (bWriter != null) {
 				bWriter.close();
+			}
+			if (bWriter1 != null) {
+				bWriter1.close();
 			}
 		} catch (IOException e) {
 			System.err.println("Could not read line from pos file. Exiting.");
