@@ -115,4 +115,5 @@ public final class FNModelOptions extends CommandLineOptions
 	public IntOption mstServerPort = new IntOption("mstport");
 	public StringOption goldSegFile = new StringOption("goldsegfile");
 	public StringOption posTaggedFile = new StringOption("posfile");
+	public StringOption outAllLemmaTagsFile = new StringOption("alllemmatagsfile");
 }
