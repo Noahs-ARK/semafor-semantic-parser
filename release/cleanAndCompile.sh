@@ -8,11 +8,9 @@ classpath=".:./lib/semafor-deps.jar"
 find edu \( -name "*.class" \) -exec rm '{}' \;
 ${JAVA_HOME_BIN}/javac -cp ${classpath} edu/cmu/cs/lti/ark/fn/data/prep/CoNLLInputPreparation.java
 ${JAVA_HOME_BIN}/javac -cp ${classpath} edu/cmu/cs/lti/ark/fn/data/prep/AllAnnotationsMergingWithoutNE.java
-${JAVA_HOME_BIN}/javac -cp ${classpath} edu/cmu/cs/lti/ark/fn/identification/ConvertAlphabetFile.java
-${JAVA_HOME_BIN}/javac -cp ${classpath} edu/cmu/cs/lti/ark/fn/identification/FrameIdentificationRelease.java
-${JAVA_HOME_BIN}/javac -cp ${classpath} edu/cmu/cs/lti/ark/fn/identification/FrameIdentificationGoldTargets.java
-${JAVA_HOME_BIN}/javac -cp ${classpath} edu/cmu/cs/lti/ark/fn/parsing/CreateAlphabet.java
-${JAVA_HOME_BIN}/javac -cp ${classpath} edu/cmu/cs/lti/ark/fn/parsing/DecodingMainArgs.java
+${JAVA_HOME_BIN}/javac -cp ${classpath} edu/cmu/cs/lti/ark/fn/parsing/ParserDriver.java
+${JAVA_HOME_BIN}/javac -cp ${classpath} edu/cmu/cs/lti/ark/fn/evaluation/PrepareFullAnnotationXML.java
+
 
 cd ${MST_PARSER_HOME}
 pwd
