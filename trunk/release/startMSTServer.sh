@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/bin/bash
 #    The script to start the MST parser server.
 #    Written by Dipanjan Das (dipanjan@cs.cmu.edu)
 #    Copyright (C) 2011

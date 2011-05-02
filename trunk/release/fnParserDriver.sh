@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/bin/bash
 #    The driver script for SEMAFOR.
 #    Written by Dipanjan Das (dipanjan@cs.cmu.edu)
 #    with suggestions from Thomas Kleinbauer (thomas.kleinbauer@dfki.de)
