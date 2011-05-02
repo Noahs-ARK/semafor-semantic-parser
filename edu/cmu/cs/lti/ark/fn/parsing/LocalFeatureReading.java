@@ -203,38 +203,40 @@ public class LocalFeatureReading
 		int lineSize = lines.size();
 		ArrayList<String> feLines = new ArrayList<String>();
 		ArrayList<SpanAndCorrespondingFeatures[]> spansList = new ArrayList<SpanAndCorrespondingFeatures[]>();
-		String feLine = lines.get(0);
-		feLines.add(feLine);
 		ArrayList<int[]> spans = new ArrayList<int[]>();
-		i = 1;
-		System.out.println("LineSize:"+lineSize);
-		while(i<lineSize)
-		{
-			String[] toks = lines.get(i).split("\t");
-			if(toks.length==6)
+		if (lineSize != 0) {
+			String feLine = lines.get(0);
+			feLines.add(feLine);
+			i = 1;
+			System.out.println("LineSize:"+lineSize);
+			while(i<lineSize)
 			{
-				feLines.add(lines.get(i));
-				int spanSize = spans.size();
-				int[][] spansArr = new int[spanSize][];
-				spans.toArray(spansArr);
-				addIntSpanArray(spansList, spansArr);
-				spans = new ArrayList<int[]>();
+				String[] toks = lines.get(i).split("\t");
+				if(toks.length==6)
+				{
+					feLines.add(lines.get(i));
+					int spanSize = spans.size();
+					int[][] spansArr = new int[spanSize][];
+					spans.toArray(spansArr);
+					addIntSpanArray(spansList, spansArr);
+					spans = new ArrayList<int[]>();
+				}
+				else if(toks.length==2)
+				{
+					int[] intSpan = new int[2];
+					intSpan[0] = new Integer(toks[0]);
+					intSpan[1] = new Integer(toks[1]);
+					spans.add(intSpan);
+				}
+				else
+				{
+					System.out.println("Problem with line:"+lines.get(i));
+				}
+	//			System.out.print(i+" ");
+	//			if(i%100==0)
+	//				System.out.println();
+				i++;
 			}
-			else if(toks.length==2)
-			{
-				int[] intSpan = new int[2];
-				intSpan[0] = new Integer(toks[0]);
-				intSpan[1] = new Integer(toks[1]);
-				spans.add(intSpan);
-			}
-			else
-			{
-				System.out.println("Problem with line:"+lines.get(i));
-			}
-//			System.out.print(i+" ");
-//			if(i%100==0)
-//				System.out.println();
-			i++;
 		}
 		// System.out.println();
 		int spanSize = spans.size();
