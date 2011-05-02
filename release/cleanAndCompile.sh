@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/bin/bash
 #    The script to compile the source code.
 #    Written by Dipanjan Das (dipanjan@cs.cmu.edu)
 #    Copyright (C) 2011

@@ -10,7 +10,7 @@ TEMP_DIR=${SEMAFOR_HOME}/release/temp
 
 # This indicates whether MST parser should run in the server mode or not
 # Modes are "server" and "noserver"
-MST_MODE=noserver
+MST_MODE=server
 
 # Location of the MST parser root directory: Please change the 
 # following path to the place where you decompressed stackedParserServer
@@ -19,7 +19,7 @@ MST_PARSER_HOME=/usr2/dipanjan/experiments/FramenetParsing/www/stackedParserServ
 
 # Name of the machine where the MST parser server is running
 # default is localhost, change if necessary.
-MST_MACHINE=malbec14.ark.cs.cmu.edu
+MST_MACHINE=malbec11.ark.cs.cmu.edu
 
 # Number of the port at which you want to run the MST parser --
 # change if necessary.
@@ -30,7 +30,7 @@ JAVA_HOME_BIN=/usr2/dipanjan/software/jdk1.6.0_06/bin
 
 # Change the following to the directory where you decompressed 
 # the models for SEMAFOR 2.0.
-MODEL_DIR=${SEMAFOR_HOME}/models
+MODEL_DIR=${SEMAFOR_HOME}/../models
 
 # If you want to use gold targets, 
 # point to gold target file's absolute path. 
