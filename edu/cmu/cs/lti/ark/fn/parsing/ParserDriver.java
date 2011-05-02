@@ -320,7 +320,10 @@ public class ParserDriver {
 				}
 				catch(Exception e)
 				{
+					e.printStackTrace();
 					System.err.println("Could not read local features. Exiting.");
+					bWriter.close();
+					bWriter1.close();
 					System.exit(-1);
 				}
 				frList = lfr.getMFrameFeaturesList();
