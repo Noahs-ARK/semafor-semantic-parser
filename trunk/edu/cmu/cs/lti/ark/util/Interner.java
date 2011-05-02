@@ -1,30 +1,28 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Dipanjan Das 
+ * Language Technologies Institute, 
+ * Carnegie Mellon University, 
+ * All Rights Reserved.
+ * 
+ * Interner.java is part of SEMAFOR 2.0.
+ * 
+ * SEMAFOR 2.0 is free software: you can redistribute it and/or modify  it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version.
+ * 
+ * SEMAFOR 2.0 is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. 
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with SEMAFOR 2.0.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package edu.cmu.cs.lti.ark.util;
 
 import java.util.*;
 
-/**
- * For interning (canonicalizing) things.
- * <p/>
- * It maps any object to a unique interned version which .equals the
- * presented object.  If presented with a new object which has no
- * previous interned version, the presented object becomes the
- * interned version.  You can tell if your object has been chosen as
- * the new unique representative by checking whether o == intern(o).
- * The interners use WeakHashMap, meaning that if the only pointers
- * to an interned item are the interners' backing maps, that item can
- * still be garbage collected.  Since the gc thread can silently
- * remove things from the backing map, there's no public way to get
- * the backing map, but feel free to add one at your own risk.
- * <p/>
- * Note that in general it is just as good or better to use the
- * static Interner.globalIntern() method rather than making an
- * instance of Interner and using the instance-level intern().
- * <p/>
- * Author: Dan Klein
- * Date: 9/28/03
- *
- * @author Dan Klein
- */
 public class Interner<T> {
 
   protected static Interner interner = new Interner();
