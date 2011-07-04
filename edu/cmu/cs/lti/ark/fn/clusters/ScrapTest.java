@@ -34,14 +34,13 @@ import gnu.trove.THashMap;
 import gnu.trove.THashSet;
 
 
-public class ScrapTest
-{
+public class ScrapTest {
 	public static void main(String[] args)
 	{	
-		//testCoverageWithUnlabeledData(getSpans());
-		//testCoverage();
-		//compareTotalNumberOfSpansInThreeSettings();
-		checkCoverageOfSpansUsingKBestLists();
+		// testCoverageWithUnlabeledData(getSpans());
+		testCoverage();
+		// compareTotalNumberOfSpansInThreeSettings();
+		// checkCoverageOfSpansUsingKBestLists();
 	}
 	
 	
@@ -355,8 +354,8 @@ public class ScrapTest
 	
 	public static void testCoverage()
 	{
-		String parseFile = "lrdata/semeval.fulltrain.sentences.lemma.tags";
-		String feFile = "lrdata/semeval.fulltrain.sentences.frame.elements";
+		String parseFile = "/home/dipanjan/work/summer2011/FN/data/cv.train.sentences.all.lemma.tags";
+		String feFile = "/home/dipanjan/work/summer2011/FN/data/cv.train.sentences.frame.elements";
 		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
 		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
 		int match=0;
@@ -405,7 +404,6 @@ public class ScrapTest
 		}
 		double recall = (double)match/total;
 		System.out.println("Recall:"+recall);
-		
 	}
 	
 	
