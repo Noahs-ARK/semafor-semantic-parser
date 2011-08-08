@@ -43,6 +43,8 @@ public class CreateAlphabet {
 		FEFileName.alphafilename = args[3];
 		FEFileName.spanfilename = args[4];		
 		FEFileName.fedictFilename1 = args[9];
+		boolean separateEventFiles = new Boolean(args[10]);
+		System.out.println("Producing separate event files: " + separateEventFiles);
 		
 		boolean genAlpha=Boolean.parseBoolean(args[5]);
 		if(genAlpha)
@@ -55,7 +57,7 @@ public class CreateAlphabet {
 		}
 		FEFileName.KBestParse = new Integer(args[7]);
 		FEFileName.KBestParseDirectory = args[8];
-		run(genAlpha, null, null, null);
+		run(genAlpha, null, null, null, separateEventFiles);
 	}	
 	
 	// Used during testing with minimal IO
@@ -75,7 +77,8 @@ public class CreateAlphabet {
 	public static void run(boolean genAlpha, 
 							ArrayList<String> tL, 	
 							ArrayList<String> fL,
-							WordNetRelations lwnr) {
+							WordNetRelations lwnr,
+							boolean separateEventFiles) {
 		DataPrep dprep=new DataPrep(tL, fL, lwnr);
 		long time=System.currentTimeMillis();
 		System.out.println("Reading alphabet...");
@@ -87,10 +90,16 @@ public class CreateAlphabet {
 			System.out.println("Finished Reading alphabet..."+(System.currentTimeMillis()-time));
 		}
 		DataPrep.genAlpha=genAlpha;
-		BufferedOutputStream bos=new BufferedOutputStream(FileUtil.openOutFile(FEFileName.eventFilename));
+		BufferedOutputStream bos = null;
+		if (!separateEventFiles) {
+			bos=new BufferedOutputStream(FileUtil.openOutFile(FEFileName.eventFilename));
+		}
 		int fCount=0;
 		time=System.currentTimeMillis();
 		while( dprep.hasNext()){
+			if (separateEventFiles) {
+				bos = new BufferedOutputStream(FileUtil.openOutFile(FEFileName.eventFilename + "." + fCount));
+			}
 			int [][][] datapoint=dprep.getTrainData();
 			System.out.print(".");
 			if(fCount%100==0){
@@ -106,12 +115,21 @@ public class CreateAlphabet {
 				BitOps.writeInt(-1,bos);
 			}
 			fCount++;
+			if (separateEventFiles) {
+				try{
+					bos.close();
+				}catch(IOException ioe){
+					System.out.println(ioe.getMessage());
+				}
+			}
 		}
-		BitOps.writeInt(-1,bos);
-		try{
-			bos.close();
-		}catch(IOException ioe){
-			System.out.println(ioe.getMessage());
+		if (!separateEventFiles) {
+			BitOps.writeInt(-1,bos);
+			try{
+				bos.close();
+			}catch(IOException ioe){
+				System.out.println(ioe.getMessage());
+			}
 		}
 		System.out.println(System.currentTimeMillis()-time);
 		if(genAlpha){
