@@ -120,8 +120,7 @@ public class Training
 	}
 	
 	public Pair<Double, double[]> getDerivativesOfSample(double[] sumDers, 
-														 int index)
-	{
+														 int index) {
 		FrameFeatures f = mFrameList.get(index);
 		ArrayList<SpanAndCorrespondingFeatures[]> featsList = f.fElementSpansAndFeatures;
 		ArrayList<Integer> goldSpans = f.fGoldSpans;
