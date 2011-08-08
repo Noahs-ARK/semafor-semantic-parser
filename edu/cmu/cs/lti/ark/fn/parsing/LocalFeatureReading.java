@@ -70,7 +70,7 @@ public class LocalFeatureReading
 	
 	public void readLocalEventsFile() throws Exception
 	{
-		BufferedInputStream bis =new BufferedInputStream( FileUtil.openInputStream(mEventsFile));
+		BufferedInputStream bis =new BufferedInputStream(FileUtil.openInputStream(mEventsFile));
 		int currentFrameFeaturesIndex = 0;
 		int currentFEIndex = 0;
 		int[] line = readALine(bis);
