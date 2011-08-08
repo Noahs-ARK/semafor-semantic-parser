@@ -41,6 +41,7 @@ public class FeatureASCIIConversion {
 				}
 			}
 			bWriter.close();
+			System.out.println("Done with: " + i);
 		}		
 	}		
 }
