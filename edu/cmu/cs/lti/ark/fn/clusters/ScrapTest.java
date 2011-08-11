@@ -40,8 +40,8 @@ public class ScrapTest {
 	public static void main(String[] args)
 	{	
 		// testCoverageWithUnlabeledData(getSpans());
-		// testCoverage();
-		testMultiwordCoverage();
+		testCoverage();
+		// testMultiwordCoverage();
 		// compareTotalNumberOfSpansInThreeSettings();
 		// checkCoverageOfSpansUsingKBestLists();
 	}
@@ -382,7 +382,7 @@ public class ScrapTest {
 			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
 			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
 			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
-			findSpans(spanMat,heads,sortedNodes);
+			findSpansAlternative(spanMat,heads,sortedNodes);
 			if (!autoSpans.contains(sentNum)) {
 				THashSet<String> spans = new THashSet<String>();
 				for (int i = 0; i < sortedNodes.length; i++) {
@@ -429,6 +429,7 @@ public class ScrapTest {
 					match++;
 				} else {
 					System.out.println("Span " + s + " does not match.");
+					printWords(s, parses.get(key));
 				}
 				total++;
 			}
@@ -438,10 +439,27 @@ public class ScrapTest {
 		System.out.println("Recall:"+recall);
 	}
 	
+	public static void printWords(String s, String parse) {
+		String[] spans = s.split(":");
+		int start = new Integer(spans[0]);
+		int end = new Integer(spans[1]);
+		StringTokenizer st = new StringTokenizer(parse,"\t");
+		int tokensInFirstSent = new Integer(st.nextToken());
+		String span = "";
+		for(int j = 0; j < tokensInFirstSent; j ++)
+		{
+			String tok = st.nextToken().trim();
+			if (j >= start && j <= end) {
+				span += tok + " ";
+			}
+		}		
+		System.out.println(span.trim());
+	}
+	
 	public static void testCoverage()
 	{
-		String parseFile = "/home/dipanjan/work/summer2011/FN/data/cv.train.sentences.all.lemma.tags";
-		String feFile = "/home/dipanjan/work/summer2011/FN/data/cv.train.sentences.frame.elements";
+		String parseFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.all.lemma.tags";
+		String feFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.frame.elements";
 		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
 		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
 		int match=0;
@@ -467,7 +485,7 @@ public class ScrapTest {
 			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
 			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
 			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
-			findSpans(spanMat,heads,sortedNodes);
+			findSpansAlternative(spanMat,heads,sortedNodes);
 						
 			for(int k = 6; k < toks.length; k = k + 2)
 			{
@@ -494,6 +512,31 @@ public class ScrapTest {
 		System.out.println("Recall:"+recall);
 	}
 	
+	public static void findSpansAlternative(boolean[][] spanMat, int[][] heads, DependencyParse[] nodes) {
+		int[] parent = new int[nodes.length - 1];
+		for (int i = 0; i < parent.length; i++) {
+			parent[i] = (nodes[i + 1].getParentIndex() - 1);
+		}
+		// single words
+		for (int i = 0; i < parent.length; i++) {
+			spanMat[i][i] = true;
+		}
+		// multiple words
+		for (int j = 1; j < parent.length; j++) {
+			for (int i = 0; i < j; i++) {
+				if (i == j) continue;
+				int totalHeads = 0;
+				for (int k = i; k <= j; k++) {
+					if (parent[k] < i || parent[k] > j) {
+						totalHeads++;
+					}
+				}
+				if (totalHeads <= 1) {
+					spanMat[i][j] = true;
+				}
+			}
+		}		
+	}
 	
 	public static void findSpans(boolean[][] spanMat, int[][] heads, DependencyParse[] nodes) {
 		int[] parent = new int[nodes.length - 1];
