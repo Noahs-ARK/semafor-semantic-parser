@@ -24,6 +24,8 @@ package edu.cmu.cs.lti.ark.fn.clusters;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
@@ -38,12 +40,12 @@ public class ScrapTest {
 	public static void main(String[] args)
 	{	
 		// testCoverageWithUnlabeledData(getSpans());
-		testCoverage();
+		// testCoverage();
+		testMultiwordCoverage();
 		// compareTotalNumberOfSpansInThreeSettings();
 		// checkCoverageOfSpansUsingKBestLists();
 	}
-	
-	
+		
 	public static void checkCoverageOfSpansUsingKBestLists()
 	{
 		String prefix="dev";
@@ -351,6 +353,90 @@ public class ScrapTest {
 		
 	}
 	
+	public static void testMultiwordCoverage() {
+		String parseFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.all.lemma.tags";
+		String feFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.frame.elements";
+		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
+		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
+		int match=0;
+		int total=0;
+		THashMap<Integer, THashSet<String>> goldSpans = new THashMap<Integer, THashSet<String>>();
+		THashMap<Integer, THashSet<String>> autoSpans = new THashMap<Integer, THashSet<String>>();		
+		
+		for(String feLine:feLines)
+		{
+			String[] toks = feLine.trim().split("\t");
+			int sentNum = new Integer(toks[5]);
+			StringTokenizer st = new StringTokenizer(parses.get(sentNum),"\t");
+			int tokensInFirstSent = new Integer(st.nextToken());
+			String[][] data = new String[5][tokensInFirstSent];
+			for(int k = 0; k < 5; k ++)
+			{
+				data[k]=new String[tokensInFirstSent];
+				for(int j = 0; j < tokensInFirstSent; j ++)
+				{
+					data[k][j]=""+st.nextToken().trim();
+				}
+			}	
+			DependencyParse parseS = DependencyParse.processFN(data, 0.0);
+			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
+			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
+			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
+			findSpans(spanMat,heads,sortedNodes);
+			if (!autoSpans.contains(sentNum)) {
+				THashSet<String> spans = new THashSet<String>();
+				for (int i = 0; i < sortedNodes.length; i++) {
+					for (int j = 0; j < sortedNodes.length; j++) {
+						if (i == j) {
+							continue;
+						}
+						if (spanMat[i][j]) {
+							String span = i + ":" + j;
+							spans.add(span);
+						}
+					}
+				}
+				autoSpans.put(sentNum, spans);
+			}
+			
+			for(int k = 6; k < toks.length; k = k + 2) {
+				String[] spans = toks[k+1].split(":");
+				if(spans.length!=1)
+				{
+					if (goldSpans.contains(sentNum)) {
+						THashSet<String> spanSet = goldSpans.get(sentNum);
+						spanSet.add(toks[k+1]);
+						goldSpans.put(sentNum, spanSet);
+					} else {
+						THashSet<String> spanSet = new THashSet<String>();
+						spanSet.add(toks[k+1]);
+						goldSpans.put(sentNum, spanSet);
+					}
+				}
+			}
+		}
+		
+		Set<Integer> goldKeys = goldSpans.keySet();
+		Integer[] keys = new Integer[goldKeys.size()];
+		goldKeys.toArray(keys);
+		Arrays.sort(keys);
+		for (int key: keys) {
+			Set<String> g = goldSpans.get(key);
+			Set<String> a = autoSpans.get(key);
+			System.out.println("Problems with sentence: " + key);
+			for (String s: g) {
+				if (a.contains(s)) {
+					match++;
+				} else {
+					System.out.println("Span " + s + " does not match.");
+				}
+				total++;
+			}
+			System.out.println("\n\n");
+		}		
+		double recall = (double)match/total;
+		System.out.println("Recall:"+recall);
+	}
 	
 	public static void testCoverage()
 	{
@@ -360,6 +446,7 @@ public class ScrapTest {
 		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
 		int match=0;
 		int total=0;
+		
 		for(String feLine:feLines)
 		{
 			System.out.println(feLine);
@@ -397,8 +484,9 @@ public class ScrapTest {
 					start=new Integer(spans[0]);
 					end=new Integer(spans[1]);
 				}
-				if(spanMat[start][end])
+				if(spanMat[start][end]) {
 					match++;
+				}
 				total++;
 			}
 		}
