@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.util.FileUtil;
+import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import gnu.trove.TIntObjectHashMap;
 
 public class LocalFeatureReading
@@ -62,13 +63,13 @@ public class LocalFeatureReading
 	}
 	
 	
-	public void readLocalFeatures() throws Exception
+	public void readLocalFeatures(boolean separateFiles, String path) throws Exception
 	{
 		readSpansFile();
-		readLocalEventsFile();
+		readLocalEventsFile(separateFiles, path);
 	}
 	
-	public void readLocalEventsFile() throws Exception
+	public void readLocalEventsFile(boolean separateFiles, String path) throws Exception
 	{
 		BufferedInputStream bis =new BufferedInputStream(FileUtil.openInputStream(mEventsFile));
 		int currentFrameFeaturesIndex = 0;
@@ -76,6 +77,7 @@ public class LocalFeatureReading
 		int[] line = readALine(bis);
 		ArrayList<int[]> temp = new ArrayList<int[]>();
 		boolean skip = false;
+		int count = 0;
 		while (line.length > 0||skip)
 		{
 			if(!skip)
@@ -121,8 +123,14 @@ public class LocalFeatureReading
 			f.fGoldSpans.add(ind);			
 			if(currentFEIndex==f.fElements.size()-1)
 			{
-				currentFrameFeaturesIndex++;
-				System.out.println("FF Index: " + currentFrameFeaturesIndex);
+				if (separateFiles) {
+					FrameFeatures f1 = mFrameFeaturesList.remove(currentFrameFeaturesIndex);
+					SerializedObjects.writeSerializedObject(f1, path + "." + count);
+				} else {
+					currentFrameFeaturesIndex++;
+				}
+				count++;
+				System.out.println("FF Index: " + count);
 				currentFEIndex = 0;
 			}
 			else
