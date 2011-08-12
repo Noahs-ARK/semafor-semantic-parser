@@ -13,11 +13,23 @@ public class FeatureASCIIConversion {
 		FNModelOptions opts = new FNModelOptions(args);
 		String frameFeaturesCacheFile = opts.frameFeaturesCacheFile.get();
 		String eventsFilePrefix = opts.eventsFile.get();	
-		ArrayList<FrameFeatures> list = (ArrayList<FrameFeatures>)SerializedObjects.readSerializedObject(frameFeaturesCacheFile);
-		int size = list.size();
+		boolean separateFiles = opts.separateEventFiles.get();
+		int size;
+		ArrayList<FrameFeatures> list = new ArrayList<FrameFeatures>();
+		if (!separateFiles) {
+			list = (ArrayList<FrameFeatures>)SerializedObjects.readSerializedObject(frameFeaturesCacheFile);
+			size = list.size();
+		} else {
+			size = opts.dataSize.get();
+		}
 		for (int i = 0; i < size; i++) {
 			BufferedWriter bWriter = new BufferedWriter(new FileWriter(eventsFilePrefix + "." + i));
-			FrameFeatures f = list.get(i);
+			FrameFeatures f = null;
+			if (!separateFiles) {
+				f = list.get(i);
+			} else {
+				f = (FrameFeatures)SerializedObjects.readSerializedObject(frameFeaturesCacheFile + "." + i);
+			}
 			ArrayList<SpanAndCorrespondingFeatures[]> featsList = f.fElementSpansAndFeatures;
 			ArrayList<Integer> goldSpans = f.fGoldSpans;
 			int fsize = featsList.size();
