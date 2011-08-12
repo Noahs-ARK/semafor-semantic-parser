@@ -35,17 +35,20 @@ public class FrameFeaturesCache
 		String eventsFile = opts.eventsFile.get();
 		String spanFile = opts.spansFile.get();
 		String frFile = opts.trainFrameFile.get();
+		boolean separateFiles = opts.separateEventFiles.get();
 		LocalFeatureReading lfr = new LocalFeatureReading(eventsFile, spanFile, frFile);
 		try
 		{
-			lfr.readLocalFeatures();
+			lfr.readLocalFeatures(separateFiles, opts.frameFeaturesCacheFile.get());
 		} 
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			System.exit(0);
 		}
-		ArrayList<FrameFeatures> list = lfr.getMFrameFeaturesList();
-		SerializedObjects.writeSerializedObject(list, opts.frameFeaturesCacheFile.get());
+		if (!separateFiles) {
+			ArrayList<FrameFeatures> list = lfr.getMFrameFeaturesList();
+			SerializedObjects.writeSerializedObject(list, opts.frameFeaturesCacheFile.get());
+		}
 	}	
 }
