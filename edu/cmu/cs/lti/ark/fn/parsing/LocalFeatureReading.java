@@ -122,12 +122,12 @@ public class LocalFeatureReading
 			if(currentFEIndex==f.fElements.size()-1)
 			{
 				currentFrameFeaturesIndex++;
+				System.out.println("FF Index: " + currentFEIndex);
 				currentFEIndex = 0;
 			}
 			else
 			{
 				currentFEIndex++;
-				System.out.println("FE Index: " + currentFEIndex);
 			}
 			temp = new ArrayList<int[]>();
 			line = readALine(bis);
