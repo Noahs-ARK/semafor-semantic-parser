@@ -127,6 +127,7 @@ public class LocalFeatureReading
 			else
 			{
 				currentFEIndex++;
+				System.out.println("FE Index: " + currentFEIndex);
 			}
 			temp = new ArrayList<int[]>();
 			line = readALine(bis);
