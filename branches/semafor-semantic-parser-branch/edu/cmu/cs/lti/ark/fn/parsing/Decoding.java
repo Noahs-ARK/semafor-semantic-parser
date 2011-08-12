@@ -460,8 +460,7 @@ public class Decoding
 		}				
 		THashMap<String,String> nonOMap = getCubePruningDecoding(oMap, mFF.fElements, vs, 100, seenSpans);
 		keySet = nonOMap.keySet();
-		for(String key:keySet)
-		{
+		for(String key:keySet) {
 			feMap.put(key, nonOMap.get(key));
 		}		
 		keySet = feMap.keySet();

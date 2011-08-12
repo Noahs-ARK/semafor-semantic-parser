@@ -40,10 +40,14 @@ public class ScrapTest {
 	public static void main(String[] args)
 	{	
 		// testCoverageWithUnlabeledData(getSpans());
-		testCoverage();
-		// testMultiwordCoverage();
+		// testCoverage();
+		testMultiwordCoverage();
 		// compareTotalNumberOfSpansInThreeSettings();
 		// checkCoverageOfSpansUsingKBestLists();
+	}
+	
+	public static void listSpanPOSs() {
+		
 	}
 		
 	public static void checkCoverageOfSpansUsingKBestLists()
@@ -382,7 +386,7 @@ public class ScrapTest {
 			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
 			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
 			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
-			findSpansAlternative(spanMat,heads,sortedNodes);
+			findSpansAlternative2(spanMat,heads,sortedNodes);
 			if (!autoSpans.contains(sentNum)) {
 				THashSet<String> spans = new THashSet<String>();
 				for (int i = 0; i < sortedNodes.length; i++) {
@@ -420,9 +424,11 @@ public class ScrapTest {
 		Integer[] keys = new Integer[goldKeys.size()];
 		goldKeys.toArray(keys);
 		Arrays.sort(keys);
+		int numAutoSpans = 0;
 		for (int key: keys) {
 			Set<String> g = goldSpans.get(key);
 			Set<String> a = autoSpans.get(key);
+			numAutoSpans += a.size();
 			System.out.println("Problems with sentence: " + key);
 			for (String s: g) {
 				if (a.contains(s)) {
@@ -437,6 +443,7 @@ public class ScrapTest {
 		}		
 		double recall = (double)match/total;
 		System.out.println("Recall:"+recall);
+		System.out.println("Number of auto spans: " + numAutoSpans);
 	}
 	
 	public static void printWords(String s, String parse) {
@@ -531,6 +538,32 @@ public class ScrapTest {
 						totalHeads++;
 					}
 				}
+				if (totalHeads <= 1) {
+					spanMat[i][j] = true;
+				}
+			}
+		}		
+	}
+	
+	public static void findSpansAlternative2(boolean[][] spanMat, int[][] heads, DependencyParse[] nodes) {
+		int[] parent = new int[nodes.length - 1];
+		for (int i = 0; i < parent.length; i++) {
+			parent[i] = (nodes[i + 1].getParentIndex() - 1);
+		}
+		// single words
+		for (int i = 0; i < parent.length; i++) {
+			spanMat[i][i] = true;
+		}
+		// multiple words
+		for (int j = 1; j < parent.length; j++) {
+			for (int i = 0; i < j; i++) {
+				if (i == j) continue;
+				int totalHeads = 0;
+//				for (int k = i; k <= j; k++) {
+//					if (parent[k] < i || parent[k] > j) {
+//						totalHeads++;
+//					}
+//				}
 				if (totalHeads <= 1) {
 					spanMat[i][j] = true;
 				}
