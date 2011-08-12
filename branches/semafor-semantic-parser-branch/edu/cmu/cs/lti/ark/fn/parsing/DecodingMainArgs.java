@@ -41,7 +41,7 @@ public class DecodingMainArgs
 		LocalFeatureReading lfr = new LocalFeatureReading(eventsFile, spanFile, frFile);
 		try
 		{
-			lfr.readLocalFeatures();
+			lfr.readLocalFeatures(false, null);
 		}
 		catch(Exception e)
 		{
