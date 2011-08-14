@@ -40,23 +40,23 @@ import gnu.trove.THashSet;
 
 
 public class ScrapTest {
+	
+	public static final String DATA_DIR = "/home/dipanjan/work/summer2011/ArgID/data";
+	public static final String INFIX = "train";
+	
 	public static void main(String[] args)
 	{	
 		// testCoverageWithUnlabeledData(getSpans());
 		// testCoverage();
-		listSpanPOSs();
+		// listSpanPOSs();
 		testMultiwordCoverage();
 		// compareTotalNumberOfSpansInThreeSettings();
 		// checkCoverageOfSpansUsingKBestLists();
 	}
 	
-	public static void listSpanPOSs() {
-		String parseFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.all.lemma.tags";
-		String feFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.frame.elements";
-		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
-		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
-		String posFile = "/usr0/dipanjan/work/summer2011/FN/data/validStartEndPOS";
-		THashSet<String> poss = new THashSet<String>();
+	public static void updatePOSSet(THashSet<String> poss, 
+									ArrayList<String> parses,
+									ArrayList<String> feLines) {
 		for(String feLine:feLines)
 		{
 			String[] toks = feLine.trim().split("\t");
@@ -72,6 +72,9 @@ public class ScrapTest {
 					data[k][j]=""+st.nextToken().trim();
 				}
 			}
+			String target = toks[2];
+			int li = target.lastIndexOf(".");
+			String pos = target.substring(li+1);
 			for(int k = 6; k < toks.length; k = k + 2) {
 				String[] spans = toks[k+1].split(":");
 				if(spans.length!=1)
@@ -80,11 +83,25 @@ public class ScrapTest {
 					int end = new Integer(spans[1]);
 					String startPOS = data[1][start];
 					String endPOS = data[1][end];
-					// System.out.println(startPOS + "\t" + endPOS);
-					poss.add(startPOS + "\t" + endPOS);
+					poss.add(pos + "\t" + startPOS + "\t" + endPOS);
 				}
 			}
 		}
+	}
+	
+	public static void listSpanPOSs() {
+		String parseFile = DATA_DIR + "/cv.train.sentences.all.lemma.tags";
+		String feFile = DATA_DIR + "/cv.train.sentences.frame.elements";
+		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
+		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
+		String posFile = DATA_DIR + "/validStartEndPOS";
+		THashSet<String> poss = new THashSet<String>();
+		updatePOSSet(poss, parses, feLines);
+		parseFile = DATA_DIR + "/framenet.original.sentences.all.lemma.tags";
+		feFile = DATA_DIR + "/framenet.original.sentences.frame.elements";
+		parses = ParsePreparation.readSentencesFromFile(parseFile);
+		feLines = ParsePreparation.readSentencesFromFile(feFile);
+		updatePOSSet(poss, parses, feLines);
 		try {
 			BufferedWriter bWriter = new BufferedWriter(new FileWriter(posFile));
 			for (String pos: poss) {
@@ -407,18 +424,16 @@ public class ScrapTest {
 	}
 	
 	public static void testMultiwordCoverage() {
-		String parseFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.all.lemma.tags";
-		String feFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.frame.elements";
-		String posFile =  "/usr0/dipanjan/work/summer2011/FN/data/validStartEndPOS";
+		String parseFile = DATA_DIR + "/cv."+INFIX+".sentences.all.lemma.tags";
+		String feFile = DATA_DIR + "/cv."+INFIX+".sentences.frame.elements";
+		String posFile =  DATA_DIR + "/validStartEndPOS";
 		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
 		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
 		ArrayList<String> poss = ParsePreparation.readSentencesFromFile(posFile);
 		THashSet<String> posSet = new THashSet<String>(poss);
 		int match=0;
 		int total=0;
-		THashMap<Integer, THashSet<String>> goldSpans = new THashMap<Integer, THashSet<String>>();
-		THashMap<Integer, THashSet<String>> autoSpans = new THashMap<Integer, THashSet<String>>();		
-		
+		int numAutoSpans = 0;
 		for(String feLine:feLines)
 		{
 			String[] toks = feLine.trim().split("\t");
@@ -438,61 +453,34 @@ public class ScrapTest {
 			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
 			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
 			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
-			findSpansAlternative(spanMat,heads,sortedNodes,posSet);
-			if (!autoSpans.contains(sentNum)) {
-				THashSet<String> spans = new THashSet<String>();
-				for (int i = 0; i < sortedNodes.length; i++) {
-					for (int j = 0; j < sortedNodes.length; j++) {
-						if (i == j) {
-							continue;
-						}
-						if (spanMat[i][j]) {
-							String span = i + ":" + j;
-							spans.add(span);
-						}
+			String target = toks[2];
+			int li = target.lastIndexOf(".");
+			String pos = target.substring(li+1);
+			findSpansAlternative(spanMat,heads,sortedNodes,posSet,pos);
+			// findSpans(spanMat,heads,sortedNodes);
+			THashSet<String> autoSpans = new THashSet<String>();
+			for (int i = 0; i < sortedNodes.length; i++) {
+				for (int j = 0; j < sortedNodes.length; j++) {
+					if (i == j) {
+						continue;
+					}
+					if (spanMat[i][j]) {
+						String span = i + ":" + j;
+							autoSpans.add(span);
 					}
 				}
-				autoSpans.put(sentNum, spans);
 			}
-			
+			numAutoSpans += autoSpans.size();
 			for(int k = 6; k < toks.length; k = k + 2) {
 				String[] spans = toks[k+1].split(":");
-				if(spans.length!=1)
-				{
-					if (goldSpans.contains(sentNum)) {
-						THashSet<String> spanSet = goldSpans.get(sentNum);
-						spanSet.add(toks[k+1]);
-						goldSpans.put(sentNum, spanSet);
-					} else {
-						THashSet<String> spanSet = new THashSet<String>();
-						spanSet.add(toks[k+1]);
-						goldSpans.put(sentNum, spanSet);
+				if(spans.length!=1) {
+					total++;
+					if (autoSpans.contains(toks[k+1])) {
+						match++;
 					}
 				}
 			}
 		}
-		
-		Set<Integer> goldKeys = goldSpans.keySet();
-		Integer[] keys = new Integer[goldKeys.size()];
-		goldKeys.toArray(keys);
-		Arrays.sort(keys);
-		int numAutoSpans = 0;
-		for (int key: keys) {
-			Set<String> g = goldSpans.get(key);
-			Set<String> a = autoSpans.get(key);
-			numAutoSpans += a.size();
-			System.out.println("Problems with sentence: " + key);
-			for (String s: g) {
-				if (a.contains(s)) {
-					match++;
-				} else {
-					System.out.println("Span " + s + " does not match.");
-					printWords(s, parses.get(key));
-				}
-				total++;
-			}
-			System.out.println("\n\n");
-		}		
 		double recall = (double)match/total;
 		System.out.println("Recall:"+recall);
 		System.out.println("Number of auto spans: " + numAutoSpans);
@@ -547,7 +535,10 @@ public class ScrapTest {
 			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
 			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
 			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
-			findSpansAlternative(spanMat,heads,sortedNodes,posSet);
+			String target = toks[2];
+			int li = target.lastIndexOf(".");
+			String pos = target.substring(li+1);
+			findSpansAlternative(spanMat,heads,sortedNodes,posSet,pos);
 						
 			for(int k = 6; k < toks.length; k = k + 2)
 			{
@@ -577,7 +568,7 @@ public class ScrapTest {
 	public static void findSpansAlternative(boolean[][] spanMat, 
 											int[][] heads, 
 											DependencyParse[] nodes,
-											THashSet<String> posSet) {
+											THashSet<String> posSet,String pos) {
 		int[] parent = new int[nodes.length - 1];
 		for (int i = 0; i < parent.length; i++) {
 			parent[i] = (nodes[i + 1].getParentIndex() - 1);
@@ -599,7 +590,7 @@ public class ScrapTest {
 				if (totalHeads <= 1) {
 					String startPOS = nodes[i+1].getPOS();
 					String endPOS = nodes[j+1].getPOS();
-					if (posSet.contains(startPOS+"\t"+endPOS)) {
+					if (true || posSet.contains(pos+"\t"+startPOS+"\t"+endPOS)) {
 						spanMat[i][j] = true;
 					}
 				}
