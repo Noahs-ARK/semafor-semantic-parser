@@ -151,7 +151,7 @@ public class DataPrep {
 		{
 			parse = dp.getParses().get(0);
 			nodes = DependencyParse.getIndexSortedListOfNodes(parse);
-			findSpans(spanMat, heads, nodes, posConstraints,dp.getFrameName());
+			findSpans(spanMat, heads, nodes);
 			if(FEFileName.useUnlabeledSpans)
 			{
 				for(int j = 1; j < nodes.length; j ++)
@@ -587,43 +587,44 @@ public class DataPrep {
 		}
 	}
 	
-	// looks at the frame
-	public static void findSpans(boolean[][] spanMat, 
-			int[][] heads, 
-			DependencyParse[] nodes,
-			Set<String> posSet,String frame) {
-		int[] parent = new int[nodes.length - 1];
-		for (int i = 0; i < parent.length; i++) {
-			parent[i] = (nodes[i + 1].getParentIndex() - 1);
-		}
-//		single words
-		for (int i = 0; i < parent.length; i++) {
-			spanMat[i][i] = true;
-		}
-//		multiple words
-		for (int j = 1; j < parent.length; j++) {
-			for (int i = 0; i < j; i++) {
-				if (i == j) continue;
-				int totalHeads = 0;
-				for (int k = i; k <= j; k++) {
-					if (parent[k] < i || parent[k] > j) {
-						totalHeads++;
-					}
-				}
-				if (totalHeads <= 1) {
-					String startPOS = nodes[i+1].getPOS();
-					String endPOS = nodes[j+1].getPOS();
-					if (posSet == null) {
-						spanMat[i][j] = true;
-					} else {
-						if (posSet.contains(frame+"\t"+startPOS.substring(0,1)+"\t"+endPOS.substring(0,1))) {
-							spanMat[i][j] = true;
-						}
-					}
-				}
-			}
-		}		
-	}
+//	// looks at the frame, 
+// 	commented this out because does not work very well, dipanjan 8/14/2011
+//	public static void findSpans(boolean[][] spanMat, 
+//			int[][] heads, 
+//			DependencyParse[] nodes,
+//			Set<String> posSet,String frame) {
+//		int[] parent = new int[nodes.length - 1];
+//		for (int i = 0; i < parent.length; i++) {
+//			parent[i] = (nodes[i + 1].getParentIndex() - 1);
+//		}
+////		single words
+//		for (int i = 0; i < parent.length; i++) {
+//			spanMat[i][i] = true;
+//		}
+////		multiple words
+//		for (int j = 1; j < parent.length; j++) {
+//			for (int i = 0; i < j; i++) {
+//				if (i == j) continue;
+//				int totalHeads = 0;
+//				for (int k = i; k <= j; k++) {
+//					if (parent[k] < i || parent[k] > j) {
+//						totalHeads++;
+//					}
+//				}
+//				if (totalHeads <= 1) {
+//					String startPOS = nodes[i+1].getPOS();
+//					String endPOS = nodes[j+1].getPOS();
+//					if (posSet == null) {
+//						spanMat[i][j] = true;
+//					} else {
+//						if (posSet.contains(frame+"\t"+startPOS.substring(0,1)+"\t"+endPOS.substring(0,1))) {
+//							spanMat[i][j] = true;
+//						}
+//					}
+//				}
+//			}
+//		}		
+//	}
 
 //	commented this out because we are trying a little more constrained span finding method
 //	dipanjan 8/13/2011		
@@ -656,78 +657,79 @@ public class DataPrep {
 
 //	commented this out because we are trying a more relaxed span finding method
 //	dipanjan 8/11/2011	
-//	public static void findSpans(boolean[][] spanMat, int[][] heads, DependencyParse[] nodes) {
-//	int[] parent = new int[nodes.length - 1];
-//	int left[] = new int[parent.length];
-//	int right[] = new int[parent.length];
-//	for (int i = 0; i < parent.length; i++) {
-//	parent[i] = (nodes[i + 1].getParentIndex() - 1);
-//	left[i] = i;
-//	right[i] = i;
-//	}
-//	for (int i = 0; i < parent.length; i++) {
-//	int index = parent[i];
-//	while (index >= 0) {
-//	if (left[index] > i) {
-//	left[index] = i;
-//	}
-//	if (right[index] < i) {
-//	right[index] = i;
-//	}
-//	index = parent[index];
-//	}
-//	}
-//	for (int i = 0; i < parent.length; i++)
-//	{
-//	spanMat[left[i]][right[i]] = true;
-//	heads[left[i]][right[i]] = i;
-//	}
+//  this worked better than the relaxed settings, dipanjan 8/14/2011
+	public static void findSpans(boolean[][] spanMat, int[][] heads, DependencyParse[] nodes) {
+		int[] parent = new int[nodes.length - 1];
+		int left[] = new int[parent.length];
+		int right[] = new int[parent.length];
+		for (int i = 0; i < parent.length; i++) {
+			parent[i] = (nodes[i + 1].getParentIndex() - 1);
+			left[i] = i;
+			right[i] = i;
+		}
+		for (int i = 0; i < parent.length; i++) {
+			int index = parent[i];
+			while (index >= 0) {
+				if (left[index] > i) {
+					left[index] = i;
+				}
+				if (right[index] < i) {
+					right[index] = i;
+				}
+				index = parent[index];
+			}
+		}
+		for (int i = 0; i < parent.length; i++)
+		{
+			spanMat[left[i]][right[i]] = true;
+			heads[left[i]][right[i]] = i;
+		}
 
-//	// single words
-//	for (int i = 0; i < parent.length; i++) {
-//	spanMat[i][i] = true;
-//	heads[i][i]=i;
-//	}
+		// single words
+		for (int i = 0; i < parent.length; i++) {
+			spanMat[i][i] = true;
+			heads[i][i]=i;
+		}
 
-//	for (int i = 0; i < parent.length; i++)
-//	{
-//	if(!(left[i]<i&&right[i]>i))
-//	continue;
-//	//left
-//	int justLeft=i-1;
-//	if(i-1>=0)
-//	{
-//	if(spanMat[left[i]][justLeft])
-//	{
-//	if(justLeft-left[i]==0&&nodes[justLeft+1].getPOS().equals("DT"))
-//	{
-//	;
-//	}
-//	else if(justLeft-left[i]==0&&nodes[justLeft+1].getPOS().equals("JJ"))
-//	{
-//	;
-//	}
-//	else
-//	{	
-//	spanMat[i][right[i]]=true;
-//	heads[i][right[i]]=i;
-//	}
-//	}
-//	}
+		for (int i = 0; i < parent.length; i++)
+		{
+			if(!(left[i]<i&&right[i]>i))
+				continue;
+			//left
+			int justLeft=i-1;
+			if(i-1>=0)
+			{
+				if(spanMat[left[i]][justLeft])
+				{
+					if(justLeft-left[i]==0&&nodes[justLeft+1].getPOS().equals("DT"))
+					{
+						;
+					}
+					else if(justLeft-left[i]==0&&nodes[justLeft+1].getPOS().equals("JJ"))
+					{
+						;
+					}
+					else
+					{	
+						spanMat[i][right[i]]=true;
+						heads[i][right[i]]=i;
+					}
+				}
+			}
 
-//	//right
-//	int justRight=i+1;
-//	if(justRight<=parent.length-1)
-//	{
-//	if(spanMat[justRight][right[i]])
-//	{
-//	spanMat[left[i]][i]=true;
-//	heads[left[i]][i]=i;
-//	}
-//	}
-//	}
+			//right
+			int justRight=i+1;
+			if(justRight<=parent.length-1)
+			{
+				if(spanMat[justRight][right[i]])
+				{
+					spanMat[left[i]][i]=true;
+					heads[left[i]][i]=i;
+				}
+			}
+		}
 
-//	}	
+	}	
 
 
 	public int featidx(String feature) {
