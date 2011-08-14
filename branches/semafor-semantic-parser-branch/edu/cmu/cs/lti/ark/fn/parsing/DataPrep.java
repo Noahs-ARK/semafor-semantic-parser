@@ -591,7 +591,7 @@ public class DataPrep {
 	public static void findSpans(boolean[][] spanMat, 
 			int[][] heads, 
 			DependencyParse[] nodes,
-			THashSet<String> posSet,String frame) {
+			Set<String> posSet,String frame) {
 		int[] parent = new int[nodes.length - 1];
 		for (int i = 0; i < parent.length; i++) {
 			parent[i] = (nodes[i + 1].getParentIndex() - 1);
