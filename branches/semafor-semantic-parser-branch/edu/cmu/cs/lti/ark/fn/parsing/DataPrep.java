@@ -32,8 +32,10 @@ import edu.cmu.cs.lti.ark.util.ds.Pair;
 import edu.cmu.cs.lti.ark.util.ds.Range0Based;
 import edu.cmu.cs.lti.ark.util.ds.Range1Based;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
+import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.fn.parsing.CandidateFrameElementFilters;
 import edu.cmu.cs.lti.ark.fn.parsing.FeatureExtractor;
+import gnu.trove.THashSet;
 
 public class DataPrep {
 	/**
@@ -83,15 +85,17 @@ public class DataPrep {
 	 */
 	public static boolean genAlpha = true;
 
-	
+
 	public static boolean useOracleSpans = false;
+
+	public static Set<String> posConstraints = null;
 	
 	public DataPrep()
 	{
 		ps = FileUtil.openOutFile(FEFileName.spanfilename);
 		load(null, null, null);
 	}
-	
+
 	public DataPrep(String spansFile)
 	{
 		ps = FileUtil.openOutFile(FEFileName.spanfilename);
@@ -99,13 +103,24 @@ public class DataPrep {
 	}
 	
 	public DataPrep(ArrayList<String> tL, 
-					ArrayList<String> fL,
-					WordNetRelations lwnr) {
+			ArrayList<String> fL,
+			WordNetRelations lwnr) {
 		// this model does not write span files
 		ps = FileUtil.openOutFile(FEFileName.spanfilename);
 		load(tL, fL, lwnr);		
-	}	
+	}
 	
+	public DataPrep(ArrayList<String> tL, 
+			ArrayList<String> fL,
+			WordNetRelations lwnr,
+			String posConstraintFile) {
+		// this model does not write span files
+		ps = FileUtil.openOutFile(FEFileName.spanfilename);
+		ArrayList<String> poss = ParsePreparation.readSentencesFromFile(posConstraintFile);
+		posConstraints = new THashSet<String>(poss);
+		load(tL, fL, lwnr);		
+	}	
+
 	private ArrayList<String >readLinesInFile(String filename){
 		ArrayList<String>lines=new ArrayList<String>();
 		Scanner sc=FileUtil.openInFile(filename);
@@ -136,7 +151,7 @@ public class DataPrep {
 		{
 			parse = dp.getParses().get(0);
 			nodes = DependencyParse.getIndexSortedListOfNodes(parse);
-			findSpans(spanMat, heads, nodes);
+			findSpans(spanMat, heads, nodes, posConstraints,dp.getFrameName());
 			if(FEFileName.useUnlabeledSpans)
 			{
 				for(int j = 1; j < nodes.length; j ++)
@@ -176,7 +191,7 @@ public class DataPrep {
 		}
 		return spanList;
 	}
-	
+
 	public int findParse(DependencyParses parses, int j, int k, int hIndex)
 	{
 		hIndex=hIndex+j;
@@ -207,15 +222,15 @@ public class DataPrep {
 		}
 		return ret;
 	}
-	
-	
+
+
 	/**
 	 * @brief load data needed for feature extraction
 	 * 
 	 */
 	private void load(ArrayList<String> tL,
-					  ArrayList<String> fL,
-					  WordNetRelations lwnr) {
+			ArrayList<String> fL,
+			WordNetRelations lwnr) {
 		if (fedict == null) {
 			fedict = new FEDict(FEFileName.fedictFilename1);
 		}
@@ -231,9 +246,9 @@ public class DataPrep {
 		} else {
 			tagLines = tL;
 		}		
-		
+
 		boolean hasCandidateFile = true;
-		
+
 		Scanner canScanner = FileUtil.openInFile(FEFileName.candidateFilename);
 		if (canScanner == null) {
 			hasCandidateFile = false;
@@ -299,12 +314,12 @@ public class DataPrep {
 					depParses[span.getStart()][span.getEnd()]=0;
 				else
 				{	int fIndex = p.getFirst();
-					depParses[span.getStart()][span.getEnd()]=fIndex;
+				depParses[span.getStart()][span.getEnd()]=fIndex;
 				}
 			}
 		}
 	}
-	
+
 	public boolean hasNext() {
 		if (feIndex >= feLines.size())
 			return false;
@@ -390,7 +405,7 @@ public class DataPrep {
 		feIndex++;
 		return alldata;
 	}
-	
+
 	private void addFeatureForOneArgumentOracleSpans(DataPointWithElements goldDP,
 			String frame, String fe, Range0Based span,
 			ArrayList<int[][]> datapointlist, int cantoks[][]) {
@@ -404,12 +419,12 @@ public class DataPrep {
 				+ goldDP.getTokenNums()[0] + "\t"
 				+ goldDP.getTokenNums()[goldDP.getTokenNums().length - 1]
 				+ "\t" + feIndex);
-		
-		*/
+
+		 */
 		ps.println(goldDP.getSentenceNum() + "\t" + fe + "\t" + frame + "\t"
 				+ goldDP.getTokenNums()[0] + "\t"
 				+ goldDP.getTokenNums()[goldDP.getTokenNums().length - 1]
-				+ "\t" + feIndex);
+				                        + "\t" + feIndex);
 		ps.println(span.getStart() + "\t" + span.getEnd());
 		int[] featArray = new int[featureSet.size()];
 		int featCount = 0;
@@ -424,7 +439,7 @@ public class DataPrep {
 			if (cantoks[j][0] == span.getStart() 
 					&& cantoks[j][1] == span.getEnd())
 				continue;
-			
+
 			Range0Based canspan;
 			canspan = CandidateFrameElementFilters.createSpanRange(cantoks[j][0], cantoks[j][1]);
 			ps.println(canspan.getStart() + "\t" + canspan.getEnd());
@@ -444,8 +459,8 @@ public class DataPrep {
 		adatapoint.toArray(datap);
 		datapointlist.add(datap);
 	}
-	
-	
+
+
 	private void addFeatureForOneArgument(DataPointWithElements goldDP,
 			String frame, String fe, Range0Based span,
 			ArrayList<int[][]> datapointlist, int cantoks[][]) {
@@ -468,12 +483,12 @@ public class DataPrep {
 				+ goldDP.getTokenNums()[0] + "\t"
 				+ goldDP.getTokenNums()[goldDP.getTokenNums().length - 1]
 				+ "\t" + feIndex);
-		
-		*/
+
+		 */
 		ps.println(goldDP.getSentenceNum() + "\t" + fe + "\t" + frame + "\t"
 				+ goldDP.getTokenNums()[0] + "\t"
 				+ goldDP.getTokenNums()[goldDP.getTokenNums().length - 1]
-				+ "\t" + feIndex);
+				                        + "\t" + feIndex);
 		ps.println(span.getStart() + "\t" + span.getEnd());
 		int[] featArray = new int[featureSet.size()];
 		int featCount = 0;
@@ -488,7 +503,7 @@ public class DataPrep {
 			if (cantoks[j][0] == span.getStart() 
 					&& cantoks[j][1] == span.getEnd())
 				continue;
-			
+
 			Range0Based canspan;
 			canspan = CandidateFrameElementFilters.createSpanRange(cantoks[j][0], cantoks[j][1]);
 			selectedParse = goldDP.getParses().get(cantoks[j][2]);
@@ -572,16 +587,20 @@ public class DataPrep {
 		}
 	}
 	
-	public static void findSpans(boolean[][] spanMat, int[][] heads, DependencyParse[] nodes) {
+	// looks at the frame
+	public static void findSpans(boolean[][] spanMat, 
+			int[][] heads, 
+			DependencyParse[] nodes,
+			THashSet<String> posSet,String frame) {
 		int[] parent = new int[nodes.length - 1];
 		for (int i = 0; i < parent.length; i++) {
 			parent[i] = (nodes[i + 1].getParentIndex() - 1);
 		}
-		// single words
+//		single words
 		for (int i = 0; i < parent.length; i++) {
 			spanMat[i][i] = true;
 		}
-		// multiple words
+//		multiple words
 		for (int j = 1; j < parent.length; j++) {
 			for (int i = 0; i < j; i++) {
 				if (i == j) continue;
@@ -592,89 +611,125 @@ public class DataPrep {
 					}
 				}
 				if (totalHeads <= 1) {
-					spanMat[i][j] = true;
+					String startPOS = nodes[i+1].getPOS();
+					String endPOS = nodes[j+1].getPOS();
+					if (posSet == null) {
+						spanMat[i][j] = true;
+					} else {
+						if (posSet.contains(frame+"\t"+startPOS.substring(0,1)+"\t"+endPOS.substring(0,1))) {
+							spanMat[i][j] = true;
+						}
+					}
 				}
 			}
 		}		
 	}
 
-	
-//  commented this out because we are trying a more relaxed span finding method
-//  dipanjan 8/11/2011	
+//	commented this out because we are trying a little more constrained span finding method
+//	dipanjan 8/13/2011		
 //	public static void findSpans(boolean[][] spanMat, int[][] heads, DependencyParse[] nodes) {
-//		int[] parent = new int[nodes.length - 1];
-//		int left[] = new int[parent.length];
-//		int right[] = new int[parent.length];
-//		for (int i = 0; i < parent.length; i++) {
-//			parent[i] = (nodes[i + 1].getParentIndex() - 1);
-//			left[i] = i;
-//			right[i] = i;
-//		}
-//		for (int i = 0; i < parent.length; i++) {
-//			int index = parent[i];
-//			while (index >= 0) {
-//				if (left[index] > i) {
-//					left[index] = i;
-//				}
-//				if (right[index] < i) {
-//					right[index] = i;
-//				}
-//				index = parent[index];
-//			}
-//		}
-//		for (int i = 0; i < parent.length; i++)
-//		{
-//			spanMat[left[i]][right[i]] = true;
-//			heads[left[i]][right[i]] = i;
-//		}
-//		
-//		// single words
-//		for (int i = 0; i < parent.length; i++) {
-//			spanMat[i][i] = true;
-//			heads[i][i]=i;
-//		}
-//		
-//		for (int i = 0; i < parent.length; i++)
-//		{
-//			if(!(left[i]<i&&right[i]>i))
-//				continue;
-//			//left
-//			int justLeft=i-1;
-//			if(i-1>=0)
-//			{
-//				if(spanMat[left[i]][justLeft])
-//				{
-//					if(justLeft-left[i]==0&&nodes[justLeft+1].getPOS().equals("DT"))
-//					{
-//						;
-//					}
-//					else if(justLeft-left[i]==0&&nodes[justLeft+1].getPOS().equals("JJ"))
-//					{
-//						;
-//					}
-//					else
-//					{	
-//						spanMat[i][right[i]]=true;
-//						heads[i][right[i]]=i;
-//					}
-//				}
-//			}
-//			
-//			//right
-//			int justRight=i+1;
-//			if(justRight<=parent.length-1)
-//			{
-//				if(spanMat[justRight][right[i]])
-//				{
-//					spanMat[left[i]][i]=true;
-//					heads[left[i]][i]=i;
-//				}
-//			}
-//		}
-//		
+//	int[] parent = new int[nodes.length - 1];
+//	for (int i = 0; i < parent.length; i++) {
+//	parent[i] = (nodes[i + 1].getParentIndex() - 1);
+//	}
+//	// single words
+//	for (int i = 0; i < parent.length; i++) {
+//	spanMat[i][i] = true;
+//	}
+//	// multiple words
+//	for (int j = 1; j < parent.length; j++) {
+//	for (int i = 0; i < j; i++) {
+//	if (i == j) continue;
+//	int totalHeads = 0;
+//	for (int k = i; k <= j; k++) {
+//	if (parent[k] < i || parent[k] > j) {
+//	totalHeads++;
+//	}
+//	}
+//	if (totalHeads <= 1) {
+//	spanMat[i][j] = true;
+//	}
+//	}
+//	}		
+//	}
+
+
+//	commented this out because we are trying a more relaxed span finding method
+//	dipanjan 8/11/2011	
+//	public static void findSpans(boolean[][] spanMat, int[][] heads, DependencyParse[] nodes) {
+//	int[] parent = new int[nodes.length - 1];
+//	int left[] = new int[parent.length];
+//	int right[] = new int[parent.length];
+//	for (int i = 0; i < parent.length; i++) {
+//	parent[i] = (nodes[i + 1].getParentIndex() - 1);
+//	left[i] = i;
+//	right[i] = i;
+//	}
+//	for (int i = 0; i < parent.length; i++) {
+//	int index = parent[i];
+//	while (index >= 0) {
+//	if (left[index] > i) {
+//	left[index] = i;
+//	}
+//	if (right[index] < i) {
+//	right[index] = i;
+//	}
+//	index = parent[index];
+//	}
+//	}
+//	for (int i = 0; i < parent.length; i++)
+//	{
+//	spanMat[left[i]][right[i]] = true;
+//	heads[left[i]][right[i]] = i;
+//	}
+
+//	// single words
+//	for (int i = 0; i < parent.length; i++) {
+//	spanMat[i][i] = true;
+//	heads[i][i]=i;
+//	}
+
+//	for (int i = 0; i < parent.length; i++)
+//	{
+//	if(!(left[i]<i&&right[i]>i))
+//	continue;
+//	//left
+//	int justLeft=i-1;
+//	if(i-1>=0)
+//	{
+//	if(spanMat[left[i]][justLeft])
+//	{
+//	if(justLeft-left[i]==0&&nodes[justLeft+1].getPOS().equals("DT"))
+//	{
+//	;
+//	}
+//	else if(justLeft-left[i]==0&&nodes[justLeft+1].getPOS().equals("JJ"))
+//	{
+//	;
+//	}
+//	else
+//	{	
+//	spanMat[i][right[i]]=true;
+//	heads[i][right[i]]=i;
+//	}
+//	}
+//	}
+
+//	//right
+//	int justRight=i+1;
+//	if(justRight<=parent.length-1)
+//	{
+//	if(spanMat[justRight][right[i]])
+//	{
+//	spanMat[left[i]][i]=true;
+//	heads[left[i]][i]=i;
+//	}
+//	}
+//	}
+
 //	}	
-	
-	
+
+
 	public int featidx(String feature) {
 		Integer fidx = featIndex.get(feature);
 		if (fidx != null)

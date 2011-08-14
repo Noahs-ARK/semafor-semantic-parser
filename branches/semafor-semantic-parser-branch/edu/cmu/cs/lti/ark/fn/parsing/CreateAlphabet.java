@@ -45,6 +45,7 @@ public class CreateAlphabet {
 		FEFileName.fedictFilename1 = args[9];
 		boolean separateEventFiles = new Boolean(args[10]);
 		System.out.println("Producing separate event files: " + separateEventFiles);
+		String posConstraintFile = args[11];
 		
 		boolean genAlpha=Boolean.parseBoolean(args[5]);
 		if(genAlpha)
@@ -57,7 +58,7 @@ public class CreateAlphabet {
 		}
 		FEFileName.KBestParse = new Integer(args[7]);
 		FEFileName.KBestParseDirectory = args[8];
-		run(genAlpha, null, null, null, separateEventFiles);
+		run(genAlpha, null, null, null, separateEventFiles, posConstraintFile);
 	}	
 	
 	// Used during testing with minimal IO
@@ -78,8 +79,9 @@ public class CreateAlphabet {
 							ArrayList<String> tL, 	
 							ArrayList<String> fL,
 							WordNetRelations lwnr,
-							boolean separateEventFiles) {
-		DataPrep dprep=new DataPrep(tL, fL, lwnr);
+							boolean separateEventFiles,
+							String posConstraintFile) {
+		DataPrep dprep=new DataPrep(tL, fL, lwnr, posConstraintFile);
 		long time=System.currentTimeMillis();
 		System.out.println("Reading alphabet...");
 		if(genAlpha){
