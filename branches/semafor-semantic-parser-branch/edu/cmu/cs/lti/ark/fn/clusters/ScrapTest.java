@@ -22,7 +22,10 @@
 package edu.cmu.cs.lti.ark.fn.clusters;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -41,14 +44,60 @@ public class ScrapTest {
 	{	
 		// testCoverageWithUnlabeledData(getSpans());
 		// testCoverage();
+		listSpanPOSs();
 		testMultiwordCoverage();
 		// compareTotalNumberOfSpansInThreeSettings();
 		// checkCoverageOfSpansUsingKBestLists();
 	}
 	
 	public static void listSpanPOSs() {
-		
-	}
+		String parseFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.all.lemma.tags";
+		String feFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.frame.elements";
+		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
+		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
+		String posFile = "/usr0/dipanjan/work/summer2011/FN/data/validStartEndPOS";
+		THashSet<String> poss = new THashSet<String>();
+		for(String feLine:feLines)
+		{
+			String[] toks = feLine.trim().split("\t");
+			int sentNum = new Integer(toks[5]);
+			StringTokenizer st = new StringTokenizer(parses.get(sentNum),"\t");
+			int tokensInFirstSent = new Integer(st.nextToken());
+			String[][] data = new String[5][tokensInFirstSent];
+			for(int k = 0; k < 5; k ++)
+			{
+				data[k]=new String[tokensInFirstSent];
+				for(int j = 0; j < tokensInFirstSent; j ++)
+				{
+					data[k][j]=""+st.nextToken().trim();
+				}
+			}
+			for(int k = 6; k < toks.length; k = k + 2) {
+				String[] spans = toks[k+1].split(":");
+				if(spans.length!=1)
+				{
+					int start = new Integer(spans[0]);
+					int end = new Integer(spans[1]);
+					String startPOS = data[1][start];
+					String endPOS = data[1][end];
+					// System.out.println(startPOS + "\t" + endPOS);
+					poss.add(startPOS + "\t" + endPOS);
+				}
+			}
+		}
+		try {
+			BufferedWriter bWriter = new BufferedWriter(new FileWriter(posFile));
+			for (String pos: poss) {
+				System.out.println(pos);
+				bWriter.write(pos + "\n");
+			}
+			bWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		System.out.println("Size: " + poss.size());
+	} 
 		
 	public static void checkCoverageOfSpansUsingKBestLists()
 	{
@@ -360,8 +409,11 @@ public class ScrapTest {
 	public static void testMultiwordCoverage() {
 		String parseFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.all.lemma.tags";
 		String feFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.frame.elements";
+		String posFile =  "/usr0/dipanjan/work/summer2011/FN/data/validStartEndPOS";
 		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
 		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
+		ArrayList<String> poss = ParsePreparation.readSentencesFromFile(posFile);
+		THashSet<String> posSet = new THashSet<String>(poss);
 		int match=0;
 		int total=0;
 		THashMap<Integer, THashSet<String>> goldSpans = new THashMap<Integer, THashSet<String>>();
@@ -386,7 +438,7 @@ public class ScrapTest {
 			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
 			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
 			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
-			findSpansAlternative2(spanMat,heads,sortedNodes);
+			findSpansAlternative(spanMat,heads,sortedNodes,posSet);
 			if (!autoSpans.contains(sentNum)) {
 				THashSet<String> spans = new THashSet<String>();
 				for (int i = 0; i < sortedNodes.length; i++) {
@@ -467,8 +519,11 @@ public class ScrapTest {
 	{
 		String parseFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.all.lemma.tags";
 		String feFile = "/usr0/dipanjan/work/summer2011/FN/data/cv.train.sentences.frame.elements";
+		String posFile =  "/usr0/dipanjan/work/summer2011/FN/data/validStartEndPOS";
 		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
 		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
+		ArrayList<String> poss = ParsePreparation.readSentencesFromFile(posFile);
+		THashSet<String> posSet = new THashSet<String>(poss);
 		int match=0;
 		int total=0;
 		
@@ -492,7 +547,7 @@ public class ScrapTest {
 			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
 			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
 			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
-			findSpansAlternative(spanMat,heads,sortedNodes);
+			findSpansAlternative(spanMat,heads,sortedNodes,posSet);
 						
 			for(int k = 6; k < toks.length; k = k + 2)
 			{
@@ -519,7 +574,10 @@ public class ScrapTest {
 		System.out.println("Recall:"+recall);
 	}
 	
-	public static void findSpansAlternative(boolean[][] spanMat, int[][] heads, DependencyParse[] nodes) {
+	public static void findSpansAlternative(boolean[][] spanMat, 
+											int[][] heads, 
+											DependencyParse[] nodes,
+											THashSet<String> posSet) {
 		int[] parent = new int[nodes.length - 1];
 		for (int i = 0; i < parent.length; i++) {
 			parent[i] = (nodes[i + 1].getParentIndex() - 1);
@@ -539,7 +597,11 @@ public class ScrapTest {
 					}
 				}
 				if (totalHeads <= 1) {
-					spanMat[i][j] = true;
+					String startPOS = nodes[i+1].getPOS();
+					String endPOS = nodes[j+1].getPOS();
+					if (posSet.contains(startPOS+"\t"+endPOS)) {
+						spanMat[i][j] = true;
+					}
 				}
 			}
 		}		
