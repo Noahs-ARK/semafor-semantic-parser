@@ -57,8 +57,7 @@ public class ScrapTest {
 	public static void updatePOSSet(THashSet<String> poss, 
 									ArrayList<String> parses,
 									ArrayList<String> feLines) {
-		for(String feLine:feLines)
-		{
+		for(String feLine:feLines) {
 			String[] toks = feLine.trim().split("\t");
 			int sentNum = new Integer(toks[5]);
 			StringTokenizer st = new StringTokenizer(parses.get(sentNum),"\t");
@@ -72,9 +71,10 @@ public class ScrapTest {
 					data[k][j]=""+st.nextToken().trim();
 				}
 			}
-			String target = toks[2];
-			int li = target.lastIndexOf(".");
-			String pos = target.substring(li+1);
+//			String target = toks[2];
+//			int li = target.lastIndexOf(".");
+//			String pos = target.substring(li+1);
+			String pos = toks[1];
 			for(int k = 6; k < toks.length; k = k + 2) {
 				String[] spans = toks[k+1].split(":");
 				if(spans.length!=1)
@@ -83,7 +83,7 @@ public class ScrapTest {
 					int end = new Integer(spans[1]);
 					String startPOS = data[1][start];
 					String endPOS = data[1][end];
-					poss.add(pos + "\t" + startPOS + "\t" + endPOS);
+					poss.add(pos + "\t" + startPOS.substring(0,1) + "\t" + endPOS.substring(0,1));
 				}
 			}
 		}
@@ -453,9 +453,10 @@ public class ScrapTest {
 			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
 			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
 			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
-			String target = toks[2];
-			int li = target.lastIndexOf(".");
-			String pos = target.substring(li+1);
+//			String target = toks[2];
+//			int li = target.lastIndexOf(".");
+//			String pos = target.substring(li+1);
+			String pos = toks[1];
 			findSpansAlternative(spanMat,heads,sortedNodes,posSet,pos);
 			// findSpans(spanMat,heads,sortedNodes);
 			THashSet<String> autoSpans = new THashSet<String>();
@@ -590,7 +591,7 @@ public class ScrapTest {
 				if (totalHeads <= 1) {
 					String startPOS = nodes[i+1].getPOS();
 					String endPOS = nodes[j+1].getPOS();
-					if (true || posSet.contains(pos+"\t"+startPOS+"\t"+endPOS)) {
+					if (posSet.contains(pos+"\t"+startPOS.substring(0,1)+"\t"+endPOS.substring(0,1))) {
 						spanMat[i][j] = true;
 					}
 				}
