@@ -81,7 +81,6 @@ public class ScanPotentialSpans {
 		for (int i = 0; i < span.length(); i++) {
 			if (Character.isDigit(span.charAt(i))) {
 				res += "@";
-				System.out.println(span);
 			} else {
 				res += "" + span.charAt(i);
 			}
