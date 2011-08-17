@@ -79,7 +79,7 @@ public class ScanPotentialSpans {
 	public static String replaceNumbersWithAt(String span) {
 		String res = "";
 		for (int i = 0; i < span.length(); i++) {
-			if (span.charAt(i) >= 0 && span.charAt(i) <= 9) {
+			if (Character.isDigit(span.charAt(i))) {
 				res += "@";
 				System.out.println(span);
 			} else {
