@@ -81,8 +81,9 @@ public class ScanPotentialSpans {
 		for (int i = 0; i < span.length(); i++) {
 			if (span.charAt(i) >= 0 && span.charAt(i) <= 9) {
 				res += "@";
+				System.out.println(span);
 			} else {
-				res += span.charAt(i);
+				res += "" + span.charAt(i);
 			}
 		}
 		return res;
