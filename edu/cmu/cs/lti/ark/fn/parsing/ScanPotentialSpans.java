@@ -140,7 +140,7 @@ public class ScanPotentialSpans {
 		try {
 			BufferedWriter bWriter = new BufferedWriter(new FileWriter(spanFile));
 			for (String span: spanArray) {
-				bWriter.write(span);
+				bWriter.write(span + "\n");
 			}
 			bWriter.close();
 		} catch (IOException e) {
