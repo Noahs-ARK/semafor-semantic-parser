@@ -111,6 +111,9 @@ public class ScanPotentialSpans {
 							if ((m-n) + 1 > SPAN_LENGTH_UPPER_BOUND) {
 								continue;
 							}
+							if ((n-m) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+								continue;
+							}
 							String span = "";
 							for (int z = m; z<= n; z++) {
 								span += data[0][z].toLowerCase() + " ";
@@ -150,6 +153,12 @@ public class ScanPotentialSpans {
 			for (int m = 0; m < sortedNodes.length; m++) {
 				for (int n = 0; n < sortedNodes.length; n++) {
 					if (spanMat[m][n]) {
+						if ((m-n) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+							continue;
+						}
+						if ((n-m) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+							continue;
+						}
 						String span = "";
 						for (int z = m; z<= n; z++) {
 							span += data[0][z].toLowerCase() + " ";
