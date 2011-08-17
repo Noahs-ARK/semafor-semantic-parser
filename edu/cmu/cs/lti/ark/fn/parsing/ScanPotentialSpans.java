@@ -16,6 +16,7 @@ import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
+import gnu.trove.TIntIntHashMap;
 
 public class ScanPotentialSpans {
 	//public static final String DATA_DIR = "/home/dipanjan/work/summer2011/ArgID/data";
@@ -23,9 +24,43 @@ public class ScanPotentialSpans {
 	
 	public static final String INFIX = "train";
 	
+	public static final int SPAN_LENGTH_UPPER_BOUND = 10;
+	
 	public static void main(String[] args) {
 		// generateFEStats();
 		generateSpans();
+		// generateSpanLengthStats();
+	}
+	
+	public static void generateSpanLengthStats() {
+		String feFile = DATA_DIR + "/cv.train.sentences.frame.elements";
+		ArrayList<String> fes = ParsePreparation.readSentencesFromFile(feFile);
+		TIntIntHashMap map = new TIntIntHashMap();
+		int total = 0;
+		for (String feLine: fes) {
+			String[] toks = feLine.trim().split("\t");
+			for(int k = 6; k < toks.length; k = k + 2) {
+				String[] spans = toks[k+1].split(":");
+				int length = 1;
+				if(spans.length != 1) {
+					int start = new Integer(spans[0]);
+					int end = new Integer(spans[1]);
+					length = (end - start) + 1;
+				} 
+				if (map.contains(length)) {
+					int val = map.get(length);
+					map.put(length, val+1);
+				} else {
+					map.put(length, 1);
+				}
+				total++;
+			}
+		}
+		int[] keys = map.keys();
+		Arrays.sort(keys);
+		for (int key: keys) {
+			System.out.println(key + "\t" + ((double)map.get(key) / total));
+		}
 	}
 	
 	public static void generateFEStats() {
@@ -73,6 +108,9 @@ public class ScanPotentialSpans {
 				for (int m = 0; m < sortedNodes.length; m++) {
 					for (int n = 0; n < sortedNodes.length; n++) {
 						if (spanMat[m][n]) {
+							if ((m-n) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+								continue;
+							}
 							String span = "";
 							for (int z = m; z<= n; z++) {
 								span += data[0][z].toLowerCase() + " ";
