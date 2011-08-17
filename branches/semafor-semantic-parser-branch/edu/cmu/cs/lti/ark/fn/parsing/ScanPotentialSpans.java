@@ -76,6 +76,18 @@ public class ScanPotentialSpans {
 		System.out.println("Total number of unique fes: " + fes.size());
 	}
 	
+	public static String replaceNumbersWithAt(String span) {
+		String res = "";
+		for (int i = 0; i < span.length(); i++) {
+			if (span.charAt(i) >= 0 && span.charAt(i) <= 9) {
+				res += "@";
+			} else {
+				res += span.charAt(i);
+			}
+		}
+		return res;
+	}
+	
 	public static void generateSpans() {
 		String[] labeledProcessedFiles = 
 		{DATA_DIR + "/cv.train.sentences.all.lemma.tags",
@@ -118,7 +130,7 @@ public class ScanPotentialSpans {
 							for (int z = m; z<= n; z++) {
 								span += data[0][z].toLowerCase() + " ";
 							}
-							span = span.trim();
+							span = replaceNumbersWithAt(span.trim());
 							spans.add(span);
 						}
 					}
@@ -163,7 +175,7 @@ public class ScanPotentialSpans {
 						for (int z = m; z<= n; z++) {
 							span += data[0][z].toLowerCase() + " ";
 						}
-						span = span.trim();
+						span = replaceNumbersWithAt(span.trim());
 						spans.add(span);
 					}
 				}
