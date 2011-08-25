@@ -89,12 +89,12 @@ public class ScanPotentialSpans {
 	}
 	
 	public static String replaceBrackets(String span) {
-		span.replace("-LRB-", "(");
-		span.replace("-RRB-", ")");
-		span.replace("-LCB-", "{");
-		span.replace("-RCB-", "}");
-		span.replace("-LSB-", "[");
-		span.replace("-RSB-", "]");
+		span.replace("-LRB-".toLowerCase(), "(");
+		span.replace("-RRB-".toLowerCase(), ")");
+		span.replace("-LCB-".toLowerCase(), "{");
+		span.replace("-RCB-".toLowerCase(), "}");
+		span.replace("-LSB-".toLowerCase(), "[");
+		span.replace("-RSB-".toLowerCase(), "]");
 		return span;
 	}
 	
