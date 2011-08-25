@@ -1,5 +1,8 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,17 +19,17 @@ import gnu.trove.THashSet;
 import gnu.trove.TIntIntHashMap;
 
 public class ScanPotentialSpans {
-	public static final String DATA_DIR = "/home/dipanjan/work/summer2011/ArgID/data";
+	//public static final String DATA_DIR = "/home/dipanjan/work/summer2011/ArgID/data";
+	public static final String DATA_DIR = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012";
+	
 	public static final String INFIX = "train";
+	
+	public static final int SPAN_LENGTH_UPPER_BOUND = 10;
 	
 	public static void main(String[] args) {
 		// generateFEStats();
 		generateSpans();
 		// generateSpanLengthStats();
-	}
-	
-	public static void findMostProbableHeadWords() {
-		
 	}
 	
 	public static void generateSpanLengthStats() {
@@ -61,7 +64,8 @@ public class ScanPotentialSpans {
 	}
 	
 	public static void generateFEStats() {
-		String feMap = DATA_DIR + "/framenet.frame.element.map";
+		String feMap = "" +
+				"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits/5/framenet.frame.element.map";
 		Set<String> fes = new THashSet<String>();
 		THashMap<String,THashSet<String>>fedict = 
 			(THashMap<String,THashSet<String>>)SerializedObjects.readSerializedObject(feMap);
@@ -72,10 +76,26 @@ public class ScanPotentialSpans {
 		System.out.println("Total number of unique fes: " + fes.size());
 	}
 	
+	public static String replaceNumbersWithAt(String span) {
+		String res = "";
+		for (int i = 0; i < span.length(); i++) {
+			if (Character.isDigit(span.charAt(i))) {
+				res += "@";
+			} else {
+				res += "" + span.charAt(i);
+			}
+		}
+		return res;
+	}
+	
 	public static void generateSpans() {
-		String[] labeledProcessedFiles = {DATA_DIR + "/cv.train.sentences.all.lemma.tags"};
-		String unlabeledProcessedFile = DATA_DIR + "/AP_1m.all.lemma.tags";
+		String[] labeledProcessedFiles = 
+		{DATA_DIR + "/cv.train.sentences.all.lemma.tags",
+		 DATA_DIR + "/cv.dev.sentences.all.lemma.tags"};
+		String unlabeledProcessedFile = 
+			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/uData/AP_1m.all.lemma.tags";
 		Set<String> spans = new THashSet<String>();
+		String spanFile = DATA_DIR + "/all.spans.sorted";
 		
 		for (int i = 0; i < labeledProcessedFiles.length; i++) {
 			String file = labeledProcessedFiles[i];
@@ -100,11 +120,17 @@ public class ScanPotentialSpans {
 				for (int m = 0; m < sortedNodes.length; m++) {
 					for (int n = 0; n < sortedNodes.length; n++) {
 						if (spanMat[m][n]) {
+							if ((m-n) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+								continue;
+							}
+							if ((n-m) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+								continue;
+							}
 							String span = "";
 							for (int z = m; z<= n; z++) {
 								span += data[0][z].toLowerCase() + " ";
 							}
-							span = span.trim();
+							span = replaceNumbersWithAt(span.trim());
 							spans.add(span);
 						}
 					}
@@ -139,16 +165,22 @@ public class ScanPotentialSpans {
 			for (int m = 0; m < sortedNodes.length; m++) {
 				for (int n = 0; n < sortedNodes.length; n++) {
 					if (spanMat[m][n]) {
+						if ((m-n) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+							continue;
+						}
+						if ((n-m) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+							continue;
+						}
 						String span = "";
 						for (int z = m; z<= n; z++) {
 							span += data[0][z].toLowerCase() + " ";
 						}
-						span = span.trim();
+						span = replaceNumbersWithAt(span.trim());
 						spans.add(span);
 					}
 				}
 			}
-			if (spans.size() >= 750000) {
+			if (spans.size() >= 500000) {
 				break;
 			}
 			if (j % 100 == 0) {
@@ -161,5 +193,18 @@ public class ScanPotentialSpans {
 		System.out.println();
 		System.out.println("Number of scanned unlabeled sentences: " + j);
 		System.out.println("Number of total spans:" + spans.size());
+		String[] spanArray = new String[spans.size()];
+		spans.toArray(spanArray);
+		Arrays.sort(spanArray);
+		try {
+			BufferedWriter bWriter = new BufferedWriter(new FileWriter(spanFile));
+			for (String span: spanArray) {
+				bWriter.write(span + "\n");
+			}
+			bWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
 }
