@@ -19,8 +19,8 @@ import gnu.trove.THashSet;
 import gnu.trove.TIntIntHashMap;
 
 public class ScanPotentialSpans {
-	public static final String DATA_DIR = "/home/dipanjan/work/summer2011/ArgID/data";
-	// public static final String DATA_DIR = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012";
+	// public static final String DATA_DIR = "/home/dipanjan/work/summer2011/ArgID/data";
+	public static final String DATA_DIR = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012";
 
 	public static final String INFIX = "train";
 
