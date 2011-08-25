@@ -88,6 +88,16 @@ public class ScanPotentialSpans {
 		return res;
 	}
 	
+	public static String replaceBrackets(String span) {
+		span.replace("-LRB-", "(");
+		span.replace("-RRB-", ")");
+		span.replace("-LCB-", "{");
+		span.replace("-RCB-", "}");
+		span.replace("-LSB-", "[");
+		span.replace("-RSB-", "]");
+		return span;
+	}
+	
 	public static void generateSpans() {
 		String[] labeledProcessedFiles = 
 		{DATA_DIR + "/cv.train.sentences.all.lemma.tags",
@@ -131,6 +141,7 @@ public class ScanPotentialSpans {
 								span += data[0][z].toLowerCase() + " ";
 							}
 							span = replaceNumbersWithAt(span.trim());
+							span = replaceBrackets(span.trim());
 							spans.add(span);
 						}
 					}
@@ -176,6 +187,7 @@ public class ScanPotentialSpans {
 							span += data[0][z].toLowerCase() + " ";
 						}
 						span = replaceNumbersWithAt(span.trim());
+						span = replaceBrackets(span.trim());
 						spans.add(span);
 					}
 				}
