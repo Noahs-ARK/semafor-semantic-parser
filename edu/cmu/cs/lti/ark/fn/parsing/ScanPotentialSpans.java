@@ -19,19 +19,19 @@ import gnu.trove.THashSet;
 import gnu.trove.TIntIntHashMap;
 
 public class ScanPotentialSpans {
-	//public static final String DATA_DIR = "/home/dipanjan/work/summer2011/ArgID/data";
-	public static final String DATA_DIR = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012";
-	
+	public static final String DATA_DIR = "/home/dipanjan/work/summer2011/ArgID/data";
+	// public static final String DATA_DIR = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012";
+
 	public static final String INFIX = "train";
-	
+
 	public static final int SPAN_LENGTH_UPPER_BOUND = 10;
-	
+
 	public static void main(String[] args) {
 		// generateFEStats();
 		generateSpans();
 		// generateSpanLengthStats();
 	}
-	
+
 	public static void generateSpanLengthStats() {
 		String feFile = DATA_DIR + "/cv.train.sentences.frame.elements";
 		ArrayList<String> fes = ParsePreparation.readSentencesFromFile(feFile);
@@ -62,10 +62,10 @@ public class ScanPotentialSpans {
 			System.out.println(key + "\t" + ((double)map.get(key) / total));
 		}
 	}
-	
+
 	public static void generateFEStats() {
 		String feMap = "" +
-				"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits/5/framenet.frame.element.map";
+		"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits/5/framenet.frame.element.map";
 		Set<String> fes = new THashSet<String>();
 		THashMap<String,THashSet<String>>fedict = 
 			(THashMap<String,THashSet<String>>)SerializedObjects.readSerializedObject(feMap);
@@ -75,7 +75,7 @@ public class ScanPotentialSpans {
 		}
 		System.out.println("Total number of unique fes: " + fes.size());
 	}
-	
+
 	public static String replaceNumbersWithAt(String span) {
 		String res = "";
 		for (int i = 0; i < span.length(); i++) {
@@ -87,26 +87,16 @@ public class ScanPotentialSpans {
 		}
 		return res;
 	}
-	
-	public static String replaceBrackets(String span) {
-		span.replace("-LRB-".toLowerCase(), "(");
-		span.replace("-RRB-".toLowerCase(), ")");
-		span.replace("-LCB-".toLowerCase(), "{");
-		span.replace("-RCB-".toLowerCase(), "}");
-		span.replace("-LSB-".toLowerCase(), "[");
-		span.replace("-RSB-".toLowerCase(), "]");
-		return span;
-	}
-	
+
 	public static void generateSpans() {
 		String[] labeledProcessedFiles = 
 		{DATA_DIR + "/cv.train.sentences.all.lemma.tags",
-		 DATA_DIR + "/cv.dev.sentences.all.lemma.tags"};
+				DATA_DIR + "/cv.dev.sentences.all.lemma.tags"};
 		String unlabeledProcessedFile = 
 			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/uData/AP_1m.all.lemma.tags";
 		Set<String> spans = new THashSet<String>();
 		String spanFile = DATA_DIR + "/all.spans.sorted";
-		
+
 		for (int i = 0; i < labeledProcessedFiles.length; i++) {
 			String file = labeledProcessedFiles[i];
 			ArrayList<String> parses = ParsePreparation.readSentencesFromFile(file);
@@ -119,7 +109,28 @@ public class ScanPotentialSpans {
 					data[k]=new String[tokensInFirstSent];
 					for(int l = 0; l < tokensInFirstSent; l ++)
 					{
-						data[k][l]=""+st.nextToken().trim();
+						String tok = st.nextToken().trim();
+						if (k == 0) {
+							if (tok.equals("-LRB-")) {
+								tok = "(";
+							}
+							if (tok.equals("-RRB-")) {
+								tok = ")";
+							}
+							if (tok.equals("-RSB-")) {
+								tok = "]";
+							}
+							if (tok.equals("-LSB-")) {
+								tok = "[";
+							}
+							if (tok.equals("-LCB-")) {
+								tok = "{";
+							}
+							if (tok.equals("-RCB-")) {
+								tok = "}";
+							}
+						}
+						data[k][l]=""+tok;
 					}
 				}	
 				DependencyParse parseS = DependencyParse.processFN(data, 0.0);
@@ -141,7 +152,6 @@ public class ScanPotentialSpans {
 								span += data[0][z].toLowerCase() + " ";
 							}
 							span = replaceNumbersWithAt(span.trim());
-							span = replaceBrackets(span.trim());
 							spans.add(span);
 						}
 					}
@@ -165,7 +175,28 @@ public class ScanPotentialSpans {
 				data[k]=new String[tokensInFirstSent];
 				for(int l = 0; l < tokensInFirstSent; l ++)
 				{
-					data[k][l]=""+st.nextToken().trim();
+					String tok = st.nextToken().trim();
+					if (k == 0) {
+						if (tok.equals("-LRB-")) {
+							tok = "(";
+						}
+						if (tok.equals("-RRB-")) {
+							tok = ")";
+						}
+						if (tok.equals("-RSB-")) {
+							tok = "]";
+						}
+						if (tok.equals("-LSB-")) {
+							tok = "[";
+						}
+						if (tok.equals("-LCB-")) {
+							tok = "{";
+						}
+						if (tok.equals("-RCB-")) {
+							tok = "}";
+						}
+					}
+					data[k][l]=""+tok;
 				}
 			}	
 			DependencyParse parseS = DependencyParse.processFN(data, 0.0);
@@ -187,7 +218,6 @@ public class ScanPotentialSpans {
 							span += data[0][z].toLowerCase() + " ";
 						}
 						span = replaceNumbersWithAt(span.trim());
-						span = replaceBrackets(span.trim());
 						spans.add(span);
 					}
 				}
