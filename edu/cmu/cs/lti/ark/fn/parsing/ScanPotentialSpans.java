@@ -32,6 +32,10 @@ public class ScanPotentialSpans {
 		// generateSpanLengthStats();
 	}
 	
+	public static void findMostProbableHeadWords() {
+		
+	}
+	
 	public static void generateSpanLengthStats() {
 		String feFile = DATA_DIR + "/cv.train.sentences.frame.elements";
 		ArrayList<String> fes = ParsePreparation.readSentencesFromFile(feFile);
