@@ -48,8 +48,8 @@ public class ScrapTest {
 	{	
 		// testCoverageWithUnlabeledData(getSpans());
 		// testCoverage();
-		// listSpanPOSs();
-		testMultiwordCoverage();
+		listSpanPOSs();
+		// testMultiwordCoverage();
 		// compareTotalNumberOfSpansInThreeSettings();
 		// checkCoverageOfSpansUsingKBestLists();
 	}
