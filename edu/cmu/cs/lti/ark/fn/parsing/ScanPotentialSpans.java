@@ -151,13 +151,15 @@ public class ScanPotentialSpans {
 						start=new Integer(spanS[0]);
 						end=new Integer(spanS[1]);
 					}
-					String span = "";
-					for (int m = start; m <= end; m++) {
-						span += data[0][m] + " ";
+					if ((end - start + 1) <= SPAN_LENGTH_UPPER_BOUND) {
+						String span = "";
+						for (int m = start; m <= end; m++) {
+							span += data[0][m] + " ";
+						}
+						span = span.toLowerCase();
+						span = replaceNumbersWithAt(span.trim());
+						spans.add(span);
 					}
-					span = span.toLowerCase();
-					span = replaceNumbersWithAt(span.trim());
-					spans.add(span);
 				}
 			}
 		}
