@@ -90,18 +90,21 @@ public class ScanPotentialSpans {
 
 	public static void generateSpans() {
 		String[] labeledProcessedFiles = 
-		{DATA_DIR + "/cv.train.sentences.all.lemma.tags",
-				DATA_DIR + "/cv.dev.sentences.all.lemma.tags"};
+		{DATA_DIR + "/framenet.original.sentences.all.lemma.tags"};
+		String[] labeledFEFiles = {DATA_DIR + "/framenet.original.sentences.frame.elements"};		
+		
 		String unlabeledProcessedFile = 
 			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/uData/AP_1m.all.lemma.tags";
 		Set<String> spans = new THashSet<String>();
 		String spanFile = DATA_DIR + "/all.spans.sorted";
-
 		for (int i = 0; i < labeledProcessedFiles.length; i++) {
 			String file = labeledProcessedFiles[i];
 			ArrayList<String> parses = ParsePreparation.readSentencesFromFile(file);
-			for (int j = 0; j < parses.size(); j++) {
-				StringTokenizer st = new StringTokenizer(parses.get(j),"\t");
+			ArrayList<String> fes = ParsePreparation.readSentencesFromFile(labeledFEFiles[i]);
+			for (String fe: fes) {
+				String[] feToks = fe.trim().split("\t");
+				int sentNum = new Integer(feToks[5]);
+				StringTokenizer st = new StringTokenizer(parses.get(sentNum),"\t");
 				int tokensInFirstSent = new Integer(st.nextToken());
 				String[][] data = new String[5][tokensInFirstSent];
 				for(int k = 0; k < 5; k ++)
@@ -133,36 +136,32 @@ public class ScanPotentialSpans {
 						data[k][l]=""+tok;
 					}
 				}	
-				DependencyParse parseS = DependencyParse.processFN(data, 0.0);
-				DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
-				boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
-				int[][] heads = new int[sortedNodes.length][sortedNodes.length];
-				ScrapTest.findSpans(spanMat,heads,sortedNodes);
-				for (int m = 0; m < sortedNodes.length; m++) {
-					for (int n = 0; n < sortedNodes.length; n++) {
-						if (spanMat[m][n]) {
-							if ((m-n) + 1 > SPAN_LENGTH_UPPER_BOUND) {
-								continue;
-							}
-							if ((n-m) + 1 > SPAN_LENGTH_UPPER_BOUND) {
-								continue;
-							}
-							String span = "";
-							for (int z = m; z<= n; z++) {
-								span += data[0][z].toLowerCase() + " ";
-							}
-							span = replaceNumbersWithAt(span.trim());
-							spans.add(span);
-						}
+				for(int k = 6; k < feToks.length; k = k + 2)
+				{
+					String[] spanS = feToks[k+1].split(":");
+					int start = -1;
+					int end = -1;
+					if(spanS.length==1)
+					{
+						start=new Integer(spanS[0]);
+						end=new Integer(spanS[0]);
 					}
-				}
-				if (j % 100 == 0) {
-					System.out.print(j+" ");
+					else
+					{
+						start=new Integer(spanS[0]);
+						end=new Integer(spanS[1]);
+					}
+					String span = "";
+					for (int m = start; m <= end; m++) {
+						span += data[0][m] + " ";
+					}
+					span = span.toLowerCase();
+					span = replaceNumbersWithAt(span.trim());
+					spans.add(span);
 				}
 			}
-			System.out.println();
 		}
-		System.out.println("Number of unique spans in the labeled data:" + spans.size());
+		System.out.println("Number of unique spans in the lexicon:" + spans.size());
 		String uFile = unlabeledProcessedFile;
 		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(uFile);
 		int j = 0;
