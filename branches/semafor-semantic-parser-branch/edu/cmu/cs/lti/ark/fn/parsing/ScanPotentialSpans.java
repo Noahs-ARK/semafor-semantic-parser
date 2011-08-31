@@ -49,106 +49,112 @@ public class ScanPotentialSpans {
 		for (int i = 0; i < allSpans.size(); i++) {
 			spanArr[i] = ""+allSpans.get(i);
 		}
-		String outFile = DATA_DIR + "/labeled.dist";
-		String outIntFile = DATA_DIR + "/labeled.dist.indexed";
-		
-		TIntObjectHashMap<int[]> countMap = new TIntObjectHashMap<int[]>(); 
-		for (int i = 0; i < labeledProcessedFiles.length; i++) {
-			String file = labeledProcessedFiles[i];
-			ArrayList<String> parses = ParsePreparation.readSentencesFromFile(file);
-			fes = ParsePreparation.readSentencesFromFile(labeledFEFiles[i]);
-			int count = 0;
-			for (String fe: fes) {
-				String[] feToks = fe.trim().split("\t");
-				int sentNum = new Integer(feToks[5]);
-				StringTokenizer st = new StringTokenizer(parses.get(sentNum),"\t");
-				int tokensInFirstSent = new Integer(st.nextToken());
-				String[][] data = new String[5][tokensInFirstSent];
-				for(int k = 0; k < 5; k ++)
-				{
-					data[k]=new String[tokensInFirstSent];
-					for(int l = 0; l < tokensInFirstSent; l ++)
+		String outFile = DATA_DIR + "/spans.fes";
+		try {
+			BufferedWriter bWriter = new BufferedWriter(new FileWriter(outFile));
+			TIntObjectHashMap<int[]> countMap = new TIntObjectHashMap<int[]>(); 
+			for (int i = 0; i < labeledProcessedFiles.length; i++) {
+				String file = labeledProcessedFiles[i];
+				ArrayList<String> parses = ParsePreparation.readSentencesFromFile(file);
+				fes = ParsePreparation.readSentencesFromFile(labeledFEFiles[i]);
+				int count = 0;
+				for (String fe: fes) {
+					String[] feToks = fe.trim().split("\t");
+					int sentNum = new Integer(feToks[5]);
+					StringTokenizer st = new StringTokenizer(parses.get(sentNum),"\t");
+					int tokensInFirstSent = new Integer(st.nextToken());
+					String[][] data = new String[5][tokensInFirstSent];
+					for(int k = 0; k < 5; k ++)
 					{
-						String tok = st.nextToken().trim();
-						if (k == 0) {
-							if (tok.equals("-LRB-")) {
-								tok = "(";
+						data[k]=new String[tokensInFirstSent];
+						for(int l = 0; l < tokensInFirstSent; l ++)
+						{
+							String tok = st.nextToken().trim();
+							if (k == 0) {
+								if (tok.equals("-LRB-")) {
+									tok = "(";
+								}
+								if (tok.equals("-RRB-")) {
+									tok = ")";
+								}
+								if (tok.equals("-RSB-")) {
+									tok = "]";
+								}
+								if (tok.equals("-LSB-")) {
+									tok = "[";
+								}
+								if (tok.equals("-LCB-")) {
+									tok = "{";
+								}
+								if (tok.equals("-RCB-")) {
+									tok = "}";
+								}
 							}
-							if (tok.equals("-RRB-")) {
-								tok = ")";
-							}
-							if (tok.equals("-RSB-")) {
-								tok = "]";
-							}
-							if (tok.equals("-LSB-")) {
-								tok = "[";
-							}
-							if (tok.equals("-LCB-")) {
-								tok = "{";
-							}
-							if (tok.equals("-RCB-")) {
-								tok = "}";
-							}
+							data[k][l]=""+tok;
 						}
-						data[k][l]=""+tok;
-					}
-				}	
-				for(int k = 6; k < feToks.length; k = k + 2)
-				{
-					String[] spanS = feToks[k+1].split(":");
-					String f = feToks[k];
-					int fIndex = Arrays.binarySearch(arr, f);
-					if (fIndex < 0) {
-						System.out.println("FE: " + f + " not found. Exiting.");
-						System.exit(-1);
-					}
-					int start = -1;
-					int end = -1;
-					if(spanS.length==1)
+					}	
+					for(int k = 6; k < feToks.length; k = k + 2)
 					{
-						start=new Integer(spanS[0]);
-						end=new Integer(spanS[0]);
-					}
-					else
-					{
-						start=new Integer(spanS[0]);
-						end=new Integer(spanS[1]);
-					}
-					if ((end - start + 1) <= SPAN_LENGTH_UPPER_BOUND) {
-						String span = "";
-						for (int m = start; m <= end; m++) {
-							span += data[0][m] + " ";
-						}
-						span = span.toLowerCase();
-						span = replaceNumbersWithAt(span.trim());
-						int index = Arrays.binarySearch(spanArr, span);
-						if (index < 0) {
-							System.out.println("Problem. Span: " + span + " not found in arr. Exiting.");
+						String[] spanS = feToks[k+1].split(":");
+						String f = feToks[k];
+						int fIndex = Arrays.binarySearch(arr, f);
+						if (fIndex < 0) {
+							System.out.println("FE: " + f + " not found. Exiting.");
 							System.exit(-1);
 						}
-						if (countMap.contains(index)) {
-							int[] Arr = countMap.get(index);
-							Arr[fIndex] += 1;
-							countMap.put(index, Arr);
-						} else {
-							int[] Arr = new int[fes.size()];
-							for (int m = 0; m < fes.size(); m++) {
-								Arr[m] = 0;
+						int start = -1;
+						int end = -1;
+						if(spanS.length==1)
+						{
+							start=new Integer(spanS[0]);
+							end=new Integer(spanS[0]);
+						}
+						else
+						{
+							start=new Integer(spanS[0]);
+							end=new Integer(spanS[1]);
+						}
+						if ((end - start + 1) <= SPAN_LENGTH_UPPER_BOUND) {
+							String span = "";
+							for (int m = start; m <= end; m++) {
+								span += data[0][m] + " ";
 							}
-							Arr[fIndex] += 1;
-							countMap.put(index, Arr);
+							span = span.toLowerCase();
+							span = replaceNumbersWithAt(span.trim());
+							int index = Arrays.binarySearch(spanArr, span);
+							if (index < 0) {
+								System.out.println("Problem. Span: " + span + " not found in arr. Exiting.");
+								System.exit(-1);
+							}
+	//						if (countMap.contains(index)) {
+	//							int[] Arr = countMap.get(index);
+	//							Arr[fIndex] += 1;
+	//							countMap.put(index, Arr);
+	//						} else {
+	//							int[] Arr = new int[fes.size()];
+	//							for (int m = 0; m < fes.size(); m++) {
+	//								Arr[m] = 0;
+	//							}
+	//							Arr[fIndex] += 1;
+	//							countMap.put(index, Arr);
+	//						}
+							bWriter.write(span + "\t" + f);
 						}
 					}
+					count ++;
+					if (count % 1000 == 0) {
+						System.out.print(count + " ");
+					}
+					if (count % 10000 == 0) {
+						System.out.println();
+					}
 				}
-				count ++;
-				if (count % 1000 == 0) {
-					System.out.print(count + " ");
-				}
-				if (count % 10000 == 0) {
-					System.out.println();
-				}
-			}
-		} 
+			} 
+			bWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
 	
 	public static void generateSpanLengthStats() {
