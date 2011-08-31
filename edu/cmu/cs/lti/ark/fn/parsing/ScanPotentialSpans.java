@@ -138,7 +138,7 @@ public class ScanPotentialSpans {
 	//							Arr[fIndex] += 1;
 	//							countMap.put(index, Arr);
 	//						}
-							bWriter.write(span + "\t" + f);
+							bWriter.write(span + "\t" + f + "\n");
 						}
 					}
 					count ++;
