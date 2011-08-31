@@ -52,7 +52,7 @@ public class ScanPotentialSpans {
 		String outFile = DATA_DIR + "/labeled.dist";
 		String outIntFile = DATA_DIR + "/labeled.dist.indexed";
 		
-		TIntObjectHashMap<float[]> countMap = new TIntObjectHashMap<float[]>(); 
+		TIntObjectHashMap<int[]> countMap = new TIntObjectHashMap<int[]>(); 
 		for (int i = 0; i < labeledProcessedFiles.length; i++) {
 			String file = labeledProcessedFiles[i];
 			ArrayList<String> parses = ParsePreparation.readSentencesFromFile(file);
@@ -127,13 +127,13 @@ public class ScanPotentialSpans {
 							System.exit(-1);
 						}
 						if (countMap.contains(index)) {
-							float[] Arr = countMap.get(index);
+							int[] Arr = countMap.get(index);
 							Arr[fIndex] += 1;
 							countMap.put(index, Arr);
 						} else {
-							float[] Arr = new float[fes.size()];
+							int[] Arr = new int[fes.size()];
 							for (int m = 0; m < fes.size(); m++) {
-								Arr[m] = (float)0.0;
+								Arr[m] = 0;
 							}
 							Arr[fIndex] += 1;
 							countMap.put(index, Arr);
