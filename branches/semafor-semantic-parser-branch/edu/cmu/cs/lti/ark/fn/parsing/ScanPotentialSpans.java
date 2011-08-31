@@ -28,10 +28,11 @@ public class ScanPotentialSpans {
 
 	public static void main(String[] args) {
 		// generateFEStats();
-		generateSpans();
+		// generateSpans();
 		// generateSpanLengthStats();
+		generateFEStats();
 	}
-
+	
 	public static void generateSpanLengthStats() {
 		String feFile = DATA_DIR + "/cv.train.sentences.frame.elements";
 		ArrayList<String> fes = ParsePreparation.readSentencesFromFile(feFile);
@@ -73,7 +74,28 @@ public class ScanPotentialSpans {
 		for (THashSet<String> set: col) {
 			fes.addAll(set);
 		}
+		String foFeFile = DATA_DIR + "/framenet.original.sentences.frame.elements";
+		String outFile = DATA_DIR + "/fes.sorted";
+		ArrayList<String> fres = ParsePreparation.readSentencesFromFile(foFeFile);
+		for (String fe: fres) {
+			String[] feToks = fe.split("\t");		
+			for(int k = 6; k < feToks.length; k = k + 2) {
+				String f = feToks[k];
+				if (!fes.contains(f)) {
+					System.out.println("Set does not contain: " + f);
+				}
+				fes.add(f);
+			}
+		}
 		System.out.println("Total number of unique fes: " + fes.size());
+		String[] arr = new String[fes.size()];
+		fes.toArray(arr);
+		Arrays.sort(arr);
+		ArrayList<String> list = new ArrayList<String>();
+		for (String a: arr) {
+			list.add(a);
+		}
+		ParsePreparation.writeSentencesToTempFile(outFile, list);
 	}
 
 	public static String replaceNumbersWithAt(String span) {
