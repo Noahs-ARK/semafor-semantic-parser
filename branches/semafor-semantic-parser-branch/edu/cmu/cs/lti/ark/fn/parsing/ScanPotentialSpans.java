@@ -232,8 +232,9 @@ public class ScanPotentialSpans {
 			}
 		}
 		return res;
-	}
-
+	}	
+	
+	
 	public static void generateSpans() {
 		String[] labeledProcessedFiles = 
 		{DATA_DIR + "/framenet.original.sentences.all.lemma.tags"};
