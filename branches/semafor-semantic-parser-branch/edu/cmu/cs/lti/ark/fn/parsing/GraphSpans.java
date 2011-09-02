@@ -93,8 +93,11 @@ public class GraphSpans {
 					smoothedGraph[index][i-1] = new Float(toks[i]);
 				}
 				count++;
-				if (count >= 1) {
-					break;
+				if (count % 10000 == 0) {
+					System.out.print(count + " ");
+				}
+				if (count % 100000 == 0) {
+					System.out.println();
 				}
 			}
 			bReader.close();
