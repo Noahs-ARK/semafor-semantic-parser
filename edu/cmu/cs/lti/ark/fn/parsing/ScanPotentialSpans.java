@@ -80,7 +80,7 @@ public class ScanPotentialSpans {
 					}
 				}	
 				DependencyParse parseS = DependencyParse.processFN(data, 0.0);
-				DependencyParse[] parseNodes = DependencyParse.getSortedListOfNodes(parseS);
+				DependencyParse[] parseNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
 				for(int k = 6; k < feToks.length; k = k + 2) {
 					String[] spanS = feToks[k+1].split(":");
 					int start = -1;
