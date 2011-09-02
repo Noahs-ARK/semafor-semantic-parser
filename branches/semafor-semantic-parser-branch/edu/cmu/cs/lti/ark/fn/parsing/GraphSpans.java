@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import edu.cmu.cs.lti.ark.util.SerializedObjects;
+
 public class GraphSpans {
 	public String[] sortedSpans = null;
 	public String[] sortedFEs = null;
@@ -80,7 +82,7 @@ public class GraphSpans {
 		System.out.println("Stored FEs.");
 	}
 	
-	public void readSmoothedFile(String smoothedFile) {
+	public void readAndSerializeSmoothedFile(String smoothedFile) {
 		smoothedGraph = new float[sortedSpans.length][sortedFEs.length];
 		String line = null;
 		try {
@@ -101,6 +103,7 @@ public class GraphSpans {
 				}
 			}
 			bReader.close();
+			SerializedObjects.writeSerializedObject(smoothedGraph, smoothedFile + ".jobj");
 		} catch (IOException e) {
 			System.out.println("Could not read smoothed graph.");
 			e.printStackTrace();
