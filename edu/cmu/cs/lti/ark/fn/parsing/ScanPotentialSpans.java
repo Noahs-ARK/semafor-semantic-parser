@@ -124,6 +124,67 @@ public class ScanPotentialSpans {
 			}
 		}
 		System.out.println("Finished scanning labeled data.");
+		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(unlabeledProcessedFile);
+		int j = 0;
+		for (j = 0; j < parses.size(); j++) {
+			StringTokenizer st = new StringTokenizer(parses.get(j),"\t");
+			int tokensInFirstSent = new Integer(st.nextToken());
+			String[][] data = new String[5][tokensInFirstSent];
+			for(int k = 0; k < 5; k ++) {
+				data[k]=new String[tokensInFirstSent];
+				for(int l = 0; l < tokensInFirstSent; l ++)	{
+					String tok = st.nextToken().trim();
+					if (k == 0) {
+						if (tok.equals("-LRB-")) { tok = "("; }
+						if (tok.equals("-RRB-")) { tok = ")"; }
+						if (tok.equals("-RSB-")) { tok = "]"; }
+						if (tok.equals("-LSB-")) { tok = "["; }
+						if (tok.equals("-LCB-")) { tok = "{"; }
+						if (tok.equals("-RCB-")) { tok = "}"; }
+					}
+					data[k][l]=""+tok;
+				}
+			}	
+			DependencyParse parseS = DependencyParse.processFN(data, 0.0);
+			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parseS);
+			boolean[][] spanMat = new boolean[sortedNodes.length][sortedNodes.length];
+			int[][] heads = new int[sortedNodes.length][sortedNodes.length];
+			ScrapTest.findSpans(spanMat,heads,sortedNodes);
+			for (int m = 0; m < sortedNodes.length; m++) {
+				for (int n = 0; n < sortedNodes.length; n++) {
+					if (spanMat[m][n]) {
+						if ((m-n) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+							continue;
+						}
+						if ((n-m) + 1 > SPAN_LENGTH_UPPER_BOUND) {
+							continue;
+						}
+						String span = "";
+						for (int z = m; z<= n; z++) {
+							span += data[0][z].toLowerCase() + " ";
+						}
+						span = replaceNumbersWithAt(span.trim());
+						if (Arrays.binarySearch(spanArr, span) >= 0) {
+							int index = Arrays.binarySearch(spanArr, span);
+							int[] tokNums = new int[n - m + 1];
+							for (int q = m; q <= n; q++) {
+								tokNums[q-m] = q;
+							}
+							DependencyParse head = DependencyParse.getHeuristicHead(sortedNodes, tokNums);
+							String hw = head.getWord().toLowerCase();
+							hw = replaceNumbersWithAt(hw);
+							if (headCountArr[index].contains(hw)) {
+								int c = headCountArr[index].get(hw);
+								headCountArr[index].put(hw, c+1);
+							} else {
+								headCountArr[index].put(hw, 1);
+							}
+						}
+					}
+				}
+			}
+		}
+		System.out.println("Finished scanning unlabeled data.");
 	}
 	
 	public static void generateLabeledData() {
