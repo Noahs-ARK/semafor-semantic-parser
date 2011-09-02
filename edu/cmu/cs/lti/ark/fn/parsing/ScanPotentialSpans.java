@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.fn.clusters.ScrapTest;
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
+import edu.cmu.cs.lti.ark.fn.utils.DataPoint;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 
@@ -18,6 +19,7 @@ import gnu.trove.THashMap;
 import gnu.trove.THashSet;
 import gnu.trove.TIntIntHashMap;
 import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TObjectIntHashMap;
 
 public class ScanPotentialSpans {
 	// public static final String DATA_DIR = "/home/dipanjan/work/summer2011/ArgID/data";
@@ -32,7 +34,87 @@ public class ScanPotentialSpans {
 		// generateSpans();
 		// generateSpanLengthStats();
 		// generateFEStats();
-		generateLabeledData();
+		// generateLabeledData();
+		generateHeadWords();
+	}
+	
+	public static void generateHeadWords() {
+		String spanFile = DATA_DIR + "/all.spans.sorted";
+		ArrayList<String> spanList = ParsePreparation.readSentencesFromFile(spanFile);
+		String[] spanArr = new String[spanList.size()];
+		for (int i = 0; i < spanArr.length; i++) {
+			spanArr[i] = "" + spanList.get(i);
+		}
+		spanList.clear();
+		String[] labeledProcessedFiles = 
+						{
+						DATA_DIR + "/framenet.original.sentences.all.lemma.tags"
+						};
+		String[] labeledFEFiles = {DATA_DIR + "/framenet.original.sentences.frame.elements"};
+		String unlabeledProcessedFile = 
+			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/uData/AP_1m.all.lemma.tags";
+		TObjectIntHashMap<String>[] headCountArr = new TObjectIntHashMap[spanArr.length];
+		for (int i = 0; i < labeledProcessedFiles.length; i++) {
+			String file = labeledProcessedFiles[i];
+			ArrayList<String> parses = ParsePreparation.readSentencesFromFile(file);
+			ArrayList<String> fes = ParsePreparation.readSentencesFromFile(labeledFEFiles[i]);
+			for (String fe: fes) {
+				String[] feToks = fe.trim().split("\t");
+				int sentNum = new Integer(feToks[5]);
+				StringTokenizer st = new StringTokenizer(parses.get(sentNum),"\t");
+				int tokensInFirstSent = new Integer(st.nextToken());
+				String[][] data = new String[5][tokensInFirstSent];
+				for(int k = 0; k < 5; k ++) {
+					data[k]=new String[tokensInFirstSent];
+					for(int l = 0; l < tokensInFirstSent; l++) {
+						String tok = st.nextToken().trim();
+						if (k == 0) {
+							if (tok.equals("-LRB-")) { tok = "("; }
+							if (tok.equals("-RRB-")) { tok = ")"; }
+							if (tok.equals("-RSB-")) { tok = "]"; }
+							if (tok.equals("-LSB-")) { tok = "["; }
+							if (tok.equals("-LCB-")) { tok = "{"; }
+							if (tok.equals("-RCB-")) { tok = "}"; }
+						}
+						data[k][l]=""+tok;
+					}
+				}	
+				DependencyParse parseS = DependencyParse.processFN(data, 0.0);
+				DependencyParse[] parseNodes = DependencyParse.getSortedListOfNodes(parseS);
+				for(int k = 6; k < feToks.length; k = k + 2) {
+					String[] spanS = feToks[k+1].split(":");
+					int start = -1;
+					int end = -1;
+					if(spanS.length==1) {
+						start=new Integer(spanS[0]);
+						end=new Integer(spanS[0]);
+					}
+					else {
+						start=new Integer(spanS[0]);
+						end=new Integer(spanS[1]);
+					}
+					if ((end - start + 1) <= SPAN_LENGTH_UPPER_BOUND) {
+						String span = "";
+						for (int m = start; m <= end; m++) {
+							span += data[0][m] + " ";
+						}
+						span = span.toLowerCase();
+						span = replaceNumbersWithAt(span.trim());
+						if (Arrays.binarySearch(spanArr, span) >= 0) {
+							int index = Arrays.binarySearch(spanArr, span);
+							int[] tokNums = new int[end - start + 1];
+							for (int m = start; m <= end; m++) {
+								tokNums[m-start] = m;
+							}
+							DependencyParse head = DependencyParse.getHeuristicHead(parseNodes, tokNums);
+							String hw = head.getWord();
+							System.out.println("Span: " + span + " head: " + hw);
+						}
+					}
+				}
+			}
+		}
+		
 	}
 	
 	public static void generateLabeledData() {
