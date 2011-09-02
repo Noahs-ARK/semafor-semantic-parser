@@ -51,6 +51,7 @@ public class ScanPotentialSpans {
 						DATA_DIR + "/framenet.original.sentences.all.lemma.tags"
 						};
 		String[] labeledFEFiles = {DATA_DIR + "/framenet.original.sentences.frame.elements"};
+		String headFile = DATA_DIR + "/all.spans.heads";
 		String unlabeledProcessedFile = 
 			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/uData/AP_1m.all.lemma.tags";
 		TObjectIntHashMap<String>[] headCountArr = new TObjectIntHashMap[spanArr.length];
@@ -183,8 +184,37 @@ public class ScanPotentialSpans {
 					}
 				}
 			}
+			if (j % 10000 == 0) {
+				System.out.print(j + " ");
+			}
+			if (j % 100000 == 0) {
+				System.out.println(j);
+			}
 		}
 		System.out.println("Finished scanning unlabeled data.");
+		try {
+			BufferedWriter bWriter = new BufferedWriter(new FileWriter(headFile));
+			for (int i = 0; i < spanArr.length; i++) {
+				TObjectIntHashMap<String> map = headCountArr[i];
+				String[] keys = new String[map.size()];
+				keys = map.keys(keys);
+				String maxKey = null;
+				int max = -1;
+				for (String key: keys) {
+					if (map.get(key) > max) {
+						max = map.get(key);
+						maxKey = key;
+					}
+				}
+				System.out.println("Span: " + spanArr + " max key: " + maxKey);
+				bWriter.write(maxKey + "\n");
+			}
+			bWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Could not print head file.");
+			System.exit(-1);
+		}
 	}
 	
 	public static void generateLabeledData() {
