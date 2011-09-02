@@ -15,7 +15,14 @@ public class GraphSpans {
 					  String smoothedFile) {
 		readSpansFile(spansFile);
 		readFEFile(feFile);
-		readAndSerializeSmoothedFile(smoothedFile);
+		// readAndSerializeSmoothedFile(smoothedFile);
+		readSerializedGraphFile(smoothedFile + ".jobj");
+	}
+	
+	public void readSerializedGraphFile(String graphSerFile) {
+		System.out.println("Reading serialized graph file.....");
+		smoothedGraph = (float[][])SerializedObjects.readSerializedObject(graphSerFile);
+		System.out.println("Finished reading serialized graph file.");
 	}
 	
 	public void readSpansFile(String spansFile) {
