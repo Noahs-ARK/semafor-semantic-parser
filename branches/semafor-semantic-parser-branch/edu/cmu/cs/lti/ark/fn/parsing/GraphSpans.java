@@ -15,7 +15,7 @@ public class GraphSpans {
 					  String smoothedFile) {
 		readSpansFile(spansFile);
 		readFEFile(feFile);
-		readSmoothedFile(smoothedFile);
+		readAndSerializeSmoothedFile(smoothedFile);
 	}
 	
 	public void readSpansFile(String spansFile) {
