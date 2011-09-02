@@ -206,7 +206,7 @@ public class ScanPotentialSpans {
 						maxKey = key;
 					}
 				}
-				System.out.println("Span: " + spanArr + " max key: " + maxKey);
+				System.out.println("Span: " + spanArr[i] + " max key: " + maxKey);
 				bWriter.write(maxKey + "\n");
 			}
 			bWriter.close();
