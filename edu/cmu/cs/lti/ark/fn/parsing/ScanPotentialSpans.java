@@ -54,6 +54,9 @@ public class ScanPotentialSpans {
 		String unlabeledProcessedFile = 
 			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/uData/AP_1m.all.lemma.tags";
 		TObjectIntHashMap<String>[] headCountArr = new TObjectIntHashMap[spanArr.length];
+		for (int i = 0; i < headCountArr.length; i++) {
+			headCountArr[i] = new TObjectIntHashMap<String>();
+		}
 		for (int i = 0; i < labeledProcessedFiles.length; i++) {
 			String file = labeledProcessedFiles[i];
 			ArrayList<String> parses = ParsePreparation.readSentencesFromFile(file);
@@ -107,14 +110,20 @@ public class ScanPotentialSpans {
 								tokNums[m-start] = m;
 							}
 							DependencyParse head = DependencyParse.getHeuristicHead(parseNodes, tokNums);
-							String hw = head.getWord();
-							System.out.println("Span: " + span + " head: " + hw);
+							String hw = head.getWord().toLowerCase();
+							hw = replaceNumbersWithAt(hw);
+							if (headCountArr[index].contains(hw)) {
+								int c = headCountArr[index].get(hw);
+								headCountArr[index].put(hw, c+1);
+							} else {
+								headCountArr[index].put(hw, 1);
+							}
 						}
 					}
 				}
 			}
 		}
-		
+		System.out.println("Finished scanning labeled data.");
 	}
 	
 	public static void generateLabeledData() {
