@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
+import edu.cmu.cs.lti.ark.util.SerializedObjects;
 
 import gnu.trove.THashSet;
 
@@ -19,13 +20,62 @@ public class CoarseDistributions {
 		String feFile = 
 			datadir + "/fes.sorted";
 		String smoothedFile =
-			datadir + "/lp.mu.0.5.nu.0.1.10";
+			datadir + "/smoothed/lp.mu.0.5.nu.0.1.10";
 		String headFile = 
 			datadir + "/all.spans.heads";
+		String smoothedHeadsFile = 
+			datadir + "/smoothed/lp.mu.0.5.nu.0.1.10.heads.jobj";
 		
 		String[] corrHeads = getCorrespondingHeads(headFile);
 		String[] sortedUniqueHeads = getSortedUniqueHeads(headFile);
 		System.out.println("Total number of unique heads: " + sortedUniqueHeads.length);
+		GraphSpans gs = new GraphSpans(spansFile, feFile, smoothedFile);
+		findHeadDistributions(corrHeads, sortedUniqueHeads, gs, smoothedHeadsFile);
+	}
+	
+	public static void findHeadDistributions(String[] corrHeads, 
+											 String[] sortedUniqueHeads,
+											 GraphSpans gs,
+											 String smoothedHeadsFile) {
+		float[][] graph = gs.smoothedGraph;
+		String[] sortedSpans = gs.sortedSpans;
+		String[] sortedFEs = gs.sortedFEs;
+		int numUniqueHeads = sortedUniqueHeads.length;
+		int numFEs = sortedFEs.length;
+		float[][] headDist = new float[numUniqueHeads][];
+		for (int i = 0; i < numUniqueHeads; i++) {
+			headDist[i] = null;
+		}
+		System.out.println("COarsening smoothed distributions...");
+		for (int i = 0; i < sortedSpans.length; i++) {
+			String corrHead = corrHeads[i];
+			int index = Arrays.binarySearch(sortedUniqueHeads, corrHead);
+			if (headDist[index] == null) {
+				headDist[index] = new float[numFEs];
+				for (int j = 0; j < numFEs; j++) {
+					headDist[index][j] = graph[i][j];
+				}
+			} else {
+				for (int j = 0; j < numFEs; j++) {
+					headDist[index][j] += graph[i][j];
+				}
+			}
+			if (i % 100000 == 0) {
+				System.out.println(i);
+			}
+		}
+		System.out.println("Normalizing head distributions...");
+		for (int i = 0; i < numUniqueHeads; i++) {
+			float sum = 0;
+			for (int j = 0; j < numFEs; j++) {
+				sum += headDist[i][j];
+			}
+			for (int j = 0; j < numFEs; j++) {
+				headDist[i][j] /= sum;
+			}
+		}
+		SerializedObjects.writeSerializedObject(headDist, smoothedHeadsFile);
+		System.out.println("Written head distributions...");
 	}
 	
 	public static String[] getCorrespondingHeads(String headFile) {
