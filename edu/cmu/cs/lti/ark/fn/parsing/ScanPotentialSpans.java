@@ -30,11 +30,11 @@ public class ScanPotentialSpans {
 	public static final int SPAN_LENGTH_UPPER_BOUND = 10;
 
 	public static void main(String[] args) {
-		// generateFEStats();
-		// generateSpans();
+		generateFEStats();
+		generateSpans();
 		// generateSpanLengthStats();
 		// generateFEStats();
-		// generateLabeledData();
+		generateLabeledData();
 		generateHeadWords();
 	}
 	
