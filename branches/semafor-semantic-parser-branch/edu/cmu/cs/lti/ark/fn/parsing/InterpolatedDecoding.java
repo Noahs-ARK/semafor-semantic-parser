@@ -96,12 +96,14 @@ public class InterpolatedDecoding extends Decoding {
 				double prob = (1 - mIWeight) * expVal / Z;
 				int[] span = featureArray[j].span;
 				if (span[0] == span[1] && span[0] == -1) {
-					
+					prob += mIWeight * (1.0 / mGS.sortedFEs.length);
 				} else {
 					String stringSpan = getSpan(frameLine, span[0], span[1]);
 					int spanIndex = Arrays.binarySearch(mGS.sortedSpans, stringSpan); 
 					if (spanIndex >= 0) {
 						prob += mIWeight * (mGS.smoothedGraph[spanIndex][feIndex]);
+					} else {
+						prob += mIWeight * (1.0 / mGS.sortedFEs.length);
 					}
 				}
 				if (prob > maxProb) {
