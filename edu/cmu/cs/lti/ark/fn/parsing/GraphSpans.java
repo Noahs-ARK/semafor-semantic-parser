@@ -19,6 +19,10 @@ public class GraphSpans {
 		readSerializedGraphFile(smoothedFile + ".jobj");
 	}
 	
+	public void serialize(String file) {
+		SerializedObjects.writeSerializedObject(this, file);
+	}
+	
 	public void readSerializedGraphFile(String graphSerFile) {
 		System.out.println("Reading serialized graph file.....");
 		smoothedGraph = (float[][])SerializedObjects.readSerializedObject(graphSerFile);
@@ -125,6 +129,8 @@ public class GraphSpans {
 			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/fes.sorted";
 		String smoothedFile =
 			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/smoothed/lp.mu.0.5.nu.0.1.10";
+		String graphFile = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/smoothed/lp.mu.0.5.nu.0.1.10.graph.spans.jobj";
 		GraphSpans gs = new GraphSpans(spansFile, feFile, smoothedFile);
+		gs.serialize(graphFile);
 	}
 }
