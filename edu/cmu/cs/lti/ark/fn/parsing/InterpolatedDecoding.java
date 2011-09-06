@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 
 public class InterpolatedDecoding extends Decoding {
+	
+	private GraphSpans mGS;
+	
 	public InterpolatedDecoding() {
 		
 	}
@@ -13,6 +16,10 @@ public class InterpolatedDecoding extends Decoding {
 			 		 String predictionFile,
 			 		 ArrayList<FrameFeatures> list,
 			 		 ArrayList<String> frameLines) {
-		
+		super.init(modelFile, 
+				  alphabetFile, 
+				  predictionFile, 
+				  list, 
+				  frameLines);
 	}
 }

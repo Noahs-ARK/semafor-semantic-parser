@@ -3,10 +3,16 @@ package edu.cmu.cs.lti.ark.fn.parsing;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
 
-public class GraphSpans {
+public class GraphSpans implements Serializable {
+	
+	/**
+	 * generated id
+	 */
+	private static final long serialVersionUID = 2598933666088212309L;
 	public String[] sortedSpans = null;
 	public String[] sortedFEs = null;
 	public float[][] smoothedGraph = null;
