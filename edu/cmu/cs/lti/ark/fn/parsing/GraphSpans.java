@@ -21,8 +21,8 @@ public class GraphSpans implements Serializable {
 					  String smoothedFile) {
 		readSpansFile(spansFile);
 		readFEFile(feFile);
-		// readAndSerializeSmoothedFile(smoothedFile);
-		readSerializedGraphFile(smoothedFile + ".jobj");
+		readAndSerializeSmoothedFile(smoothedFile);
+		// readSerializedGraphFile(smoothedFile + ".jobj");
 	}
 	
 	public void serialize(String file) {
@@ -120,7 +120,7 @@ public class GraphSpans implements Serializable {
 				}
 			}
 			bReader.close();
-			SerializedObjects.writeSerializedObject(smoothedGraph, smoothedFile + ".jobj");
+			// SerializedObjects.writeSerializedObject(smoothedGraph, smoothedFile + ".jobj");
 		} catch (IOException e) {
 			System.out.println("Could not read smoothed graph.");
 			e.printStackTrace();
@@ -128,7 +128,7 @@ public class GraphSpans implements Serializable {
 		}
 	} 
 	
-	public static void main(String[] args) {
+	public static void test() {
 		String spansFile = 
 			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/all.spans.sorted";
 		String feFile = 
@@ -136,6 +136,15 @@ public class GraphSpans implements Serializable {
 		String smoothedFile =
 			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/smoothed/lp.mu.0.5.nu.0.1.10";
 		String graphFile = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/smoothed/lp.mu.0.5.nu.0.1.10.graph.spans.jobj";
+		GraphSpans gs = new GraphSpans(spansFile, feFile, smoothedFile);
+		gs.serialize(graphFile);
+	}
+	
+	public static void main(String[] args) {
+		String spansFile = args[0];
+		String feFile = args[1];
+		String smoothedFile = args[2];
+		String graphFile = args[3];
 		GraphSpans gs = new GraphSpans(spansFile, feFile, smoothedFile);
 		gs.serialize(graphFile);
 	}
