@@ -14,6 +14,19 @@ import gnu.trove.THashSet;
 
 public class CoarseDistributions {
 	public static void main(String[] args) {
+		String spansFile = args[0];
+		String feFile = args[1];
+		String smoothedFile = args[2];
+		String headFile = args[3];
+		String smoothedHeadsFile = args[4];
+		String[] corrHeads = getCorrespondingHeads(headFile);
+		String[] sortedUniqueHeads = getSortedUniqueHeads(headFile);
+		System.out.println("Total number of unique heads: " + sortedUniqueHeads.length);
+		GraphSpans gs = new GraphSpans(spansFile, feFile, smoothedFile);
+		findHeadDistributions(corrHeads, sortedUniqueHeads, gs, smoothedHeadsFile);
+	}
+	
+	public static void test() {
 		String datadir = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012";
 		String spansFile = 
 			datadir + "/all.spans.sorted";
