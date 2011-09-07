@@ -39,9 +39,9 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 		mSortedUniqueHeads = CoarseDistributions.getSortedUniqueHeads(headsFile);
 		System.out.println("Reading distributions over heads " + headsSerFile);
 		mHeadDist = (float[][]) SerializedObjects.readSerializedObject(headsSerFile);
-		modifyHeadDist();
 		System.out.println("Reading sorted FEs");
 		readFEFile(feFile); 
+		modifyHeadDist();
 		mIWeight = interpolationWeight;
 	}
 	
