@@ -78,52 +78,34 @@ public class InterpolatedDecoding extends Decoding {
 			int featArrLen = featureArray.length;
 			int maxIndex = -1;
 			double maxProb = -Double.MAX_VALUE;
-			double Z1 = 0.0;
+			double Z = 0.0;
+			for(int j = 0; j < featArrLen; j ++)
+			{
+				int[] feats = featureArray[j].features;
+				double weightSum=getWeightSum(feats);
+				double expVal = Math.exp(weightSum);
+				Z += expVal;
+			}
 			String fe = frameElements.get(i);
 			int feIndex = Arrays.binarySearch(mGS.sortedFEs, fe);
-			double Z2 = 0.0;
-			for(int j = 0; j < featArrLen; j ++) {
+			for(int j = 0; j < featArrLen; j ++)
+			{
 				int[] feats = featureArray[j].features;
-				double weightSum1 =getWeightSum(feats);
-				double expVal1 = Math.exp(weightSum1);
-				Z1 += expVal1;
+				double weightSum=getWeightSum(feats);
+				double expVal = Math.exp(weightSum);
+				double prob = (1 - mIWeight) * expVal / Z;
 				int[] span = featureArray[j].span;
-				double weightSum2 = 0.0;
 				if (span[0] == span[1] && span[0] == -1) {
-					weightSum2 = 1.0 / mGS.sortedFEs.length;
+					prob += mIWeight * (1.0 / mGS.sortedFEs.length);
 				} else {
 					String stringSpan = getSpan(frameLine, span[0], span[1]);
 					int spanIndex = Arrays.binarySearch(mGS.sortedSpans, stringSpan); 
 					if (spanIndex >= 0) {
-						weightSum2 = mGS.smoothedGraph[spanIndex][feIndex];
+						prob += mIWeight * (mGS.smoothedGraph[spanIndex][feIndex]);
 					} else {
-						weightSum2 = 1.0 / mGS.sortedFEs.length;
+						prob += mIWeight * (1.0 / mGS.sortedFEs.length);
 					}
 				}
-				double expVal2 = Math.exp(weightSum2);
-				Z2 += expVal2;
-			}
-			for(int j = 0; j < featArrLen; j ++) {
-				int[] feats = featureArray[j].features;
-				double weightSum1 =getWeightSum(feats);
-				double expVal1 = Math.exp(weightSum1);
-				double prob1 = expVal1 / Z1;
-				int[] span = featureArray[j].span;
-				double weightSum2 = 0.0;
-				if (span[0] == span[1] && span[0] == -1) {
-					weightSum2 = 1.0 / mGS.sortedFEs.length;
-				} else {
-					String stringSpan = getSpan(frameLine, span[0], span[1]);
-					int spanIndex = Arrays.binarySearch(mGS.sortedSpans, stringSpan); 
-					if (spanIndex >= 0) {
-						weightSum2 = mGS.smoothedGraph[spanIndex][feIndex];
-					} else {
-						weightSum2 = 1.0 / mGS.sortedFEs.length;
-					}
-				}
-				double expVal2 = Math.exp(weightSum2);
-				double prob2 = expVal2 / Z2;
-				double prob = (1 - mIWeight) * prob1 + mIWeight * prob2;
 				if (prob > maxProb) {
 					maxProb = prob;
 					maxIndex = j;
