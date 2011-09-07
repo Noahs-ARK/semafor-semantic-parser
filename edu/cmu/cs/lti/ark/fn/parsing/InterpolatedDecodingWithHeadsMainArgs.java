@@ -22,15 +22,17 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
+import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 
 
 public class InterpolatedDecodingWithHeadsMainArgs
 {
 	public static void main(String[] args)
 	{
-		InterpolatedDecoding bpd = new InterpolatedDecoding();
+		InterpolatedDecodingWithHeads bpd = new InterpolatedDecodingWithHeads();
 		String modelFile = args[0];
 		String alphabetFile = args[1];
 		String eventsFile = args[2];
@@ -40,8 +42,10 @@ public class InterpolatedDecodingWithHeadsMainArgs
 		String overlap = args[6];
 		String parseFile = args[7];
 		double interpolationWeight = new Double(args[8]);
-		String graphSpansFile = args[9];
-		String[][] toks = getToks(parseFile);
+		String headsSerFile = args[9];
+		String headsFile = args[10];
+		String feFile = args[11];		
+		DependencyParse[][] parses = getParses(parseFile);
 		LocalFeatureReading lfr = new LocalFeatureReading(eventsFile, spanFile, frFile);
 		try
 		{
@@ -58,25 +62,41 @@ public class InterpolatedDecodingWithHeadsMainArgs
 				predictionFile,
 				list,
 				ParsePreparation.readSentencesFromFile(frFile),
-				graphSpansFile,
-				interpolationWeight
+				headsSerFile,
+		 		headsFile,
+		 		feFile,
+		 		interpolationWeight
 				);
-		bpd.setSentences(toks);
+		bpd.setParses(parses);
 		bpd.decodeAll(overlap, 0);		
 	}
 	
-	public static String[][] getToks(String parseFile) {
+	public static DependencyParse[][] getParses(String parseFile) {
 		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
 		int num = parses.size();
-		String[][] toks = new String[num][];
+		DependencyParse[][] parseS = new DependencyParse[num][];
 		for (int i = 0; i < num; i++) {
-			String[] tokens = parses.get(i).split("\t");
-			int numToks = new Integer(tokens[0]);
-			toks[i] = new String[numToks];
-			for (int j = 1; j < numToks + 1; j++) {
-				toks[i][j-1] = tokens[j];  
-			}
+			StringTokenizer st = new StringTokenizer(parses.get(i),"\t");
+			int tokensInFirstSent = new Integer(st.nextToken());
+			String[][] data = new String[5][tokensInFirstSent];
+			for(int k = 0; k < 5; k ++) {
+				data[k]=new String[tokensInFirstSent];
+				for(int l = 0; l < tokensInFirstSent; l++) {
+					String tok = st.nextToken().trim();
+					if (k == 0) {
+						if (tok.equals("-LRB-")) { tok = "("; }
+						if (tok.equals("-RRB-")) { tok = ")"; }
+						if (tok.equals("-RSB-")) { tok = "]"; }
+						if (tok.equals("-LSB-")) { tok = "["; }
+						if (tok.equals("-LCB-")) { tok = "{"; }
+						if (tok.equals("-RCB-")) { tok = "}"; }
+					}
+					data[k][l]=""+tok;
+				}
+			}	
+			DependencyParse parse = DependencyParse.processFN(data, 0.0);
+			parseS[i] = DependencyParse.getIndexSortedListOfNodes(parse);
 		}
-		return toks;
+		return parseS;
 	}
 }

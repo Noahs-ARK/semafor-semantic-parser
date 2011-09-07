@@ -1,15 +1,21 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
+import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 
 
 public class InterpolatedDecodingWithHeads extends Decoding {
-	private GraphSpans mGS;
+	private float[][] mHeadDist;
+	private String[] mSortedUniqueHeads;
+	private String[] mSortedFEs;
 	private double mIWeight;
-	private String[][] mToks;
+	private DependencyParse[][] mParses;
 	
 	public InterpolatedDecodingWithHeads() {
 		
@@ -20,40 +26,71 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 			 		 String predictionFile,
 			 		 ArrayList<FrameFeatures> list,
 			 		 ArrayList<String> frameLines,
-			 		 String graphSpansFile,
+			 		 String headsSerFile,
+			 		 String headsFile,
+			 		 String feFile,
 			 		 double interpolationWeight) {
 		super.init(modelFile, 
 				  alphabetFile, 
 				  predictionFile, 
 				  list, 
 				  frameLines);
-		System.out.println("Reading graph spans file from: " + graphSpansFile);
-		mGS = (GraphSpans) SerializedObjects.readSerializedObject(graphSpansFile);
-		System.out.println("Finished reading graph spans file.");
+		System.out.println("Reading sorted heads...");
+		mSortedUniqueHeads = CoarseDistributions.getSortedUniqueHeads(headsFile);
+		System.out.println("Reading distributions over heads " + headsSerFile);
+		mHeadDist = (float[][]) SerializedObjects.readSerializedObject(headsSerFile);
+		System.out.println("Reading sorted FEs");
+		readFEFile(feFile); 
 		mIWeight = interpolationWeight;
 	}
 	
-	public void setSentences(String[][] toks) {
-		mToks = toks;
+	public void readFEFile(String feFile) {
+		int count = 0;
+		System.out.println("Reading fe file...");
+		String line = null;
+		try {
+			BufferedReader bReader = new BufferedReader(new FileReader(feFile));
+			while ((line = bReader.readLine()) != null) {
+				count++;
+			}
+			bReader.close();
+		} catch (IOException e) {
+			System.out.println("Could not read file: " + feFile);
+			System.exit(-1);
+		}
+		System.out.println("Total number of fes: " + count);
+		mSortedFEs = new String[count];
+		count = 0;
+		try {
+			BufferedReader bReader = new BufferedReader(new FileReader(feFile));
+			while ((line = bReader.readLine()) != null) {
+				line = line.trim();
+				mSortedFEs[count] = line;
+				count++;
+			}
+			bReader.close();
+		} catch (IOException e) {
+			System.out.println("Could not read file: " + feFile);
+			System.exit(-1);
+		}
+		System.out.println("Stored FEs.");
 	}
 	
-	public String getSpan(String frameLine, int istart, int iend) {
+	public void setParses(DependencyParse[][] parses) {
+		mParses = parses;
+	}
+	
+	public String getHead(String frameLine, int istart, int iend) {
 		String[] frameToks = frameLine.split("\t");
 		int sentNum = new Integer(frameToks[5]);
-		String span = "";
-		for (int i = istart; i <= iend; i++) {
-			String tok = mToks[sentNum][i];
-			if (tok.equals("-LRB-")) { tok = "("; }
-			if (tok.equals("-RRB-")) { tok = ")"; }
-			if (tok.equals("-RSB-")) { tok = "]"; }
-			if (tok.equals("-LSB-")) { tok = "["; }
-			if (tok.equals("-LCB-")) { tok = "{"; }
-			if (tok.equals("-RCB-")) { tok = "}"; }
-			span += tok + " ";
+		int[] tokNums = new int[iend - istart + 1];
+		for (int m = istart; m <= iend; m++) {
+			tokNums[m-istart] = m;
 		}
-		span = span.trim().toLowerCase();
-		span = ScanPotentialSpans.replaceNumbersWithAt(span.trim());
-		return span;
+		DependencyParse head = DependencyParse.getHeuristicHead(mParses[sentNum], tokNums);
+		String hw = head.getWord().toLowerCase();
+		hw = ScanPotentialSpans.replaceNumbersWithAt(hw);
+		return hw;
 	}
 	
 	public String getDecision(FrameFeatures mFF, 
@@ -87,7 +124,7 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 				Z += expVal;
 			}
 			String fe = frameElements.get(i);
-			int feIndex = Arrays.binarySearch(mGS.sortedFEs, fe);
+			int feIndex = Arrays.binarySearch(mSortedFEs, fe);
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
@@ -96,14 +133,14 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 				double prob = (1 - mIWeight) * expVal / Z;
 				int[] span = featureArray[j].span;
 				if (span[0] == span[1] && span[0] == -1) {
-					prob += mIWeight * (1.0 / mGS.sortedFEs.length);
+					prob += mIWeight * (1.0 / mSortedFEs.length);
 				} else {
-					String stringSpan = getSpan(frameLine, span[0], span[1]);
-					int spanIndex = Arrays.binarySearch(mGS.sortedSpans, stringSpan); 
-					if (spanIndex >= 0) {
-						prob += mIWeight * (mGS.smoothedGraph[spanIndex][feIndex]);
+					String head = getHead(frameLine, span[0], span[1]);
+					int headIndex = Arrays.binarySearch(mSortedUniqueHeads, head); 
+					if (headIndex >= 0) {
+						prob += mIWeight * (mHeadDist[headIndex][feIndex]);
 					} else {
-						prob += mIWeight * (1.0 / mGS.sortedFEs.length);
+						prob += mIWeight * (1.0 / mSortedFEs.length);
 					}
 				}
 				if (prob > maxProb) {
