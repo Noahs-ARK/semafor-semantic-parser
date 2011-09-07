@@ -39,9 +39,29 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 		mSortedUniqueHeads = CoarseDistributions.getSortedUniqueHeads(headsFile);
 		System.out.println("Reading distributions over heads " + headsSerFile);
 		mHeadDist = (float[][]) SerializedObjects.readSerializedObject(headsSerFile);
+		modifyHeadDist();
 		System.out.println("Reading sorted FEs");
 		readFEFile(feFile); 
 		mIWeight = interpolationWeight;
+	}
+	
+	public void modifyHeadDist() {
+		int len = mHeadDist.length;
+		for (int i = 0; i < len; i++) {
+			double min = Double.MAX_VALUE;
+			double max = - Double.MAX_VALUE;
+			for (int j = 0; j < mSortedFEs.length; j++) {
+				if (mHeadDist[i][j] > max) {
+					max = mHeadDist[i][j];
+				}
+				if (mHeadDist[i][j] < min) {
+					min = mHeadDist[i][j];
+				}
+			}
+			for (int j = 0; j < mSortedFEs.length; j++) {
+				mHeadDist[i][j] /= (max - min);
+			}
+		}
 	}
 	
 	public void readFEFile(String feFile) {
