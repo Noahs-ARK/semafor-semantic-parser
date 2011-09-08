@@ -16,6 +16,7 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 	private String[] mSortedFEs;
 	private double mIWeight;
 	private DependencyParse[][] mParses;
+	private double avg;
 	
 	public InterpolatedDecodingWithHeads() {
 		
@@ -47,6 +48,7 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 	
 	public void modifyHeadDist() {
 		int len = mHeadDist.length;
+		double avg = 0.0;
 		for (int i = 0; i < len; i++) {
 			double min = Double.MAX_VALUE;
 			double max = - Double.MAX_VALUE;
@@ -60,6 +62,7 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 			}
 			for (int j = 0; j < mSortedFEs.length; j++) {
 				mHeadDist[i][j] /= (max - min);
+				avg += (1.0 / len*mSortedFEs.length) * mHeadDist[i][j];
 			}
 		}
 	}
@@ -153,14 +156,16 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 				double prob = (1 - mIWeight) * expVal / Z;
 				int[] span = featureArray[j].span;
 				if (span[0] == span[1] && span[0] == -1) {
-					prob += mIWeight * (1.0 / mSortedFEs.length);
+					// prob += mIWeight * (1.0 / mSortedFEs.length);
+					prob += mIWeight * avg;
 				} else {
 					String head = getHead(frameLine, span[0], span[1]);
 					int headIndex = Arrays.binarySearch(mSortedUniqueHeads, head); 
 					if (headIndex >= 0) {
 						prob += mIWeight * (mHeadDist[headIndex][feIndex]);
 					} else {
-						prob += mIWeight * (1.0 / mSortedFEs.length);
+						// prob += mIWeight * (1.0 / mSortedFEs.length);
+						prob += mIWeight * avg;
 					}
 				}
 				if (prob > maxProb) {
