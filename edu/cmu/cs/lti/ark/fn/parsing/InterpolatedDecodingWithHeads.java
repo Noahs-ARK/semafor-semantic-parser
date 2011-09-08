@@ -60,6 +60,8 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 					min = mHeadDist[i][j];
 				}
 			}
+			System.out.println("Max: " + max);
+			System.out.println("Min: " + min);
 			for (int j = 0; j < mSortedFEs.length; j++) {
 				if (max != min) {
 					 mHeadDist[i][j] = mHeadDist[i][j] / (float)(max - min);
