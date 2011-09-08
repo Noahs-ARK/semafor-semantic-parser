@@ -51,7 +51,9 @@ public class InterpolatedDecoding extends Decoding {
 				}
 			}
 			for (int j = 0; j < flen; j++) {
-				mGS.smoothedGraph[i][j] /= (max - min);
+				if (max != min) {
+					mGS.smoothedGraph[i][j] /= (max - min);
+				}
 				avg += (1.0 / len*mGS.smoothedGraph.length) * mGS.smoothedGraph[i][j];
 			}
 		}
