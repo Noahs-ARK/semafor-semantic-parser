@@ -64,8 +64,6 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 					flag2 = true;
 				}
 			}
-			System.out.println("Max: " + max);
-			System.out.println("Min: " + min);
 			if (!flag1 && !flag2) {
 				System.out.println("Problem with distribution.");
 				for (int j = 0; j < mSortedFEs.length; j++) {
@@ -78,9 +76,8 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 				if (max != min) {
 					 mHeadDist[i][j] = mHeadDist[i][j] / (float)(max - min);
 				}
+				avg += mHeadDist[i][j] / (float) mSortedFEs.length;
 			}
-			avg += ((max - min) / 2.0);
-			System.out.println("Average: " + avg);
 		}
 		avg = avg / (double) len;
 		System.out.println("Average component weight: " + avg);
