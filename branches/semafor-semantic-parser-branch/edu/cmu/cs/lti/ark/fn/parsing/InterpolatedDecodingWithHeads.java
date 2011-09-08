@@ -61,8 +61,10 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 				}
 			}
 			for (int j = 0; j < mSortedFEs.length; j++) {
-				mHeadDist[i][j] /= (max - min);
-				avg += (1.0 / len*mSortedFEs.length) * mHeadDist[i][j];
+				if (max != min) {
+					 mHeadDist[i][j] = mHeadDist[i][j] / (float)(max - min);
+				}
+				avg += (1.0 / (double)len * (double)mSortedFEs.length) * mHeadDist[i][j];
 			}
 		}
 	}
