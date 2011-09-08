@@ -61,6 +61,16 @@ public class CoarseDistributions {
 		for (int i = 0; i < sortedSpans.length; i++) {
 			String corrHead = corrHeads[i];
 			int index = Arrays.binarySearch(sortedUniqueHeads, corrHead);
+			if (corrHead.contains("lfm")) {
+				System.out.println("Index: " + index);
+				System.out.println("String in sortedUniqueHeads: " + sortedUniqueHeads[index]);
+				float sum = 0;
+				for (int j = 0; j < numFEs; j++) {
+					sum += graph[i][j];
+				}
+				System.out.println("Sum of weights: " + sum);
+				System.exit(-1);
+			}
 			if (headDist[index] == null) {
 				headDist[index] = new float[numFEs];
 				for (int j = 0; j < numFEs; j++) {
