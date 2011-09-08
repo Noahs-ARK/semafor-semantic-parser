@@ -64,6 +64,8 @@ public class CoarseDistributions {
 			if (corrHead.contains("lfm")) {
 				System.out.println("Index: " + index);
 				System.out.println("String in sortedUniqueHeads: " + sortedUniqueHeads[index]);
+				System.out.println("Corrhead: " + corrHead);
+				System.out.println("Span: " + sortedSpans[i]);
 				float sum = 0;
 				for (int j = 0; j < numFEs; j++) {
 					sum += graph[i][j];
