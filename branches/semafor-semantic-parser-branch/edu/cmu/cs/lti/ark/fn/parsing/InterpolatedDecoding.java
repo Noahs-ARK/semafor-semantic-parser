@@ -54,9 +54,10 @@ public class InterpolatedDecoding extends Decoding {
 				if (max != min) {
 					mGS.smoothedGraph[i][j] /= (max - min);
 				}
-				avg += (1.0 / len*mGS.smoothedGraph.length) * mGS.smoothedGraph[i][j];
+				avg += (1.0 / (float)flen * (float)mGS.smoothedGraph.length) * mGS.smoothedGraph[i][j];
 			}
 		}
+		System.out.println("Average: " + avg);
 	}
 	
 	public void setSentences(String[][] toks) {
