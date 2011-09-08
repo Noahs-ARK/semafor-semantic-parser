@@ -61,18 +61,6 @@ public class CoarseDistributions {
 		for (int i = 0; i < sortedSpans.length; i++) {
 			String corrHead = corrHeads[i];
 			int index = Arrays.binarySearch(sortedUniqueHeads, corrHead);
-			if (corrHead.contains("lfm")) {
-				System.out.println("Index: " + index);
-				System.out.println("String in sortedUniqueHeads: " + sortedUniqueHeads[index]);
-				System.out.println("Corrhead: " + corrHead);
-				System.out.println("Span: " + sortedSpans[i]);
-				float sum = 0;
-				for (int j = 0; j < numFEs; j++) {
-					sum += graph[i][j];
-				}
-				System.out.println("Sum of weights: " + sum);
-				System.exit(-1);
-			}
 			if (headDist[index] == null) {
 				headDist[index] = new float[numFEs];
 				for (int j = 0; j < numFEs; j++) {
@@ -90,20 +78,11 @@ public class CoarseDistributions {
 		System.out.println("Normalizing head distributions...");
 		for (int i = 0; i < numUniqueHeads; i++) {
 			float sum = 0;
-			if (sortedUniqueHeads[i].contains("lfm")) {
-				System.out.println("Found: " + sortedUniqueHeads[i]);
-				for (int j = 0; j < numFEs; j++) {
-					System.out.println(headDist[i][j]);
-				}
-			}
 			for (int j = 0; j < numFEs; j++) {
 				sum += headDist[i][j];
 			}
 			for (int j = 0; j < numFEs; j++) {
 				headDist[i][j] /= sum;
-			}
-			if (sortedUniqueHeads[i].contains("lfm")) {
-				System.out.println(sum);
 			}
 		}
 		SerializedObjects.writeSerializedObject(headDist, smoothedHeadsFile);
