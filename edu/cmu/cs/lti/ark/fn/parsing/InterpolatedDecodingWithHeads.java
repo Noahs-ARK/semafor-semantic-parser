@@ -64,10 +64,13 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 				if (max != min) {
 					 mHeadDist[i][j] = mHeadDist[i][j] / (float)(max - min);
 				}
-				avg += (1.0 / (double)len * (double)mSortedFEs.length) * mHeadDist[i][j];
+				avg += (double)mHeadDist[i][j] / ((double) len * (double) mSortedFEs.length);
 			}
 		}
 		System.out.println("Average component weight: " + avg);
+		if (true) {
+			System.exit(-1);
+		}
 	}
 	
 	public void readFEFile(String feFile) {
