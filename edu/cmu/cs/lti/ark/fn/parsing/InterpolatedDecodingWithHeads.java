@@ -66,7 +66,7 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 				if (max != min) {
 					 mHeadDist[i][j] = mHeadDist[i][j] / (float)(max - min);
 				}
-				avg += (double)mHeadDist[i][j] / ((double) len * (double) mSortedFEs.length);
+				avg += (double)mHeadDist[i][j] / ((double) mSortedFEs.length);
 			}
 		}
 		System.out.println("Average component weight: " + avg);
