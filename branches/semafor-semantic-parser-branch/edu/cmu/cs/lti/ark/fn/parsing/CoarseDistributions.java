@@ -84,6 +84,13 @@ public class CoarseDistributions {
 			for (int j = 0; j < numFEs; j++) {
 				headDist[i][j] /= sum;
 			}
+			if (sortedUniqueHeads[i].contains("lfm")) {
+				System.out.println("Found: " + sortedUniqueHeads[i]);
+				for (int j = 0; j < numFEs; j++) {
+					System.out.println(headDist[i][j]);
+				}
+				System.out.println(sum);
+			}
 		}
 		SerializedObjects.writeSerializedObject(headDist, smoothedHeadsFile);
 		System.out.println("Written head distributions...");
