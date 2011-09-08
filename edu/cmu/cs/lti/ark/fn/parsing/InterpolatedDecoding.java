@@ -10,6 +10,7 @@ public class InterpolatedDecoding extends Decoding {
 	private GraphSpans mGS;
 	private double mIWeight;
 	private String[][] mToks;
+	private double avg;
 	
 	public InterpolatedDecoding() {
 		
@@ -31,6 +32,28 @@ public class InterpolatedDecoding extends Decoding {
 		mGS = (GraphSpans) SerializedObjects.readSerializedObject(graphSpansFile);
 		System.out.println("Finished reading graph spans file.");
 		mIWeight = interpolationWeight;
+	}
+	
+	public void modifyHeadDist() {
+		int len = mGS.smoothedGraph.length;
+		int flen = mGS.smoothedGraph[0].length;
+		avg = 0.0;
+		for (int i = 0; i < len; i++) {
+			double min = Double.MAX_VALUE;
+			double max = - Double.MAX_VALUE;
+			for (int j = 0; j < flen; j++) {
+				if (mGS.smoothedGraph[i][j] > max) {
+					max = mGS.smoothedGraph[i][j];
+				}
+				if (mGS.smoothedGraph[i][j] < min) {
+					min = mGS.smoothedGraph[i][j];
+				}
+			}
+			for (int j = 0; j < flen; j++) {
+				mGS.smoothedGraph[i][j] /= (max - min);
+				avg += (1.0 / len*mGS.smoothedGraph.length) * mGS.smoothedGraph[i][j];
+			}
+		}
 	}
 	
 	public void setSentences(String[][] toks) {
@@ -96,14 +119,16 @@ public class InterpolatedDecoding extends Decoding {
 				double prob = (1 - mIWeight) * expVal / Z;
 				int[] span = featureArray[j].span;
 				if (span[0] == span[1] && span[0] == -1) {
-					prob += mIWeight * (1.0 / mGS.sortedFEs.length);
+					// prob += mIWeight * (1.0 / mGS.sortedFEs.length);
+					prob += mIWeight * avg;
 				} else {
 					String stringSpan = getSpan(frameLine, span[0], span[1]);
 					int spanIndex = Arrays.binarySearch(mGS.sortedSpans, stringSpan); 
 					if (spanIndex >= 0) {
 						prob += mIWeight * (mGS.smoothedGraph[spanIndex][feIndex]);
 					} else {
-						prob += mIWeight * (1.0 / mGS.sortedFEs.length);
+						// prob += mIWeight * (1.0 / mGS.sortedFEs.length);
+						prob += mIWeight * avg;
 					}
 				}
 				if (prob > maxProb) {
