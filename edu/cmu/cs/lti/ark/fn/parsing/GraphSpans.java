@@ -100,7 +100,7 @@ public class GraphSpans implements Serializable {
 	}
 	
 	public void readAndSerializeSmoothedFile(String smoothedFile) {
-		smoothedGraph = new float[sortedSpans.length][sortedFEs.length];
+		smoothedGraph = new float[sortedSpans.length][];
 		String line = null;
 		try {
 			BufferedReader bReader = new BufferedReader(new FileReader(smoothedFile));
@@ -108,8 +108,24 @@ public class GraphSpans implements Serializable {
 			while ((line = bReader.readLine()) != null) {
 				String[] toks = line.trim().split("\t");
 				int index = new Integer(toks[0]);
+				float sum = 0;
+				if (toks.length - 1 != sortedFEs.length) {
+					System.out.println("Problem with index: " + index);
+					System.out.println("Span: " + sortedSpans[index]);
+					System.out.println("Number of toks: " + (toks.length - 1));
+					System.exit(-1);
+				}
+				smoothedGraph[index] = new float[sortedFEs.length];
 				for (int i = 1; i < toks.length; i++) {
 					smoothedGraph[index][i-1] = new Float(toks[i]);
+					sum += smoothedGraph[index][i-1];
+				}
+				if (sum == 0) {
+					System.out.println("Problem with sum. " +
+							"index: " + index);
+					System.out.println("Span: " + sortedSpans[index]);
+					System.out.println("Number of toks: " + (toks.length - 1));
+					System.exit(-1);
 				}
 				count++;
 				if (count % 10000 == 0) {
