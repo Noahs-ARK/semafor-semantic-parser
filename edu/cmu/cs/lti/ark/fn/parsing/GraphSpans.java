@@ -110,7 +110,7 @@ public class GraphSpans implements Serializable {
 				int index = new Integer(toks[0]);
 				float sum = 0;
 				if (toks.length - 1 != sortedFEs.length) {
-					System.out.println("Problem with index: " + index);
+					System.out.println("\nProblem with index: " + index);
 					System.out.println("Span: " + sortedSpans[index]);
 					System.out.println("Number of toks: " + (toks.length - 1));
 					System.exit(-1);
@@ -121,11 +121,13 @@ public class GraphSpans implements Serializable {
 					sum += smoothedGraph[index][i-1];
 				}
 				if (sum == 0) {
-					System.out.println("Problem with sum. " +
+					System.out.println("\nProblem with sum. " +
 							"index: " + index);
 					System.out.println("Span: " + sortedSpans[index]);
 					System.out.println("Number of toks: " + (toks.length - 1));
-					System.exit(-1);
+					for (int i = 1; i < toks.length; i++) {
+						smoothedGraph[index][i-1] = (float) 1.0 / (float) sortedFEs.length;
+					}
 				}
 				count++;
 				if (count % 10000 == 0) {
