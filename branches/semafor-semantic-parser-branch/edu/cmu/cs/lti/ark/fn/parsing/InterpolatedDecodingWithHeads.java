@@ -48,7 +48,7 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 	
 	public void modifyHeadDist() {
 		int len = mHeadDist.length;
-		double avg = 0.0;
+		avg = 0.0;
 		for (int i = 0; i < len; i++) {
 			double min = Double.MAX_VALUE;
 			double max = - Double.MAX_VALUE;
