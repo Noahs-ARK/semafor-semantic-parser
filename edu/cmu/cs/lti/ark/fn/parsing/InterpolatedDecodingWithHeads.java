@@ -52,16 +52,27 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 		for (int i = 0; i < len; i++) {
 			double min = Double.MAX_VALUE;
 			double max = - Double.MAX_VALUE;
+			boolean flag1 = false;
+			boolean flag2 = false;
 			for (int j = 0; j < mSortedFEs.length; j++) {
 				if (mHeadDist[i][j] > max) {
 					max = mHeadDist[i][j];
+					flag1 = true;
 				}
 				if (mHeadDist[i][j] < min) {
 					min = mHeadDist[i][j];
+					flag2 = true;
 				}
 			}
 			System.out.println("Max: " + max);
 			System.out.println("Min: " + min);
+			if (!flag1 && !flag2) {
+				System.out.println("Problem with distribution.");
+				for (int j = 0; j < mSortedFEs.length; j++) {
+					System.out.println(mHeadDist[i][j]);
+				}
+				System.exit(-1);
+			}
 			for (int j = 0; j < mSortedFEs.length; j++) {
 				if (max != min) {
 					 mHeadDist[i][j] = mHeadDist[i][j] / (float)(max - min);
