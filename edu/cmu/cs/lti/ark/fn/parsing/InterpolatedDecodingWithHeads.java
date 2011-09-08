@@ -71,6 +71,7 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 				for (int j = 0; j < mSortedFEs.length; j++) {
 					System.out.println(mHeadDist[i][j]);
 				}
+				System.out.println(mSortedUniqueHeads[i]);
 				System.exit(-1);
 			}
 			for (int j = 0; j < mSortedFEs.length; j++) {
