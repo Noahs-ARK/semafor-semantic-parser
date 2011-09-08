@@ -66,8 +66,7 @@ public class ScrapTest {
 			for(int k = 0; k < 5; k ++)
 			{
 				data[k]=new String[tokensInFirstSent];
-				for(int j = 0; j < tokensInFirstSent; j ++)
-				{
+				for(int j = 0; j < tokensInFirstSent; j ++) {
 					data[k][j]=""+st.nextToken().trim();
 				}
 			}
