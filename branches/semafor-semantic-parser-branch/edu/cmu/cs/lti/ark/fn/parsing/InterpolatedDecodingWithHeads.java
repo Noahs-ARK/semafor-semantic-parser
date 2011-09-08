@@ -81,9 +81,6 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 		}
 		avg = avg / (double) len;
 		System.out.println("Average component weight: " + avg);
-		if (true) {
-			System.exit(-1);
-		}
 	}
 	
 	public void readFEFile(String feFile) {
