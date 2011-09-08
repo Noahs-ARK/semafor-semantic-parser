@@ -68,6 +68,7 @@ public class InterpolatedDecodingWithHeads extends Decoding {
 				}
 			}
 			avg += ((max - min) / 2.0);
+			System.out.println("Average: " + avg);
 		}
 		avg = avg / (double) len;
 		System.out.println("Average component weight: " + avg);
