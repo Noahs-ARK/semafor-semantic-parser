@@ -50,21 +50,18 @@ public class InterpolatedDecoding extends Decoding {
 					min = mGS.smoothedGraph[i][j];
 				}
 			}
-			System.out.println("Max: " + max);
-			System.out.println("Min: " + min);
+			// System.out.println("Max: " + max);
+			// System.out.println("Min: " + min);
 			for (int j = 0; j < flen; j++) {
 				if (max != min) {
 					mGS.smoothedGraph[i][j] = mGS.smoothedGraph[i][j] / (float)(max - min);
 				}
 				avg += mGS.smoothedGraph[i][j] / (float) flen;
 			}
-			System.out.println("Average: " + avg);
+			// System.out.println("Average: " + avg);
 		}
 		avg = avg / (double) len;
 		System.out.println("Average component weight: " + avg);
-		if (true) {
-			System.exit(-1);
-		}
 	}
 	
 	public void setSentences(String[][] toks) {
