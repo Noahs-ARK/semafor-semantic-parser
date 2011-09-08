@@ -78,6 +78,12 @@ public class CoarseDistributions {
 		System.out.println("Normalizing head distributions...");
 		for (int i = 0; i < numUniqueHeads; i++) {
 			float sum = 0;
+			if (sortedUniqueHeads[i].contains("lfm")) {
+				System.out.println("Found: " + sortedUniqueHeads[i]);
+				for (int j = 0; j < numFEs; j++) {
+					System.out.println(headDist[i][j]);
+				}
+			}
 			for (int j = 0; j < numFEs; j++) {
 				sum += headDist[i][j];
 			}
@@ -85,10 +91,6 @@ public class CoarseDistributions {
 				headDist[i][j] /= sum;
 			}
 			if (sortedUniqueHeads[i].contains("lfm")) {
-				System.out.println("Found: " + sortedUniqueHeads[i]);
-				for (int j = 0; j < numFEs; j++) {
-					System.out.println(headDist[i][j]);
-				}
 				System.out.println(sum);
 			}
 		}
