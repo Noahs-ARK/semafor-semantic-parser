@@ -31,6 +31,7 @@ public class InterpolatedDecoding extends Decoding {
 		System.out.println("Reading graph spans file from: " + graphSpansFile);
 		mGS = (GraphSpans) SerializedObjects.readSerializedObject(graphSpansFile);
 		System.out.println("Finished reading graph spans file.");
+		modifyHeadDist();
 		mIWeight = interpolationWeight;
 	}
 	
