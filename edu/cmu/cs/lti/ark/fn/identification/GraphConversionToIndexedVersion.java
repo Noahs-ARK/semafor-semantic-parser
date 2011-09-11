@@ -22,7 +22,7 @@ public class GraphConversionToIndexedVersion {
 			}			
 		};
 		String[] files = inputDir.list(filter);
-		String[] sortedTypes = getSortedListOfTypes(files[0]);
+		String[] sortedTypes = getSortedListOfTypes(inputDir + "/" + files[0]);
 		writeSortedTypes(outputGraphPath + "/sorted.types", sortedTypes);
 		for (int i = 0; i < files.length; i++) {
 			writeConvertedFile(inputGraphPath, outputGraphPath, files[i], sortedTypes);
