@@ -32,7 +32,7 @@ public class GraphConversionToIndexedVersion {
 										  String outputDir, 
 										  String fileName) {
 		String[] sortedTypes = getSortedListOfTypes(inputDir + "/" + fileName);
-		writeSortedTypes(outputDir + "/sorted.types.fileName", sortedTypes);
+		writeSortedTypes(outputDir + "/sorted.types." + fileName, sortedTypes);
 		try {
 			BufferedReader bReader = new BufferedReader(new FileReader(inputDir + "/" + fileName));
 			String line = null;
@@ -48,10 +48,10 @@ public class GraphConversionToIndexedVersion {
 					System.exit(-1);
 				}
 				lines[index] = index + "";
-				for (int i = 1; i < toks.length; i = i + 1) {
+				for (int i = 1; i < toks.length; i = i + 2) {
 					int index1 = Arrays.binarySearch(sortedTypes, toks[i]);
 					if (index1 < 0) {
-						System.out.println("1. Problem with type: " + toks[1]);
+						System.out.println("1. Problem with type: " + toks[i]);
 						System.exit(-1);
 					}
 					double val = new Double(toks[i+1]);
