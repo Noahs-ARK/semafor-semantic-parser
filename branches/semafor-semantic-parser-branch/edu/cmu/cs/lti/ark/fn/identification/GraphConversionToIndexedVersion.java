@@ -75,6 +75,7 @@ public class GraphConversionToIndexedVersion {
 			for (int i = 0; i < frames.size(); i++) {
 				frameArr[i] = frames.get(i).trim();
 			}
+			Arrays.sort(frameArr);
 			System.out.println("Number of frames: " + frameArr.length);
 			String labeledPredicatesFile = "labeled.predicates";
 			bReader =  new BufferedReader(new FileReader(inputDir + "/" + labeledPredicatesFile));
@@ -89,7 +90,7 @@ public class GraphConversionToIndexedVersion {
 					String outLine = index + "";
 					for (int i = 1; i < toks.length; i = i + 2) {
 						String frame = toks[i];
-						System.out.println(toks[i] + "\t" + toks[i+1]);
+						// System.out.println(toks[i] + "\t" + toks[i+1]);
 						int fIndex = Arrays.binarySearch(frameArr, frame);
 						if (fIndex < 0) {
 							System.out.println("Problem with frame: " + frame +". Not in list.");
