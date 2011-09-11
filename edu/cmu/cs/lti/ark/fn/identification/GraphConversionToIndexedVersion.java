@@ -49,7 +49,7 @@ public class GraphConversionToIndexedVersion {
 					System.exit(-1);
 				}
 				lines[index] = index + "";
-				for (int i = 1; i < toks.length; i = i + 1) {
+				for (int i = 1; i < toks.length; i = i + 2) {
 					int index1 = Arrays.binarySearch(sortedTypes, toks[i]);
 					if (index1 < 0) {
 						System.out.println("1. Problem with type: " + toks[1]);
@@ -79,7 +79,7 @@ public class GraphConversionToIndexedVersion {
 		try {
 			BufferedWriter bWriter = new BufferedWriter(new FileWriter(filePath));
 			for (String string: sortedTypes) {
-				System.out.println(string);
+				bWriter.write(string + "\n");
 			}
 			bWriter.close();
 		} catch (IOException e) {
@@ -96,7 +96,7 @@ public class GraphConversionToIndexedVersion {
 			while ((line = bReader.readLine()) != null) {
 				String[] toks = line.trim().split("\t");
 				set.add(toks[0]);
-				for (int i = 1; i < toks.length; i = i + 1) {
+				for (int i = 1; i < toks.length; i = i + 2) {
 					set.add(toks[i]);
 				}
 			}
