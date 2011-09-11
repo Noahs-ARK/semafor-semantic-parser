@@ -1,5 +1,6 @@
 package edu.cmu.cs.lti.ark.fn.identification;
 
+import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import gnu.trove.THashSet;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -67,6 +69,40 @@ public class GraphConversionToIndexedVersion {
 				}
 				bWriter.write(lines[i] + "\n");
 			}
+			bWriter.close();
+			ArrayList<String> frames = ParsePreparation.readSentencesFromFile(inputDir + "/sorted.frames");
+			String[] frameArr = new String[frames.size()];
+			for (int i = 0; i < frames.size(); i++) {
+				frameArr[i] = frames.get(i).trim();
+			}
+			String labeledPredicatesFile = inputDir + "/labeled.predicates";
+			bReader =  new BufferedReader(new FileReader(inputDir + "/" + labeledPredicatesFile));
+			bWriter = new BufferedWriter(new FileWriter(outputDir + "/" + labeledPredicatesFile + "." + fileName));
+			line = null;
+			while ((line = bReader.readLine()) != null) {
+				String[] toks = line.trim().split("\t");
+				String type = toks[0];
+				if (Arrays.binarySearch(sortedTypes, type) >= 0) {
+					int index = Arrays.binarySearch(sortedTypes, type);
+					double[] dist = new double[frameArr.length];
+					String outLine = index + "";
+					for (int i = 1; i < toks.length; i = i + 2) {
+						String frame = toks[i];
+						int fIndex = Arrays.binarySearch(frameArr, frame);
+						if (fIndex < 0) {
+							System.out.println("Problem with frame: " + frame +". Not in list.");
+							System.exit(-1);
+						}
+						dist[fIndex] = new Double(toks[i+1]);
+					}
+					for (int i = 0; i < frameArr.length; i++) {
+						outLine += "\t" + dist[i];
+					}
+					outLine = outLine.trim();
+					bWriter.write(outLine + "\n");
+				}
+			}
+			bReader.close();
 			bWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
