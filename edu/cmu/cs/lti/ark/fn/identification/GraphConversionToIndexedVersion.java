@@ -75,7 +75,7 @@ public class GraphConversionToIndexedVersion {
 			for (int i = 0; i < frames.size(); i++) {
 				frameArr[i] = frames.get(i).trim();
 			}
-			String labeledPredicatesFile = inputDir + "/../labeled.predicates";
+			String labeledPredicatesFile = "labeled.predicates";
 			bReader =  new BufferedReader(new FileReader(inputDir + "/" + labeledPredicatesFile));
 			bWriter = new BufferedWriter(new FileWriter(outputDir + "/" + labeledPredicatesFile + "." + fileName));
 			line = null;
