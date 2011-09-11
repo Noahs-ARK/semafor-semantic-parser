@@ -22,18 +22,17 @@ public class GraphConversionToIndexedVersion {
 			}			
 		};
 		String[] files = inputDir.list(filter);
-		String[] sortedTypes = getSortedListOfTypes(inputDir + "/" + files[0]);
-		writeSortedTypes(outputGraphPath + "/sorted.types", sortedTypes);
 		for (int i = 0; i < files.length; i++) {
-			writeConvertedFile(inputGraphPath, outputGraphPath, files[i], sortedTypes);
+			writeConvertedFile(inputGraphPath, outputGraphPath, files[i]);
 			System.out.println("Done with: " + files[i]);
 		}			
 	}
 	
 	public static void writeConvertedFile(String inputDir,
 										  String outputDir, 
-										  String fileName,
-										  String[] sortedTypes) {
+										  String fileName) {
+		String[] sortedTypes = getSortedListOfTypes(inputDir + "/" + fileName);
+		writeSortedTypes(outputDir + "/sorted.types.fileName", sortedTypes);
 		try {
 			BufferedReader bReader = new BufferedReader(new FileReader(inputDir + "/" + fileName));
 			String line = null;
@@ -49,7 +48,7 @@ public class GraphConversionToIndexedVersion {
 					System.exit(-1);
 				}
 				lines[index] = index + "";
-				for (int i = 1; i < toks.length; i = i + 2) {
+				for (int i = 1; i < toks.length; i = i + 1) {
 					int index1 = Arrays.binarySearch(sortedTypes, toks[i]);
 					if (index1 < 0) {
 						System.out.println("1. Problem with type: " + toks[1]);
