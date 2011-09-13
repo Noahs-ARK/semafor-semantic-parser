@@ -148,7 +148,7 @@ public class SmoothedGraph implements Serializable {
 	}	
 	
 	public static void main(String[] args) {
-		String file = "/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits/5/smoothed.graph.a.0.2.k.5.mu.0.5.nu.0.000001";
+		String file = "/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits/5/smoothed.graph.a.0.5.k.10.mu.0.1.nu.0.000001";
 		String[] tarr = {"1", "2", "3", "5", "10"};
 		for (String t: tarr) {
 			SmoothedGraph sg = new SmoothedGraph(file, new Integer(t));
