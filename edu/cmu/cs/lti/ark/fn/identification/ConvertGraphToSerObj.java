@@ -82,11 +82,24 @@ public class ConvertGraphToSerObj {
  			int t = new Integer(args[1].trim());
  			Date d = new Date();
  			String tempFile = dir + "/" + i + "/" + d.getTime();
- 			ArrayList<String> lines = ParsePreparation.readSentencesFromFile(smoothedGraphdir + "/" + files[j]);
+ 			ArrayList<String> lines = ParsePreparation.readSentencesFromFile(filepath);
  			ArrayList<String> outLines = new ArrayList<String>();
  			for (String line: lines) {
  				String[] toks = line.split("\\s+");
- 				System.out.println(toks.length);
+ 				String outLine = "";
+ 				String tok = typeArr[new Integer(toks[0])];
+ 				outLine += tok;
+ 				for (int k= 1; k < toks.length; k = k + 2) {
+ 					String frame = frameArr[new Integer(toks[k])];
+ 					double val = new Double(toks[k+1]);
+ 					outLine += "\t" + frame + "\t" + val;
+ 				}
+ 				outLine = outLine.trim();
+ 				outLines.add(outLine);
+ 			}
+ 			ParsePreparation.writeSentencesToTempFile(tempFile, outLines);
+ 			if (true) {
+ 				break;
  			}
 			// SmoothedGraph sg = new SmoothedGraph(filepath, t);
 			// SerializedObjects.writeSerializedObject(sg, filepath + ".t." + t + ".jobj.gz");
