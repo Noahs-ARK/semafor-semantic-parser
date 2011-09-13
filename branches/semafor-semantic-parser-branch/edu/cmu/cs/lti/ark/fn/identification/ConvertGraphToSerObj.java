@@ -58,7 +58,7 @@ public class ConvertGraphToSerObj {
 				return !name.endsWith(".jobj");
 			}				
 		};		
-		File f = new File(graphdir);
+		File f = new File(smoothedGraphdir);
 		String[] files = f.list(filter);
 		for (int j = 0; j < files.length; j++) {
 			String filepath = smoothedGraphdir + "/" + files[j];
