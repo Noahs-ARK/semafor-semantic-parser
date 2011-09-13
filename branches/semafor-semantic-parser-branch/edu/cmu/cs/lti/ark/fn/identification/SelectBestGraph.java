@@ -96,7 +96,6 @@ public class SelectBestGraph {
 										pCorr = new Double(toks1[0]);
 										ptot = new Double(toks1[1]);
 									}
-									break;
 								}
 							}
 							if (corr == 0.0) {
