@@ -112,7 +112,7 @@ public class SelectBestGraph {
 						if (!found) {
 							continue;
 						}
-						double avg = correct / total;
+						double avg = pcorrect / ptotal;
 						if (avg>maxacc) {
 							maxacc = avg;
 							maxfile = resultfile;
@@ -208,7 +208,7 @@ public class SelectBestGraph {
 						if (!found) {
 							continue;
 						}
-						double avg = correct / total;
+						double avg = pcorrect / ptotal;
 						if (avg>maxacc) {
 							maxacc = avg;
 							maxfile = resultfile;
