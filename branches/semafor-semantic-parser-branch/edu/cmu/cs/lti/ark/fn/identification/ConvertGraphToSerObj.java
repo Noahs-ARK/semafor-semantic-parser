@@ -65,7 +65,6 @@ public class ConvertGraphToSerObj {
 		String[] files = f.list(filter);
 		for (int j = 0; j < files.length; j++) {
 			String filepath = smoothedGraphdir + "/" + files[j];
-			System.out.println("File: " + files[j]);
 			int aIndex = files[j].indexOf("a.");
 			int muIndex = files[j].indexOf("mu.");
 			String infix = files[j].substring(aIndex, muIndex-1);
@@ -98,12 +97,14 @@ public class ConvertGraphToSerObj {
  				outLines.add(outLine);
  			}
  			ParsePreparation.writeSentencesToTempFile(tempFile, outLines);
- 			if (true) {
- 				break;
- 			}
-			// SmoothedGraph sg = new SmoothedGraph(filepath, t);
-			// SerializedObjects.writeSerializedObject(sg, filepath + ".t." + t + ".jobj.gz");
-			// System.out.println("Done with:" + j + " " + files[j]);
+			SmoothedGraph sg = new SmoothedGraph(tempFile, t);
+			SerializedObjects.writeSerializedObject(sg, filepath + ".t." + t + ".jobj.gz");
+			File tempF = new File(tempFile);
+			if (!tempF.delete()) {
+				System.out.println("Could not delete " + tempF.getAbsolutePath() + ". Exiting");
+				System.exit(-1);
+			}
+			System.out.println("Done with:" + j + " " + files[j]);
 		}
 	}
 	
