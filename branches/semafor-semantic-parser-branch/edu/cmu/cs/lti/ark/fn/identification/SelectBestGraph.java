@@ -53,7 +53,7 @@ public class SelectBestGraph {
 						System.out.println("Result file:"+resultfile);
 						boolean found = true;
 						for (int cv = 0; cv <= 4; cv++)	{
-							String file = dir + "/" + cv + "/results/" + resultfile;
+							String file = dir + "/" + cv + "/sparseresults/" + resultfile;
 							File f = new File(file);
 							if (!f.exists()) {
 								found = false;
@@ -68,7 +68,7 @@ public class SelectBestGraph {
 						found = true;
 						ArrayList<String> indresults = new ArrayList<String>();
 						for (int cv = 0; cv <= 4; cv++)	{
-							String file = dir + "/" + cv + "/results/" + resultfile;
+							String file = dir + "/" + cv + "/sparseresults/" + resultfile;
 							ArrayList<String> sents = 
 								ParsePreparation.readSentencesFromFile(file);
 							int size = sents.size()-1;
@@ -134,7 +134,7 @@ public class SelectBestGraph {
 						System.out.println("Result file:"+resultfile);
 						boolean found = true;
 						for (int cv = 0; cv <= 4; cv++)	{
-							String file = dir + "/" + cv + "/sparseresults/" + resultfile;
+							String file = dir + "/" + cv + "/results/" + resultfile;
 							File f = new File(file);
 							if (!f.exists()) {
 								found = false;
@@ -149,7 +149,7 @@ public class SelectBestGraph {
 						found = true;
 						ArrayList<String> indresults = new ArrayList<String>();
 						for (int cv = 0; cv <= 4; cv++)	{
-							String file = dir + "/" + cv + "/sparseresults/" + resultfile;
+							String file = dir + "/" + cv + "/results/" + resultfile;
 							ArrayList<String> sents = 
 								ParsePreparation.readSentencesFromFile(file);
 							int size = sents.size()-1;
