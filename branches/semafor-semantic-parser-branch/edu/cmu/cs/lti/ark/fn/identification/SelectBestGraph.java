@@ -44,6 +44,7 @@ public class SelectBestGraph {
 		String[] t = {"1", "2", "3", "5", "10"};
 		String maxfile = null;
 		double maxacc = -Double.MAX_VALUE;
+		double maxPartialAcc = 0;
 		for (int al = 0; al < a.length; al++) {
 			for (int k = 5; k <= 10; k = k + 5) {
 				for (int m = 0; m < mu.length; m++) {
@@ -65,6 +66,8 @@ public class SelectBestGraph {
 						}
 						double total = 0.0;
 						double correct = 0.0;
+						double ptotal = 0.0;
+						double pcorrect = 0.0;
 						found = true;
 						ArrayList<String> indresults = new ArrayList<String>();
 						for (int cv = 0; cv <= 4; cv++)	{
@@ -74,7 +77,10 @@ public class SelectBestGraph {
 							int size = sents.size()-1;
 							double tot = 0.0;
 							double corr = 0.0;
+							double ptot = 0.0;
+							double pCorr = 0.0;
 							for (int l = 0; l <= size; l++) {
+								boolean marked = false;
 								if (sents.get(l).contains("Fscore")) {
 									String line = sents.get(l).trim();
 									String[] toks1 = line.split("\\(");
@@ -82,8 +88,14 @@ public class SelectBestGraph {
 									toks1 = last.split("\\)");
 									String first = ""+toks1[0];
 									toks1 = first.split("/");
-									corr = new Double(toks1[0]);
-									tot = new Double(toks1[1]);
+									if (!marked) {
+										corr = new Double(toks1[0]);
+										tot = new Double(toks1[1]);
+										marked = true;
+									} else {
+										pCorr = new Double(toks1[0]);
+										ptot = new Double(toks1[1]);
+									}
 									break;
 								}
 							}
@@ -95,6 +107,8 @@ public class SelectBestGraph {
 							indresults.add(corr + " / " + tot);
 							correct += corr;
 							total += tot;
+							pcorrect += pCorr;
+							ptotal += ptot;
 						}
 						if (!found) {
 							continue;
@@ -103,6 +117,7 @@ public class SelectBestGraph {
 						if (avg>maxacc) {
 							maxacc = avg;
 							maxfile = resultfile;
+							maxPartialAcc = pcorrect / ptotal;
 						}
 						System.out.println("Done with:"+resultfile + " Avg:"+avg);
 						for (int i = 0; i < 5; i++) {
@@ -115,6 +130,7 @@ public class SelectBestGraph {
 		}
 		System.out.println("Maxfile:"+maxfile);
 		System.out.println("Maxacc:"+maxacc);
+		System.out.println("Max partial acc: " + maxPartialAcc);
 	}	
 	
 	public static void chooseBestLPGraph() {
