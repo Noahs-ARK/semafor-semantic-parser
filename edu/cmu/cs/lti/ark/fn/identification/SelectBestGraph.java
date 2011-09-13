@@ -142,7 +142,7 @@ public class SelectBestGraph {
 		double maxacc = -Double.MAX_VALUE;
 		double maxPartialAcc = 0.0;
 		for (int al = 0; al < a.length; al++) {
-			for (int k = 5; k <= 20; k = k + 5) {
+			for (int k = 5; k <= 10; k = k + 5) {
 				for (int m = 0; m < mu.length; m++) {
 					for (int tl = 0; tl < t.length; tl++) {
 						String resultfile = 
