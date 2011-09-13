@@ -79,8 +79,8 @@ public class SelectBestGraph {
 							double corr = 0.0;
 							double ptot = 0.0;
 							double pCorr = 0.0;
+							boolean marked = false;
 							for (int l = 0; l <= size; l++) {
-								boolean marked = false;
 								if (sents.get(l).contains("Fscore")) {
 									String line = sents.get(l).trim();
 									String[] toks1 = line.split("\\(");
