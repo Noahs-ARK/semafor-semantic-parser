@@ -66,8 +66,9 @@ public class ConvertGraphToSerObj {
 			int aIndex = files[j].indexOf("a.");
 			int muIndex = files[j].indexOf("mu.");
 			String infix = files[j].substring(aIndex, muIndex-1);
-			System.out.println(infix);
-			int t = new Integer(args[1]);
+			String typeFile = "sorted.types.sym.graph." + infix;
+			System.out.println(typeFile);
+			int t = new Integer(args[1].trim());
 			// SmoothedGraph sg = new SmoothedGraph(filepath, t);
 			// SerializedObjects.writeSerializedObject(sg, filepath + ".t." + t + ".jobj.gz");
 			// System.out.println("Done with:" + j + " " + files[j]);
