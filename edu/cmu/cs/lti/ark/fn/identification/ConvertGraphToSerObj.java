@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
@@ -79,6 +80,14 @@ public class ConvertGraphToSerObj {
 			frames.toArray(frameArr);
 			Arrays.sort(frameArr);					
  			int t = new Integer(args[1].trim());
+ 			Date d = new Date();
+ 			String tempFile = dir + "/" + i + "/" + d.getTime();
+ 			ArrayList<String> lines = ParsePreparation.readSentencesFromFile(smoothedGraphdir + "/" + files[j]);
+ 			ArrayList<String> outLines = new ArrayList<String>();
+ 			for (String line: lines) {
+ 				String[] toks = line.split("//s");
+ 				System.out.println(toks.length);
+ 			}
 			// SmoothedGraph sg = new SmoothedGraph(filepath, t);
 			// SerializedObjects.writeSerializedObject(sg, filepath + ".t." + t + ".jobj.gz");
 			// System.out.println("Done with:" + j + " " + files[j]);
