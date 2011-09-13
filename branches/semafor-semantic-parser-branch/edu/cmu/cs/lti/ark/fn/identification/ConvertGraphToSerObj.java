@@ -79,31 +79,9 @@ public class ConvertGraphToSerObj {
 			frames.toArray(frameArr);
 			Arrays.sort(frameArr);					
  			int t = new Integer(args[1].trim());
- 			Date d = new Date();
- 			String tempFile = dir + "/" + i + "/" + d.getTime();
- 			ArrayList<String> lines = ParsePreparation.readSentencesFromFile(filepath);
- 			ArrayList<String> outLines = new ArrayList<String>();
- 			for (String line: lines) {
- 				String[] toks = line.split("\\s+");
- 				String outLine = "";
- 				String tok = typeArr[new Integer(toks[0])];
- 				outLine += tok;
- 				for (int k= 1; k < toks.length; k = k + 2) {
- 					String frame = frameArr[new Integer(toks[k])];
- 					double val = new Double(toks[k+1]);
- 					outLine += "\t" + frame + "\t" + val;
- 				}
- 				outLine = outLine.trim();
- 				outLines.add(outLine);
- 			}
- 			ParsePreparation.writeSentencesToTempFile(tempFile, outLines);
-			SmoothedGraph sg = new SmoothedGraph(tempFile, t);
+ 			ArrayList<String> sentences = ParsePreparation.readSentencesFromFile(filepath);
+			SmoothedGraph sg = new SmoothedGraph(sentences, t, typeArr, frameArr); 
 			SerializedObjects.writeSerializedObject(sg, filepath + ".t." + t + ".jobj.gz");
-			File tempF = new File(tempFile);
-			if (!tempF.delete()) {
-				System.out.println("Could not delete " + tempF.getAbsolutePath() + ". Exiting");
-				System.exit(-1);
-			}
 			System.out.println("Done with:" + j + " " + files[j]);
 		}
 	}
