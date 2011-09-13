@@ -62,6 +62,7 @@ public class ConvertGraphToSerObj {
 		String[] files = f.list(filter);
 		for (int j = 0; j < files.length; j++) {
 			String filepath = graphdir + "/" + files[j];
+			System.out.println("File: " + files[j]);
 			int aIndex = files[j].indexOf("a.");
 			int muIndex = files[j].indexOf("mu.");
 			String infix = files[j].substring(aIndex, muIndex);
