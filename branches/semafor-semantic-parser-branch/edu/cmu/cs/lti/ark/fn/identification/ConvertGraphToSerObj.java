@@ -24,6 +24,7 @@ package edu.cmu.cs.lti.ark.fn.identification;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
@@ -68,8 +69,16 @@ public class ConvertGraphToSerObj {
 			int muIndex = files[j].indexOf("mu.");
 			String infix = files[j].substring(aIndex, muIndex-1);
 			String typeFile = "sorted.types.sym.graph." + infix;
-			System.out.println(typeFile);
-			int t = new Integer(args[1].trim());
+			ArrayList<String> list = ParsePreparation.readSentencesFromFile(graphdir+ "/" + typeFile);
+			String[] typeArr = new String[list.size()];
+			list.toArray(typeArr);
+			Arrays.sort(typeArr);
+			String framesFile = dir+ "/" + i + "/sorted.frames";
+			ArrayList<String> frames = ParsePreparation.readSentencesFromFile(framesFile);
+			String[] frameArr = new String[frames.size()];
+			frames.toArray(frameArr);
+			Arrays.sort(frameArr);					
+ 			int t = new Integer(args[1].trim());
 			// SmoothedGraph sg = new SmoothedGraph(filepath, t);
 			// SerializedObjects.writeSerializedObject(sg, filepath + ".t." + t + ".jobj.gz");
 			// System.out.println("Done with:" + j + " " + files[j]);
