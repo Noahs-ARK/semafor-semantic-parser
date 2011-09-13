@@ -69,7 +69,13 @@ public class SmoothedGraph implements Serializable {
 			String pred = typeArr[new Integer(toks[0])];
 			int li = pred.lastIndexOf(".");
 			String coarsepred = pred.substring(0, li);
-			for (int k= 1; k < 2*t+1; k = k + 2) {
+			int end = 0;
+			if (2*t + 1 > toks.length) {
+				end = toks.length;
+			} else {
+				end = 2*t + 1;
+			}
+			for (int k= 1; k < end; k = k + 2) {
 				String frame = frameArr[new Integer(toks[k])];
 				if (fineMap.containsKey(pred)) {
 					Set<String> fineSet = fineMap.get(pred);
