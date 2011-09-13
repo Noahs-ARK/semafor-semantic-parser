@@ -85,7 +85,7 @@ public class ConvertGraphToSerObj {
  			ArrayList<String> lines = ParsePreparation.readSentencesFromFile(smoothedGraphdir + "/" + files[j]);
  			ArrayList<String> outLines = new ArrayList<String>();
  			for (String line: lines) {
- 				String[] toks = line.split("//s");
+ 				String[] toks = line.split("\\s+");
  				System.out.println(toks.length);
  			}
 			// SmoothedGraph sg = new SmoothedGraph(filepath, t);
