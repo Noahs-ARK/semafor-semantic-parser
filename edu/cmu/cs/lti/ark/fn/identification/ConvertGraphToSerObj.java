@@ -49,6 +49,7 @@ public class ConvertGraphToSerObj {
 	}
 	
 	public static void allIndexedGraphs(String[] args) {
+		System.out.println("Length of args:" + args.length);
 		String dir = "/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits";
 		int i = new Integer(args[0]);
 		String smoothedGraphdir = dir + "/" + i + "/smoothedgraphs";
