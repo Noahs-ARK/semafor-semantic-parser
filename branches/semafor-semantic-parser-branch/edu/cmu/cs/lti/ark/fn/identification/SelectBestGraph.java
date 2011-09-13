@@ -29,11 +29,15 @@ import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 public class SelectBestGraph {
 	public static void main(String[] args) {
 		if (args[0].equals("gslp")) {
-			chooseBestGSLPGraph();
+			chooseBestSLPGraph("gslp");
+		} else if (args[0].equals("ulp")) {
+			chooseBestSLPGraph("ulp");
+		} else if (args[0].equals("lp")) {
+			chooseBestLPGraph();
 		}
 	}		
 	
-	public static void chooseBestGSLPGraph() {
+	public static void chooseBestSLPGraph(String prefix) {
 		String dir = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits";
 		String[] mu = {"0.01", "0.1", "0.3", "0.5", "1.0"};
 		String[] a = {"0.0", "0.5"};
@@ -45,7 +49,7 @@ public class SelectBestGraph {
 				for (int m = 0; m < mu.length; m++) {
 					for (int tl = 0; tl < t.length; tl++) {
 						String resultfile = 
-							"gslp.a."+a[al]+".k."+k+".mu."+mu[m]+".nu.0.000001.t."+t[tl]+".jobj.gz_results";
+							prefix + ".a."+a[al]+".k."+k+".mu."+mu[m]+".nu.0.000001.t."+t[tl]+".jobj.gz_results";
 						System.out.println("Result file:"+resultfile);
 						boolean found = true;
 						for (int cv = 0; cv <= 4; cv++)	{
