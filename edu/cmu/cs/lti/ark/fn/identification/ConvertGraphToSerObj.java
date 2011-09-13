@@ -65,7 +65,7 @@ public class ConvertGraphToSerObj {
 			System.out.println("File: " + files[j]);
 			int aIndex = files[j].indexOf("a.");
 			int muIndex = files[j].indexOf("mu.");
-			String infix = files[j].substring(aIndex, muIndex);
+			String infix = files[j].substring(aIndex, muIndex-1);
 			System.out.println(infix);
 			int t = new Integer(args[1]);
 			// SmoothedGraph sg = new SmoothedGraph(filepath, t);
