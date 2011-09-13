@@ -55,7 +55,7 @@ public class ConvertGraphToSerObj {
 		String graphdir = dir + "/" + i + "/sparsegraphs";
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return name.startsWith("smoothed.graph") && (!name.endsWith(".jobj"));
+				return !name.endsWith(".jobj");
 			}				
 		};		
 		File f = new File(graphdir);
