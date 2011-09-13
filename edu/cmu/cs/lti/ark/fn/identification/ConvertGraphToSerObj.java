@@ -31,7 +31,8 @@ import gnu.trove.TObjectIntHashMap;
 
 public class ConvertGraphToSerObj {
 	public static void main(String[] args) {
-		variousMs(args);
+		// variousMs(args);
+		allIndexedGraphs(args);
 	}
 
 	public static void variousMs(String[] args) {
@@ -46,6 +47,32 @@ public class ConvertGraphToSerObj {
 			System.out.println("Done with:" + m);
 		}
 	}
+	
+	public static void allIndexedGraphs(String[] args) {
+		String dir = "/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits";
+		int i = new Integer(args[0]);
+		String smoothedGraphdir = dir + "/" + i + "/smoothedgraphs";
+		String graphdir = dir + "/" + i + "/sparsegraphs";
+		FilenameFilter filter = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.startsWith("smoothed.graph") && (!name.endsWith(".jobj"));
+			}				
+		};		
+		File f = new File(graphdir);
+		String[] files = f.list(filter);
+		for (int j = 0; j < files.length; j++) {
+			String filepath = graphdir + "/" + files[j];
+			int aIndex = files[j].indexOf("a.");
+			int muIndex = files[j].indexOf("mu.");
+			String infix = files[j].substring(aIndex, muIndex);
+			System.out.println(infix);
+			int t = new Integer(args[1]);
+			// SmoothedGraph sg = new SmoothedGraph(filepath, t);
+			// SerializedObjects.writeSerializedObject(sg, filepath + ".t." + t + ".jobj.gz");
+			// System.out.println("Done with:" + j + " " + files[j]);
+		}
+	}
+	
 	
 	public static void allGraphs(String[] args) {
 		String dir = "/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits";
