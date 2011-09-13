@@ -112,8 +112,8 @@ public class SelectBestGraph {
 						if (!found) {
 							continue;
 						}
-						double avg = pcorrect / ptotal;
-						if (avg>maxPartialAcc) {
+						double avg = correct / total;
+						if (avg>maxacc) {
 							maxacc = correct / total;
 							maxfile = resultfile;
 							maxPartialAcc = pcorrect / ptotal;
@@ -208,8 +208,8 @@ public class SelectBestGraph {
 						if (!found) {
 							continue;
 						}
-						double avg = pcorrect / ptotal;
-						if (avg>maxPartialAcc) {
+						double avg = correct / total;
+						if (avg>maxacc) {
 							maxacc = correct / total;
 							maxfile = resultfile;
 							maxPartialAcc = pcorrect / ptotal;
