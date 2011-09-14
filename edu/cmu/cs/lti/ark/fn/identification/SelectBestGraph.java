@@ -34,6 +34,8 @@ public class SelectBestGraph {
 			chooseBestSLPGraph("ulp");
 		} else if (args[0].equals("lp")) {
 			chooseBestLPGraph();
+		} else if (args[0].equals("eslp")) {
+			chooseBestSLPGraph("eslp");
 		}
 	}		
 	
@@ -41,7 +43,7 @@ public class SelectBestGraph {
 		String dir = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits";
 		String[] mu = {"0.01", "0.1", "0.3", "0.5", "1.0"};
 		String[] a = {"0.2", "0.5", "0.7", "1.0"};
-		String[] t = {"1", "2", "3", "5", "10"};
+		String[] t = {"2", "3", "5", "10"};
 		String maxfile = null;
 		double maxacc = -Double.MAX_VALUE;
 		double maxPartialAcc = 0;
