@@ -107,6 +107,32 @@ public class GraphConversionToIndexedVersion {
 			}
 			bReader.close();
 			bWriter.close();
+			String labeledFile = outputDir + "/" + labeledPredicatesFile + "." + fileName;
+			ArrayList<String> labeledLines = ParsePreparation.readSentencesFromFile(labeledFile);
+			int size = labeledLines.size();
+			String halfFile = labeledFile + ".half";
+			int halfSize = size / 2;
+			ArrayList<String> halfLines = new ArrayList<String>();
+			String quarterFile = labeledFile + ".quarter";
+			int qsize = size / 4;
+			ArrayList<String> quarterLines = new ArrayList<String>();
+			String threeQuartersFile = labeledFile + ".threeqs";
+			int threeqsize = (int)((double)size * 0.75);
+			ArrayList<String> threeqLines = new ArrayList<String>();
+			for (int i = 0; i < size; i++) {
+				if (i < halfSize) {
+					halfLines.add(labeledLines.get(i));
+				}
+				if (i < qsize) {
+					quarterLines.add(labeledLines.get(i));
+				}
+				if (i < threeqsize) {
+					threeqLines.add(labeledLines.get(i));
+				}
+			}
+			ParsePreparation.writeSentencesToTempFile(halfFile, halfLines);
+			ParsePreparation.writeSentencesToTempFile(quarterFile, quarterLines);
+			ParsePreparation.writeSentencesToTempFile(threeQuartersFile, threeqLines);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(-1);
