@@ -25,6 +25,10 @@ public class ILPDecoding {
 	}
 	
 	public Map<String, String> decode(Map<String, Pair<int[], Double>[]> scoreMap) {
+		Map<String, String> res = new THashMap<String, String>();
+		if (scoreMap.size() == 0) {
+			return res;
+		}
 		String[] keys = new String[scoreMap.size()];
 		scoreMap.keySet().toArray(keys);
 		Arrays.sort(keys);
@@ -56,7 +60,6 @@ public class ILPDecoding {
 		int[] lb = new int[totalCount];
 		int[] ub = new int[totalCount];
 		double[] objVals = new double[totalCount];
-		Map<String, String> res = new THashMap<String, String>();
 		System.out.println("Size of keys: " + keys.length);
 		System.out.println("Totalcount: " + totalCount);
 		try {
