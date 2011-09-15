@@ -7,10 +7,10 @@ public class ILPDecoding {
 	public ILPDecoding() {
 		try {
 			IloCplex cplex = new IloCplex(); 
-			double[] lb = {0.0, 0.0, 0.0}; 
-		    double[] ub = {40.0, Double.MAX_VALUE, Double.MAX_VALUE};
-		    IloNumVar[] x  = cplex.numVarArray(3, lb, ub);
-		    double[] objvals = {1.0, 2.0, 3.0};
+			int[] lb = {0, 0, 0}; 
+		    int[] ub = {40, Integer.MAX_VALUE, Integer.MAX_VALUE};
+		    IloIntVar[] x  = cplex.intVarArray(3, lb, ub);
+		    int[] objvals = {1, 2, 3};
 		    cplex.addMaximize(cplex.scalProd(x, objvals)); 
 		    cplex.addLe(cplex.sum(cplex.prod(-1.0, x[0]), 
                     cplex.prod( 1.0, x[1]), 
@@ -26,8 +26,7 @@ public class ILPDecoding {
 		        for (int j = 0; j < ncols; ++j) 
 		           cplex.output().println("Column: " + j + " Value = " + val[j]); 
 		      }
-		      cplex.end(); 
-		    
+		      cplex.end();   
 		} catch (IloException e) { 
 			System.err.println("Concert exception caught: " + e); 
 		}
