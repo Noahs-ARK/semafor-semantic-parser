@@ -73,7 +73,7 @@ public class ILPDecoding {
 					Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 					for (int j = 0; j < arr.length; j++) {
 						if (val[count] == 1.0) {
-							res.put(keys[i], arr[j].getFirst()[0] + "_" + arr[j].getFirst()[0]);
+							res.put(keys[i], arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1]);
 						}
 						count++;
 					}
