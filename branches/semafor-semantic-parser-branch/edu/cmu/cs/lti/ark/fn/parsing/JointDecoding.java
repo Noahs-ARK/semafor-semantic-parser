@@ -84,6 +84,7 @@ public class JointDecoding extends Decoding {
 				double weightFeatSum = getWeightSum(feats);
 				double expWeightFeatSum = Math.exp(weightFeatSum);
 				double lProb = Math.log(expWeightFeatSum / Z);
+				System.out.println("Span: " + featureArray[j].span[0]+"_"+featureArray[j].span[1]+" Log probability: " + lProb);
 				arr[j] = new Pair<int[], Double>(featureArray[j].span, lProb);
 			}
 			Arrays.sort(arr, wc);
