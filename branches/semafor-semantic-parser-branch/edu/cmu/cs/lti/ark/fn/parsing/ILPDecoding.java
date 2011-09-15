@@ -52,8 +52,6 @@ public class ILPDecoding {
 				Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 				IloNumExpr[] prods = new IloNumExpr[arr.length];
 				for (int j = 0; j < arr.length; j++) {
-					lb[count] = 0; ub[count] = 1;
-					objVals[count] = arr[j].getSecond();
 					prods[j] = cplex.prod(1.0, x[j]);
 					count++;
 				}
@@ -72,7 +70,7 @@ public class ILPDecoding {
 				for (int i = 0; i < keys.length; i++) {
 					Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 					for (int j = 0; j < arr.length; j++) {
-						if (val[count] == 1.0) {
+						if (val[count] > 0.0) {
 							res.put(keys[i], arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1]);
 						}
 						count++;
