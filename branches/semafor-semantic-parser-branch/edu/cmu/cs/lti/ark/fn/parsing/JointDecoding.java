@@ -6,11 +6,8 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.Map;
 
-import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
-import edu.cmu.cs.lti.ark.fn.optimization.LDouble;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
-import gnu.trove.THashSet;
 
 public class JointDecoding extends Decoding {
 	
