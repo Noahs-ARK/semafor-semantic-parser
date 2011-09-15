@@ -45,5 +45,6 @@ public class ILPDecoding {
 		System.out.println("Solving ILP:");
 		ILPDecoding ilp = new ILPDecoding();
 		ilp.decode();
+		ilp.decode();
 	}
 }
