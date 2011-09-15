@@ -34,12 +34,15 @@ public class ILPDecoding {
 		        int ncols = cplex.getNcols(); 
 		        for (int j = 0; j < ncols; ++j) 
 		           cplex.output().println("Column: " + j + " Value = " + val[j]); 
-		      }
-		      cplex.end();   
+		    }
 		      cplex.clearModel();
 		} catch (IloException e) { 
 			System.err.println("Concert exception caught: " + e); 
 		}
+	}
+	
+	public void end() {
+		cplex.end();
 	}
 	
 	public static void main(String[] args) {
@@ -47,5 +50,6 @@ public class ILPDecoding {
 		ILPDecoding ilp = new ILPDecoding();
 		ilp.decode();
 		ilp.decode();
+		ilp.end();
 	}
 }
