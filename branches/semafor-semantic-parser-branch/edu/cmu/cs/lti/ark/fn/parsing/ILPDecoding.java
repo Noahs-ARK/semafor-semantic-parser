@@ -63,9 +63,20 @@ public class ILPDecoding {
 				cplex.output().println("Solution status = " + cplex.getStatus()); 
 				cplex.output().println("Solution value  = " + cplex.getObjValue());
 				double[] val = cplex.getValues(x); 
-				int ncols = cplex.getNcols(); 
-				for (int j = 0; j < ncols; ++j) 
-					cplex.output().println("Column: " + j + " Value = " + val[j]); 
+				int ncols = cplex.getNcols();
+				if (ncols != totalCount) {
+					System.out.println("Problem ncols: " + ncols + " totalCount: " + totalCount);
+					System.exit(-1);
+				}
+				for (int i = 0; i < keys.length; i++) {
+					Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
+					for (int j = 0; j < arr.length; j++) {
+						if (val[count] == 1.0) {
+							res.put(keys[i], arr[j].getFirst()[0] + "_" + arr[j].getFirst()[0]);
+						}
+						count++;
+					}
+				}
 			}
 			cplex.clearModel();
 		} catch (IloException e) {
