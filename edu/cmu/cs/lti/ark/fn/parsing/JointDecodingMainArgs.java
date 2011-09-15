@@ -22,6 +22,7 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 
@@ -55,11 +56,14 @@ public class JointDecodingMainArgs
 				list,
 				ParsePreparation.readSentencesFromFile(frFile)
 				);
+		Date sd = new Date();
+		long st = sd.getTime();
 		bpd.decodeAll(overlap, 0);
-//		for (int i = 0; i < 5; i++) {
-//			bpd.decode(i, overlap, 0);
-//		}
+		Date ed = new Date();
+		long et = sd.getTime();
 		bpd.wrapUp();
+		long diff = et - st;
+		System.out.println("Total time taken: " + diff);
 	}		
 	
 	
