@@ -52,7 +52,7 @@ public class ILPDecoding {
 				Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 				IloNumExpr[] prods = new IloNumExpr[arr.length];
 				for (int j = 0; j < arr.length; j++) {
-					prods[j] = cplex.prod(1.0, x[j]);
+					prods[j] = cplex.prod(1.0, x[count]);
 					count++;
 				}
 				cplex.addEq(cplex.sum(prods), 1.0);
