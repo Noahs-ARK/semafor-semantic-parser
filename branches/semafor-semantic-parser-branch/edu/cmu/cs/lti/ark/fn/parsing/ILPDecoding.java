@@ -67,6 +67,7 @@ public class ILPDecoding {
 				for (int j = 0; j < ncols; ++j) 
 					cplex.output().println("Column: " + j + " Value = " + val[j]); 
 			}
+			cplex.clearModel();
 		} catch (IloException e) {
 			e.printStackTrace();
 			System.exit(-1);
