@@ -79,6 +79,8 @@ public class JointDecoding extends Decoding {
 				Z += expWeightFeatSum;
 			}
 			Pair<int[], Double>[] arr = new Pair[featArrLen];
+			double maxProb = -Double.MAX_VALUE;
+			String outcome = null;
 			for(int j = 0; j < featArrLen; j ++) {
 				int[] feats = featureArray[j].features;
 				double weightFeatSum = getWeightSum(feats);
@@ -86,9 +88,11 @@ public class JointDecoding extends Decoding {
 				double lProb = Math.log(expWeightFeatSum / Z);
 				System.out.println("Span: " + featureArray[j].span[0]+"_"+featureArray[j].span[1]+" Log probability: " + lProb);
 				arr[j] = new Pair<int[], Double>(featureArray[j].span, lProb);
+				if (lProb > maxProb) {
+					maxProb = lProb;
+					outcome = featureArray[j].span[0]+"_"+featureArray[j].span[1];
+				}
 			}
-			Arrays.sort(arr, wc);
-			String outcome = arr[0].getFirst()[0] +"_" + arr[0].getFirst()[1];
 			// null span is the best span
 			if (outcome.equals("-1_-1")) {
 				if (!mIgnoreNullSpansWhileJointDecoding) {
