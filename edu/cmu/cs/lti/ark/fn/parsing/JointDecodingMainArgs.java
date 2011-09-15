@@ -55,10 +55,10 @@ public class JointDecodingMainArgs
 				list,
 				ParsePreparation.readSentencesFromFile(frFile)
 				);
-		// bpd.decodeAll(overlap, 0);
-		for (int i = 0; i < 5; i++) {
-			bpd.decode(i, overlap, 0);
-		}
+		bpd.decodeAll(overlap, 0);
+//		for (int i = 0; i < 5; i++) {
+//			bpd.decode(i, overlap, 0);
+//		}
 		bpd.wrapUp();
 	}		
 	
