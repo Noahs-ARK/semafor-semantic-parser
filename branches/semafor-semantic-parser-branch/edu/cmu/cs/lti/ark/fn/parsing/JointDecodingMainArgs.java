@@ -54,7 +54,8 @@ public class JointDecodingMainArgs
 				alphabetFile, 
 				predictionFile,
 				list,
-				ParsePreparation.readSentencesFromFile(frFile)
+				ParsePreparation.readSentencesFromFile(frFile),
+				false
 				);
 		Date sd = new Date();
 		long st = sd.getTime();

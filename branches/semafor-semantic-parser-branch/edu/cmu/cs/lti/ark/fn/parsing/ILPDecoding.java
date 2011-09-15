@@ -1,9 +1,7 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
 
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
