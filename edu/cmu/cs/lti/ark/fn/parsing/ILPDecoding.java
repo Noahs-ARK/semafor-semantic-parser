@@ -41,6 +41,8 @@ public class ILPDecoding {
 				count++;
 			}
 		}
+		System.out.println("Size of keys: " + keys.length);
+		System.out.println("Totalcount: " + totalCount);
 		Map<String, String> res = new THashMap<String, String>();
 		try {
 			count = 0;
