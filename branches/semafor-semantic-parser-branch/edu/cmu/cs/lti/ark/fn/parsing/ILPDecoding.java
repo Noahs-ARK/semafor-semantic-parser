@@ -1,5 +1,11 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
+import java.util.Arrays;
+import java.util.Map;
+
+import edu.cmu.cs.lti.ark.util.ds.Pair;
+import gnu.trove.THashMap;
+
 import ilog.concert.*; 
 import ilog.cplex.*;
 
@@ -14,7 +20,59 @@ public class ILPDecoding {
 		}
 	}
 	
-	public void decode() {
+	public Map<String, String> decode(Map<String, Pair<int[], Double>[]> scoreMap) {
+		String[] keys = new String[scoreMap.size()];
+		scoreMap.keySet().toArray(keys);
+		Arrays.sort(keys);
+		int totalCount = 0;
+		for (int i = 0; i < keys.length; i++) {
+			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
+			totalCount += arr.length; 
+		}
+		int[] lb = new int[totalCount];
+		int[] ub = new int[totalCount];
+		double[] objVals = new double[totalCount];
+		int count = 0;
+		for (int i = 0; i < keys.length; i++) {
+			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
+			for (int j = 0; j < arr.length; j++) {
+				lb[count] = 0; ub[count] = 1;
+				objVals[count] = arr[j].getSecond();
+				count++;
+			}
+		}
+		Map<String, String> res = new THashMap<String, String>();
+		try {
+			count = 0;
+			IloIntVar[] x = cplex.intVarArray(totalCount, lb, ub);
+			for (int i = 0; i < keys.length; i++) {
+				Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
+				IloNumExpr[] prods = new IloNumExpr[arr.length];
+				for (int j = 0; j < arr.length; j++) {
+					lb[count] = 0; ub[count] = 1;
+					objVals[count] = arr[j].getSecond();
+					prods[j] = cplex.prod(1.0, x[j]);
+					count++;
+				}
+				cplex.addEq(cplex.sum(prods), 1.0);
+			}
+			cplex.addMaximize(cplex.scalProd(x, objVals));
+			 if (cplex.solve()) { 
+			        cplex.output().println("Solution status = " + cplex.getStatus()); 
+			        cplex.output().println("Solution value  = " + cplex.getObjValue());
+			        double[] val = cplex.getValues(x); 
+			        int ncols = cplex.getNcols(); 
+			        for (int j = 0; j < ncols; ++j) 
+			           cplex.output().println("Column: " + j + " Value = " + val[j]); 
+			 }
+		} catch (IloException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		return res;
+	}
+	
+	public void decodeTrivial() {
 		try { 
 			int[] lb = {0, 0, 0}; 
 		    int[] ub = {40, Integer.MAX_VALUE, Integer.MAX_VALUE};
@@ -35,7 +93,7 @@ public class ILPDecoding {
 		        for (int j = 0; j < ncols; ++j) 
 		           cplex.output().println("Column: " + j + " Value = " + val[j]); 
 		    }
-		      cplex.clearModel();
+		    cplex.clearModel();
 		} catch (IloException e) { 
 			System.err.println("Concert exception caught: " + e); 
 		}
@@ -48,8 +106,8 @@ public class ILPDecoding {
 	public static void main(String[] args) {
 		System.out.println("Solving ILP:");
 		ILPDecoding ilp = new ILPDecoding();
-		ilp.decode();
-		ilp.decode();
+		ilp.decodeTrivial();
+		ilp.decodeTrivial();
 		ilp.end();
 	}
 }
