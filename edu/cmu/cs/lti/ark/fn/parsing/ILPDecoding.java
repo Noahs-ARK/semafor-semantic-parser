@@ -1,10 +1,12 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
+import gnu.trove.TIntHashSet;
 
 import ilog.concert.*; 
 import ilog.cplex.*;
@@ -19,16 +21,40 @@ public class ILPDecoding {
 			System.exit(-1);
 		}
 	}
-
+	
 	public Map<String, String> decode(Map<String, Pair<int[], Double>[]> scoreMap) {
 		String[] keys = new String[scoreMap.size()];
 		scoreMap.keySet().toArray(keys);
 		Arrays.sort(keys);
 		int totalCount = 0;
+		int min = Integer.MAX_VALUE;
+		int max = -Integer.MAX_VALUE;
 		for (int i = 0; i < keys.length; i++) {
 			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
-			totalCount += arr.length; 
+			totalCount += arr.length;
+			for (int j = 0; j < arr.length; j++) {
+				int start = arr[j].getFirst()[0];
+				int end = arr[j].getFirst()[1];
+				if (start != -1) {
+					if (start < min) {
+						min = start;
+					}
+					if (start > max) {
+						max = start;
+					}
+				}
+				if (end != -1) {
+					if (end < min) {
+						min = end;
+					}
+					if (end > max) {
+						max = end;
+					}
+				}
+			}
 		}
+		System.out.println("Min index:" + min);
+		System.out.println("Max index:" + max);
 		int[] lb = new int[totalCount];
 		int[] ub = new int[totalCount];
 		double[] objVals = new double[totalCount];
@@ -48,6 +74,7 @@ public class ILPDecoding {
 			IloIntVar[] x = cplex.intVarArray(totalCount, lb, ub);
 			cplex.addMaximize(cplex.scalProd(x, objVals));
 			count = 0;
+			// constraint indicating that an FE can have only one span
 			for (int i = 0; i < keys.length; i++) {
 				Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 				IloNumExpr[] prods = new IloNumExpr[arr.length];
