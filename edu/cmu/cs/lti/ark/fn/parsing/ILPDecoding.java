@@ -68,6 +68,7 @@ public class ILPDecoding {
 					System.out.println("Problem ncols: " + ncols + " totalCount: " + totalCount);
 					System.exit(-1);
 				}
+				count = 0;
 				for (int i = 0; i < keys.length; i++) {
 					Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 					for (int j = 0; j < arr.length; j++) {
