@@ -4,9 +4,18 @@ import ilog.concert.*;
 import ilog.cplex.*;
 
 public class ILPDecoding {
+	private IloCplex cplex = null;
 	public ILPDecoding() {
 		try {
-			IloCplex cplex = new IloCplex(); 
+			cplex = new IloCplex(); 
+		} catch (IloException e) { 
+			System.err.println("Concert exception caught: " + e);
+			System.exit(-1);
+		}
+	}
+	
+	public void decode() {
+		try { 
 			int[] lb = {0, 0, 0}; 
 		    int[] ub = {40, Integer.MAX_VALUE, Integer.MAX_VALUE};
 		    IloIntVar[] x  = cplex.intVarArray(3, lb, ub);
@@ -35,5 +44,6 @@ public class ILPDecoding {
 	public static void main(String[] args) {
 		System.out.println("Solving ILP:");
 		ILPDecoding ilp = new ILPDecoding();
+		ilp.decode();
 	}
 }
