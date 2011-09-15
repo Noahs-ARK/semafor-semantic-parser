@@ -36,6 +36,7 @@ public class ILPDecoding {
 		           cplex.output().println("Column: " + j + " Value = " + val[j]); 
 		      }
 		      cplex.end();   
+		      cplex.clearModel();
 		} catch (IloException e) { 
 			System.err.println("Concert exception caught: " + e); 
 		}
