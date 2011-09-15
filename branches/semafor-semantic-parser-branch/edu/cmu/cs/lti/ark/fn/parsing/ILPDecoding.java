@@ -102,7 +102,7 @@ public class ILPDecoding {
 					prods[j] = cplex.prod(1.0, x[s]);
 					j++;
 				}
-				cplex.addEq(cplex.sum(prods), 1.0);
+				cplex.addLe(cplex.sum(prods), 1.0);
 			}
 			if (cplex.solve()) { 
 				cplex.output().println("Solution status = " + cplex.getStatus()); 
