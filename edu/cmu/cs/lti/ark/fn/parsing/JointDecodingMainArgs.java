@@ -60,7 +60,7 @@ public class JointDecodingMainArgs
 		long st = sd.getTime();
 		bpd.decodeAll(overlap, 0);
 		Date ed = new Date();
-		long et = sd.getTime();
+		long et = ed.getTime();
 		bpd.wrapUp();
 		long diff = et - st;
 		System.out.println("Total time taken: " + diff);
