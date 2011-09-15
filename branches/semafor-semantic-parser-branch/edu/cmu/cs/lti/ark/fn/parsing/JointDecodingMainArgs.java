@@ -57,7 +57,7 @@ public class JointDecodingMainArgs
 				);
 		// bpd.decodeAll(overlap, 0);
 		for (int i = 0; i < 5; i++) {
-			bpd.decode(3, overlap, 0);
+			bpd.decode(i, overlap, 0);
 		}
 		bpd.wrapUp();
 	}		
