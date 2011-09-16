@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import edu.cmu.cs.lti.ark.util.XmlUtils;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
@@ -29,7 +30,12 @@ public class DataStructuresForFERelations {
 			String frame = file.substring(0, index);
 			System.out.println("Frame: " + frame);
 			Document d = XmlUtils.parseXmlFile(f.getAbsolutePath() + "/" + file, false);
-			System.out.println("Done with: " + file);
+			Element[] e = XmlUtils.applyXPath(d, "/frame/FE/excludesFE");
+			if (e == null || e.length == 0) {
+				System.out.println("Done with: " + file);
+				continue;
+			}
+			System.out.println("Total number of exlude FEs found: " + e.length);
 		}
 	}
 }
