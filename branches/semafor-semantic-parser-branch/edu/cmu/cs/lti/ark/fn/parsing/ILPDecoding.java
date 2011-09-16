@@ -139,15 +139,32 @@ public class ILPDecoding {
 					}
 					System.out.println("Found two overlapping FEs: " + one + "\t" + two);
 					System.out.println("Indices: " + keys[oneIndex] + "\t" + keys[twoIndex]);
-					IloNumExpr[] prods1 = new IloNumExpr[scoreMap.get(one).length];
-					IloNumExpr[] prods2 = new IloNumExpr[scoreMap.get(two).length];
+					IloNumExpr[] prods1 = new IloNumExpr[scoreMap.get(one).length-1];
+					IloNumExpr[] prods2 = new IloNumExpr[scoreMap.get(two).length-1];
+					int nullIndex1 = -1;
+					int nullIndex2 = -1;
+					count = 0;
+					Pair<int[], Double>[] arr1 = scoreMap.get(one);
+					Pair<int[], Double>[] arr2 = scoreMap.get(two);
 					for (int j = 0; j < scoreMap.get(one).length; j++) {
-						prods1[j] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
+						if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
+							nullIndex1 = mappedIndices[oneIndex][j];
+							continue;
+						}
+						prods1[count] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
+						count++;
 					}
+					count = 0;
 					for (int j = 0; j < scoreMap.get(two).length; j++) {
-						prods2[j] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
+						if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
+							nullIndex2 = mappedIndices[twoIndex][j];
+							continue;
+						}
+						prods2[count] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
+						count++;
 					}
 					cplex.addEq(cplex.sum(prods1), cplex.sum(prods2));
+					cplex.addEq(x[nullIndex1], x[nullIndex2]);
 				}
 			}			
 			
