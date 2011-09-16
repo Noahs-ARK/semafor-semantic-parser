@@ -32,7 +32,7 @@ public class DataStructuresForFERelations {
 			System.out.println("Frame: " + frame);
 			Document d = XmlUtils.parseXmlFile(f.getAbsolutePath() + "/" + file, false);
 			Element[] eArr = XmlUtils.applyXPath(d, "/frame/FE/excludesFE");
-			if (eArr != null && eArr.length == 0) {
+			if (eArr != null && eArr.length != 0) {
 				System.out.println("Total number of exlude FEs found: " + eArr.length);
 				for (int i = 0; i < eArr.length; i++) {
 					Element e = eArr[i];
