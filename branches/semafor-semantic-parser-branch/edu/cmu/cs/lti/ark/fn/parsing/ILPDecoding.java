@@ -143,10 +143,12 @@ public class ILPDecoding {
 					IloNumExpr[] prods = new IloNumExpr[sumOfLengths];
 					count = 0;
 					for (int j = 0; j < scoreMap.get(one).length; j++) {
+						System.out.println("MappedIndex1: " + mappedIndices[oneIndex][j]);
 						prods[count] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
 						count++;
 					}
 					for (int j = 0; j < scoreMap.get(two).length; j++) {
+						System.out.println("MappedIndex2: " + mappedIndices[twoIndex][j]);
 						prods[count] = cplex.prod(-1.0, x[mappedIndices[twoIndex][j]]);
 						count++;
 					}
