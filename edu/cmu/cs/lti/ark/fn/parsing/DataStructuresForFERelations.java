@@ -43,7 +43,7 @@ public class DataStructuresForFERelations {
 					}
 					NamedNodeMap map = par.getAttributes();
 					Node name = map.getNamedItem("name");
-					System.out.println(name.getNodeValue());
+					System.out.println(e.getAttribute("name") + "\t" + name.getNodeValue());
 				}
 			}
 			
