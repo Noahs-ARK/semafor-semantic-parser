@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.util.XmlUtils;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
@@ -103,6 +104,10 @@ public class DataStructuresForFERelations {
 			}
 		}
 		printMaps(requiresMap, exclusionMap);
+		String excludesFile = "/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/excludes.map";
+		String requiresFile = "/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/requires.map";
+		SerializedObjects.writeSerializedObject(exclusionMap, excludesFile);
+		SerializedObjects.writeSerializedObject(requiresMap, requiresFile);
 	}
 	
 	public static void printMaps(Map<String, Set<Pair<String, String>>> requiresMap, 
