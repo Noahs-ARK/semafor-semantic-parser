@@ -38,7 +38,7 @@ import edu.cmu.cs.lti.ark.fn.optimization.*;
 public class Decoding
 {
 	private int numLocalFeatures;
-	private double[] localW;
+	protected double[] localW;
 	private String mLocalAlphabetFile;
 	private String mLocalModelFile;
 	public static long count=0;
@@ -119,14 +119,14 @@ public class Decoding
 		return dec;
 	}
 	
-	public double getWeightSum(int[] feats)
+	public double getWeightSum(int[] feats, double[] w)
 	{
-		double weightSum = localW[0];
+		double weightSum = w[0];
 		for (int k = 0; k < feats.length; k++)
 		{
 			if(feats[k]!=0)
 			{
-				weightSum+=localW[feats[k]];
+				weightSum+=w[feats[k]];
 			}
 		}
 		return weightSum;
@@ -155,7 +155,7 @@ public class Decoding
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				double weightSum=getWeightSum(feats);
+				double weightSum=getWeightSum(feats, localW);
 				double expVal = Math.exp(weightSum);
 				if(expVal>maxSum)
 				{
@@ -405,7 +405,7 @@ public class Decoding
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				weiFeatSum[j]=getWeightSum(feats);
+				weiFeatSum[j]=getWeightSum(feats, localW);
 				if(weiFeatSum[j]>maxSum)
 				{
 					maxSum = weiFeatSum[j];
@@ -450,7 +450,7 @@ public class Decoding
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				weiFeatSum[j]=getWeightSum(feats);
+				weiFeatSum[j]=getWeightSum(feats, localW);
 				double expVal = Math.exp(weiFeatSum[j]);
 				LDouble lVal = LDouble.convertToLogDomain(expVal);
 				String span = featureArray[j].span[0]+"_"+featureArray[j].span[1];
