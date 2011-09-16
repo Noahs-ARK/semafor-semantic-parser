@@ -139,20 +139,15 @@ public class ILPDecoding {
 					}
 					System.out.println("Found two overlapping FEs: " + one + "\t" + two);
 					System.out.println("Indices: " + keys[oneIndex] + "\t" + keys[twoIndex]);
-					int sumOfLengths = scoreMap.get(one).length + scoreMap.get(two).length;
-					IloNumExpr[] prods = new IloNumExpr[sumOfLengths];
-					count = 0;
+					IloNumExpr[] prods1 = new IloNumExpr[scoreMap.get(one).length];
+					IloNumExpr[] prods2 = new IloNumExpr[scoreMap.get(two).length];
 					for (int j = 0; j < scoreMap.get(one).length; j++) {
-						System.out.println("MappedIndex1: " + mappedIndices[oneIndex][j]);
-						prods[count] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
-						count++;
+						prods1[j] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
 					}
 					for (int j = 0; j < scoreMap.get(two).length; j++) {
-						System.out.println("MappedIndex2: " + mappedIndices[twoIndex][j]);
-						prods[count] = cplex.prod(-1.0, x[mappedIndices[twoIndex][j]]);
-						count++;
+						prods2[count] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
 					}
-					cplex.addEq(cplex.sum(prods), 0.0);
+					cplex.addEq(cplex.sum(prods1), cplex.sum(prods2));
 				}
 			}			
 			
