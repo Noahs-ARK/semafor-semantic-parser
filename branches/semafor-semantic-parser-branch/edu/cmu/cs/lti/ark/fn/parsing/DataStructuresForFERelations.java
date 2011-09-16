@@ -13,6 +13,7 @@ import org.w3c.dom.Node;
 import edu.cmu.cs.lti.ark.util.XmlUtils;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
+import gnu.trove.THashSet;
 
 public class DataStructuresForFERelations {
 	public static void main(String[] args) {
@@ -43,10 +44,62 @@ public class DataStructuresForFERelations {
 					}
 					NamedNodeMap map = par.getAttributes();
 					Node name = map.getNamedItem("name");
-					System.out.println(e.getAttribute("name") + "\t" + name.getNodeValue());
+					String one = null;
+					String two = null;
+					if (e.getAttribute("name").compareTo(name.getNodeValue()) < 0) {
+						one = e.getAttribute("name");
+						two = name.getNodeValue();
+					} else {
+						two = e.getAttribute("name");
+						one = name.getNodeValue();
+					}
+					Pair<String, String> p = new Pair<String, String>(one, two);
+					if (exclusionMap.containsKey(frame)) {
+						Set<Pair<String, String>> set = exclusionMap.get(frame);
+						set.add(p);
+						exclusionMap.put(frame, set);
+					} else {
+						Set<Pair<String,String>> set = new THashSet<Pair<String,String>>();
+						set.add(p);
+						exclusionMap.put(frame, set);
+					}
 				}
 			}
-			
+			Map<String, Set<Pair<String, String>>> requiresMap = 
+				new THashMap<String, Set<Pair<String, String>>>();
+			eArr = XmlUtils.applyXPath(d, "/frame/FE/requiresFE");
+			if (eArr != null && eArr.length != 0) {
+				System.out.println("Total number of requires FEs found: " + eArr.length);
+				for (int i = 0; i < eArr.length; i++) {
+					Element e = eArr[i];
+					Node par = e.getParentNode();
+					if (!par.getNodeName().equals("FE")) {
+						System.out.println("Node name is not FE. Exiting.");
+						System.exit(-1);
+					}
+					NamedNodeMap map = par.getAttributes();
+					Node name = map.getNamedItem("name");
+					String one = null;
+					String two = null;
+					if (e.getAttribute("name").compareTo(name.getNodeValue()) < 0) {
+						one = e.getAttribute("name");
+						two = name.getNodeValue();
+					} else {
+						two = e.getAttribute("name");
+						one = name.getNodeValue();
+					}
+					Pair<String, String> p = new Pair<String, String>(one, two);
+					if (exclusionMap.containsKey(frame)) {
+						Set<Pair<String, String>> set = requiresMap.get(frame);
+						set.add(p);
+						requiresMap.put(frame, set);
+					} else {
+						Set<Pair<String,String>> set = new THashSet<Pair<String,String>>();
+						set.add(p);
+						requiresMap.put(frame, set);
+					}
+				}
+			}
 		}
 	}
 }
