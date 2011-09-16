@@ -44,9 +44,12 @@ public class ILPDecoding {
 		Arrays.sort(keys);	
 		int totalCount = 0;
 		int max = -Integer.MAX_VALUE;
+		int[][] mappedIndices = new int[keys.length][];
+		int count = 0;
 		for (int i = 0; i < keys.length; i++) {
 			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 			totalCount += arr.length;
+			mappedIndices[i] = new int[arr.length];
 			for (int j = 0; j < arr.length; j++) {
 				int start = arr[j].getFirst()[0];
 				int end = arr[j].getFirst()[1];
@@ -60,8 +63,11 @@ public class ILPDecoding {
 						max = end;
 					}
 				}
+				mappedIndices[i][j] = count;
+				count++;
 			}
-		}
+		}		
+		
 		System.out.println("Max index:" + max);
 		TIntHashSet[] overlapArray = new TIntHashSet[max+1];
 		for (int i = 0; i < max+1; i++) {
@@ -73,7 +79,7 @@ public class ILPDecoding {
 		System.out.println("Size of keys: " + keys.length);
 		System.out.println("Totalcount: " + totalCount);
 		try {
-			int count = 0;
+			count = 0;
 			for (int i = 0; i < keys.length; i++) {
 				Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 				for (int j = 0; j < arr.length; j++) {
@@ -117,6 +123,35 @@ public class ILPDecoding {
 				}
 				cplex.addLe(cplex.sum(prods), 1.0);
 			}
+			// constraints for required FEs
+			if (requiresMap.containsKey(frame)) {
+				Set<Pair<String, String>> set = requiresMap.get(frame);
+				for (Pair<String, String> p: set) {
+					String one = p.getFirst();
+					String two = p.getSecond();
+					int oneIndex = Arrays.binarySearch(keys, one);
+					if (oneIndex < 0) {
+						continue;
+					}
+					int twoIndex = Arrays.binarySearch(keys, two);
+					if (twoIndex < 0) {
+						continue;
+					}
+					int sumOfLengths = scoreMap.get(one).length + scoreMap.get(one).length;
+					IloNumExpr[] prods = new IloNumExpr[sumOfLengths];
+					count = 0;
+					for (int j = 0; j < scoreMap.get(one).length; j++) {
+						prods[count] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
+						count++;
+					}
+					for (int j = 0; j < scoreMap.get(two).length; j++) {
+						prods[count] = cplex.prod(-1.0, x[mappedIndices[twoIndex][j]]);
+						count++;
+					}
+					cplex.addEq(cplex.sum(prods), 0.0);
+				}
+			}			
+			
 			if (cplex.solve()) { 
 				cplex.output().println("Solution status = " + cplex.getStatus()); 
 				cplex.output().println("Solution value  = " + cplex.getObjValue());
