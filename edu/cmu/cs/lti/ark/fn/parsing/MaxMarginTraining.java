@@ -24,6 +24,7 @@ package edu.cmu.cs.lti.ark.fn.parsing;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Date;
@@ -52,6 +53,7 @@ public class MaxMarginTraining
 	private double[][] tGradients;
 	private double[] tValues;
 	private Parameters params;
+	private JointDecoding mJd;
 	
 	public MaxMarginTraining()
 	{
@@ -72,6 +74,7 @@ public class MaxMarginTraining
 		mFrameLines = ParsePreparation.readSentencesFromFile(frFile);
 		numDataPoints = mFrameList.size();
 		mNumThreads = 1;
+		mJd = new JointDecoding();
 	}
 
 	public void init(String modelFile, 
@@ -88,6 +91,7 @@ public class MaxMarginTraining
 		mFrameLines = ParsePreparation.readSentencesFromFile(frFile);
 		numDataPoints = mFrameList.size();
 		mNumThreads = numThreads;
+		mJd = new JointDecoding();
 	}
 	
 	private void initModel()
@@ -97,6 +101,18 @@ public class MaxMarginTraining
 		localsc.close();
 		params = new Parameters(numFeatures);
 	}	
+	
+	public void trainingIter(int iter) {
+		for (int i = 0; i < mFrameList.size(); i++) {
+			if((i+1) % 200 == 0) {
+                System.out.print((i+1)+",");
+			}
+			FrameFeatures ff = mFrameList.get(i);
+			Map<String, String> map = 
+				mJd.getNonOverlappingDecision(ff, mFrameLines.get(i), 0, params.parameters, true);
+						
+		}
+	}
 	
 	public void train(int numIters) {
 		for (int i = 0; i < numIters; i++) {
