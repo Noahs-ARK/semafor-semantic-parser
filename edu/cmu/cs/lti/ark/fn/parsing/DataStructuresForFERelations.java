@@ -110,7 +110,7 @@ public class DataStructuresForFERelations {
 		Set<String> keys = requiresMap.keySet();
 		for (String key: keys) {
 			System.out.println(key + ":");
-			Set<Pair<String, String>> set = excludesMap.get(key);
+			Set<Pair<String, String>> set = requiresMap.get(key);
 			for (Pair<String, String> p: set) {
 				System.out.println(p.getFirst() + "\t" + p.getSecond());
 			}
