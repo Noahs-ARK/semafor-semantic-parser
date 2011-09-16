@@ -205,7 +205,6 @@ public class ILPDecoding {
 						count++;
 					}
 					cplex.addLe(cplex.sum(prods), 1.0);
-					cplex.addLe(cplex.sum(x[nullIndex1], x[nullIndex2]), 1.0);
 				}
 			}
 			
