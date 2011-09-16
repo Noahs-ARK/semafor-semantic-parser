@@ -89,7 +89,7 @@ public class DataStructuresForFERelations {
 						one = name.getNodeValue();
 					}
 					Pair<String, String> p = new Pair<String, String>(one, two);
-					if (exclusionMap.containsKey(frame)) {
+					if (requiresMap.containsKey(frame)) {
 						Set<Pair<String, String>> set = requiresMap.get(frame);
 						set.add(p);
 						requiresMap.put(frame, set);
