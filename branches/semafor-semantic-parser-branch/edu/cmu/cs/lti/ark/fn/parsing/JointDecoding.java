@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.Map;
 
+import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
 
@@ -100,7 +101,7 @@ public class JointDecoding extends Decoding {
 			System.out.println("Frame element:"+frameElements.get(i)+" Found span:"+outcome);
 		}
 		// vs is the set of FEs on which joint decoding has to be done
-		Map<String, String> feMap = ilpd.decode(vs);
+		Map<String, String> feMap = ilpd.decode(vs, frameName);
 		Set<String> keySet = feMap.keySet();
 		int count = 1;
 		for(String fe:keySet)
@@ -124,6 +125,14 @@ public class JointDecoding extends Decoding {
 		decisionLine="0\t"+count+"\t"+decisionLine.trim();
 		System.out.println(decisionLine);
 		return decisionLine;
+	}
+
+	public void setMaps(String requiresMap, String excludesMap) {
+		Map<String, Set<Pair<String, String>>> exclusionMap = 
+			(Map<String, Set<Pair<String, String>>>) SerializedObjects.readSerializedObject(excludesMap);
+		Map<String, Set<Pair<String, String>>> requiresMapObj = 
+			(Map<String, Set<Pair<String, String>>>) SerializedObjects.readSerializedObject(requiresMap);
+		ilpd.setMaps(exclusionMap, requiresMapObj);
 	}
 }
 

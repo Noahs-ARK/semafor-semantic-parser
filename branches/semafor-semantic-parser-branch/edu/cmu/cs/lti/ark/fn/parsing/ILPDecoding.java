@@ -2,7 +2,9 @@ package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
+import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
 import gnu.trove.TIntHashSet;
@@ -13,6 +15,9 @@ import ilog.cplex.*;
 
 public class ILPDecoding {
 	private IloCplex cplex = null;
+	private Map<String, Set<Pair<String, String>>> excludesMap;
+	private Map<String, Set<Pair<String, String>>> requiresMap;
+	
 	public ILPDecoding() {
 		try {
 			cplex = new IloCplex(); 
@@ -22,14 +27,21 @@ public class ILPDecoding {
 		}
 	}
 	
-	public Map<String, String> decode(Map<String, Pair<int[], Double>[]> scoreMap) {
+	public void setMaps(Map<String, Set<Pair<String, String>>> excludesMap, 
+						Map<String, Set<Pair<String, String>>> requiresMap) {
+		this.excludesMap = excludesMap;
+		this.requiresMap = requiresMap;
+	}
+	
+	public Map<String, String> decode(Map<String, Pair<int[], Double>[]> scoreMap, 
+									  String frame) {
 		Map<String, String> res = new THashMap<String, String>();
 		if (scoreMap.size() == 0) {
 			return res;
 		}
 		String[] keys = new String[scoreMap.size()];
 		scoreMap.keySet().toArray(keys);
-		Arrays.sort(keys);
+		Arrays.sort(keys);	
 		int totalCount = 0;
 		int max = -Integer.MAX_VALUE;
 		for (int i = 0; i < keys.length; i++) {
