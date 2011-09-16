@@ -145,7 +145,7 @@ public class ILPDecoding {
 						prods1[j] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
 					}
 					for (int j = 0; j < scoreMap.get(two).length; j++) {
-						prods2[count] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
+						prods2[j] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
 					}
 					cplex.addEq(cplex.sum(prods1), cplex.sum(prods2));
 				}
