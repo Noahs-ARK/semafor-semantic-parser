@@ -169,7 +169,7 @@ public class ILPDecoding {
 			
 			// constraints for excluding FEs
 			if (excludesMap.containsKey(frame)) {
-				Set<Pair<String, String>> set = requiresMap.get(frame);
+				Set<Pair<String, String>> set = excludesMap.get(frame);
 				for (Pair<String, String> p: set) {
 					String one = p.getFirst();
 					String two = p.getSecond();
