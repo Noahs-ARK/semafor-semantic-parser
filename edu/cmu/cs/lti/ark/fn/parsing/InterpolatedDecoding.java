@@ -117,7 +117,7 @@ public class InterpolatedDecoding extends Decoding {
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				double weightSum=getWeightSum(feats);
+				double weightSum=getWeightSum(feats, localW);
 				double expVal = Math.exp(weightSum);
 				Z += expVal;
 			}
@@ -126,7 +126,7 @@ public class InterpolatedDecoding extends Decoding {
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				double weightSum=getWeightSum(feats);
+				double weightSum=getWeightSum(feats, localW);
 				double expVal = Math.exp(weightSum);
 				double prob = (1 - mIWeight) * expVal / Z;
 				int[] span = featureArray[j].span;
@@ -199,7 +199,7 @@ public class InterpolatedDecoding extends Decoding {
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				double weightSum=getWeightSum(feats);
+				double weightSum=getWeightSum(feats, localW);
 				double expVal = Math.exp(weightSum);
 				Z += expVal;
 			}
@@ -208,7 +208,7 @@ public class InterpolatedDecoding extends Decoding {
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				double weightSum=getWeightSum(feats);
+				double weightSum=getWeightSum(feats, localW);
 				double expVal = Math.exp(weightSum);
 				double prob = (1 - mIWeight) * expVal / Z;
 				int[] span = featureArray[j].span;
@@ -268,7 +268,7 @@ public class InterpolatedDecoding extends Decoding {
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				double weightSum=getWeightSum(feats);
+				double weightSum=getWeightSum(feats, localW);
 				double expVal = Math.exp(weightSum);
 				Z += expVal;
 			}
@@ -276,7 +276,7 @@ public class InterpolatedDecoding extends Decoding {
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				double weightSum=getWeightSum(feats);
+				double weightSum=getWeightSum(feats, localW);
 				double expVal = Math.exp(weightSum);
 				double prob = (1 - mIWeight) * expVal / Z;
 				int[] span = featureArray[j].span;
