@@ -108,6 +108,7 @@ public class MaxMarginTraining
                 System.out.print((i+1)+",");
 			}
 			FrameFeatures ff = mFrameList.get(i);
+			// assumes all FEs to be there in the map
 			Map<String, String> map = 
 				mJd.getNonOverlappingDecision(ff, mFrameLines.get(i), 0, params.parameters, true);
 						
