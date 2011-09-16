@@ -39,6 +39,9 @@ public class JointDecodingMainArgs
 		String predictionFile = args[4];
 		String frFile = args[5];
 		String overlap = args[6];
+		String requiresMap = args[7];
+		String excludesMap = args[8];
+		
 		LocalFeatureReading lfr = new LocalFeatureReading(eventsFile, spanFile, frFile);
 		try
 		{
@@ -57,6 +60,7 @@ public class JointDecodingMainArgs
 				ParsePreparation.readSentencesFromFile(frFile),
 				false
 				);
+		bpd.setMaps(requiresMap, excludesMap);
 		Date sd = new Date();
 		long st = sd.getTime();
 		bpd.decodeAll(overlap, 0);
