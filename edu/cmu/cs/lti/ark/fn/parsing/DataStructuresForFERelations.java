@@ -27,6 +27,8 @@ public class DataStructuresForFERelations {
 		String[] files = f.list(filter);
 		Map<String, Set<Pair<String, String>>> exclusionMap = 
 			new THashMap<String, Set<Pair<String, String>>>();
+		Map<String, Set<Pair<String, String>>> requiresMap = 
+			new THashMap<String, Set<Pair<String, String>>>();
 		for (String file: files) {
 			int index = file.indexOf(".xml");
 			String frame = file.substring(0, index);
@@ -65,8 +67,7 @@ public class DataStructuresForFERelations {
 					}
 				}
 			}
-			Map<String, Set<Pair<String, String>>> requiresMap = 
-				new THashMap<String, Set<Pair<String, String>>>();
+			
 			eArr = XmlUtils.applyXPath(d, "/frame/FE/requiresFE");
 			if (eArr != null && eArr.length != 0) {
 				System.out.println("Total number of requires FEs found: " + eArr.length);
@@ -100,6 +101,20 @@ public class DataStructuresForFERelations {
 					}
 				}
 			}
+		}
+		printMaps(requiresMap, exclusionMap);
+	}
+	
+	public static void printMaps(Map<String, Set<Pair<String, String>>> requiresMap, 
+			Map<String, Set<Pair<String, String>>> excludesMap) {
+		Set<String> keys = requiresMap.keySet();
+		for (String key: keys) {
+			System.out.println(key + ":");
+			Set<Pair<String, String>> set = excludesMap.get(key);
+			for (Pair<String, String> p: set) {
+				System.out.println(p.getFirst() + "\t" + p.getSecond());
+			}
+			System.out.println();
 		}
 	}
 }
