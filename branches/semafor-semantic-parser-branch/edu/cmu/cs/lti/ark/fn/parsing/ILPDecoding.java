@@ -137,8 +137,7 @@ public class ILPDecoding {
 					if (twoIndex < 0) {
 						continue;
 					}
-					System.out.println("Found two overlapping FEs: " + one + "\t" + two);
-					System.out.println("Indices: " + keys[oneIndex] + "\t" + keys[twoIndex]);
+					System.out.println("Found two required FEs: " + one + "\t" + two);
 					IloNumExpr[] prods1 = new IloNumExpr[scoreMap.get(one).length-1];
 					IloNumExpr[] prods2 = new IloNumExpr[scoreMap.get(two).length-1];
 					int nullIndex1 = -1;
@@ -167,6 +166,48 @@ public class ILPDecoding {
 					cplex.addEq(x[nullIndex1], x[nullIndex2]);
 				}
 			}			
+			
+			// constraints for excluding FEs
+			if (excludesMap.containsKey(frame)) {
+				Set<Pair<String, String>> set = requiresMap.get(frame);
+				for (Pair<String, String> p: set) {
+					String one = p.getFirst();
+					String two = p.getSecond();
+					int oneIndex = Arrays.binarySearch(keys, one);
+					if (oneIndex < 0) {
+						continue;
+					}
+					int twoIndex = Arrays.binarySearch(keys, two);
+					if (twoIndex < 0) {
+						continue;
+					}
+					System.out.println("Found two mutually exclusive FEs: " + one + "\t" + two);
+					IloNumExpr[] prods = new IloNumExpr[2*scoreMap.get(one).length-2];
+					int nullIndex1 = -1;
+					int nullIndex2 = -1;
+					count = 0;
+					Pair<int[], Double>[] arr1 = scoreMap.get(one);
+					Pair<int[], Double>[] arr2 = scoreMap.get(two);
+					for (int j = 0; j < scoreMap.get(one).length; j++) {
+						if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
+							nullIndex1 = mappedIndices[oneIndex][j];
+							continue;
+						}
+						prods[count] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
+						count++;
+					}
+					for (int j = 0; j < scoreMap.get(two).length; j++) {
+						if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
+							nullIndex2 = mappedIndices[twoIndex][j];
+							continue;
+						}
+						prods[count] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
+						count++;
+					}
+					cplex.addLe(cplex.sum(prods), 1.0);
+					cplex.addLe(cplex.sum(x[nullIndex1], x[nullIndex2]), 1.0);
+				}
+			}
 			
 			if (cplex.solve()) { 
 				cplex.output().println("Solution status = " + cplex.getStatus()); 
