@@ -138,6 +138,7 @@ public class ILPDecoding {
 						continue;
 					}
 					System.out.println("Found two overlapping FEs: " + one + "\t" + two);
+					System.out.println("Indices: " + keys[oneIndex] + "\t" + keys[twoIndex]);
 					int sumOfLengths = scoreMap.get(one).length + scoreMap.get(two).length;
 					IloNumExpr[] prods = new IloNumExpr[sumOfLengths];
 					count = 0;
