@@ -9,7 +9,7 @@
 // The license is approved by the Open Source Initiative, and is
 // available from their website at http://www.opensource.org.
 ///////////////////////////////////////////////////////////////////////////////
-package edu.cmu.cs.lti.ark.fn.parsing;
+package edu.cmu.cs.lti.ark.fn.optimization;
 import gnu.trove.TIntArrayList;
 import gnu.trove.TIntDoubleHashMap;
 import gnu.trove.TLinkedList;

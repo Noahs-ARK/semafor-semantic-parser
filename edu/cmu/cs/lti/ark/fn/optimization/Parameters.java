@@ -1,6 +1,9 @@
-package edu.cmu.cs.lti.ark.fn.parsing;
+package edu.cmu.cs.lti.ark.fn.optimization;
 
 import java.util.Map;
+
+import edu.cmu.cs.lti.ark.fn.parsing.FrameFeatures;
+import edu.cmu.cs.lti.ark.fn.parsing.SpanAndCorrespondingFeatures;
 
 public class Parameters {
 	private double SCORE = 0.0;
