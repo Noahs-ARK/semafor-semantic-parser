@@ -99,6 +99,10 @@ public class MaxMarginTraining
 		params = new Parameters(numFeatures);
 	}	
 	
+	public void wrapUp() {
+		mJd.wrapUp();
+	}
+	
 	public void trainingIter(int iter, int numIters) {
 		double error = 0.0;
 		for (int i = 0; i < 100; i++) {
