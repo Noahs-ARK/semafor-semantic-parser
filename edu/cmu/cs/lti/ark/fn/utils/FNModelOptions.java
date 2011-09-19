@@ -138,4 +138,7 @@ public final class FNModelOptions extends CommandLineOptions
 	public StringOption posTaggedFile = new StringOption("posfile");
 	public StringOption outAllLemmaTagsFile = new StringOption("alllemmatagsfile");
 	public BoolOption separateEventFiles = new BoolOption("separateeventfiles");
+	
+	public StringOption reqFile = new StringOption("reqmapfile");
+	public StringOption exFile = new StringOption("exmapfile");
 }
