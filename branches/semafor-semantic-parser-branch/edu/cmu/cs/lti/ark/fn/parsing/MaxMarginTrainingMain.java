@@ -55,10 +55,16 @@ public class MaxMarginTrainingMain
 		System.out.println("Reading binary event files.");
 		File f = new File(path);
 		String[] list = f.list(filter);
+		int i = 0;
 		for (String l: list) {
 			FrameFeatures fr = (FrameFeatures)SerializedObjects.readSerializedObject(f.getAbsolutePath() + "/" + l);
 			ffList.add(fr);
+			i++;
+			if (i % 500 == 0) {
+				System.out.print(i + " ");
+			}
 		}
+		System.out.println();
 		System.out.println("Finished reading binary event files");
 		return ffList;
 	}
