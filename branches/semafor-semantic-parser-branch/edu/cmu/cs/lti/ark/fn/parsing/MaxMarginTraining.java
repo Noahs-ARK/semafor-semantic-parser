@@ -172,6 +172,7 @@ public class MaxMarginTraining
             trainingIter(i+1, numIters);
             long end = System.currentTimeMillis();
             System.out.println("|Time:"+(end-start)+"]");
+            writeModel(mModelFile + "_"+i);
 		}
 		params.averageParams(numIters*mFrameList.size());
 		writeModel(mModelFile);

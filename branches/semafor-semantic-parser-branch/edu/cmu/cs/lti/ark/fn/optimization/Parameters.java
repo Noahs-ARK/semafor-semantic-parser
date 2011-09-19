@@ -119,6 +119,43 @@ public class Parameters {
 		}
 		return (1 - f);
 	}
+	
+	private double numErrorsPrecision(FrameFeatures actF, 
+			Map<String, String> pred) {
+		int actSize = actF.fElements.size();
+		if (actSize != pred.size()) {
+			System.out.println("Problem. The sizes do not match. Exiting");
+			System.exit(-1);
+		}
+		double matches = 0.0;
+		double totalGold = 0.0;
+		double totalPred = 0.0;
+		for (int i = 0; i < actSize; i++) {
+			String fe = actF.fElements.get(i);
+			SpanAndCorrespondingFeatures[] spans = 
+				actF.fElementSpansAndFeatures.get(i);
+			String actSpan = spans[actF.fGoldSpans.get(i)].span[0] + "_" + spans[actF.fGoldSpans.get(i)].span[1];
+			if (!pred.containsKey(fe)) {
+				System.out.println("Fe: " + fe + " not in map. Exiting.");
+				System.exit(-1);
+			}
+			if (!pred.get(fe).equals("-1_-1")) {
+				totalPred += 1.0;
+				if (pred.get(fe).equals(actSpan)) {
+					matches += 1.0;
+				}
+			}
+			if (!actSpan.equals("-1_-1")) {
+				totalGold += 1.0;
+			}
+		}
+		double p = matches / totalPred;
+		if (totalPred != 0) {
+			return (1 - p);
+		} else {
+			return 0;
+		}
+	}
 
 	public double getScore(FeatureVector fv) {
 		return fv.getScore(parameters);
