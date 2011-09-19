@@ -43,6 +43,7 @@ public class MaxMarginTrainingMain
 		bpt.init(modelFile, alphabetFile, list, frFile);
 		bpt.train(totalpasses);
 		bpt.writeModel();
+		bpt.wrapUp();
 	}	
 	
 	public static ArrayList<FrameFeatures> getFFList(String path) {
