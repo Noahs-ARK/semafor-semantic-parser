@@ -22,7 +22,7 @@ public class Parameters {
 		parameters = total;
 	}
 	
-	public void updateParamsMIRA(FrameFeatures actF,
+	public double updateParamsMIRA(FrameFeatures actF,
 								 FeatureVector instFv,
 								 Map<String, String>[] pred,
 								 FeatureVector[] bestFv,
@@ -35,9 +35,11 @@ public class Parameters {
 		double[] b = new double[K];
 		double[] lam_dist = new double[K];
 		FeatureVector[] dist = new FeatureVector[K];
+		double totalError = 0.0;
 		for(int k = 0; k < K; k++) {
 			lam_dist[k] = getScore(actFV) - getScore(bestFv[k]);
 			b[k] = (double) numErrors(actF, pred[k]);
+			totalError += b[k];
 			b[k] -= lam_dist[k];
 			dist[k] = actFV.getDistVector(bestFv[k]);
 		}
@@ -48,6 +50,7 @@ public class Parameters {
 			fv = dist[k];
 			fv.update(parameters, total, alpha[k], upd);	    
 		}
+		return totalError;
 	}
 
 	private double numErrors(FrameFeatures actF, 

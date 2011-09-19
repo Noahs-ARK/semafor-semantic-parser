@@ -64,8 +64,7 @@ public class MaxMarginTraining
 			String alphabetFile, 
 			ArrayList<FrameFeatures> list, 
 			String lexiconFile,
-			String frFile,
-			String binaryFactorPresent)
+			String frFile)
 	{
 		mModelFile = modelFile;
 		mAlphabetFile = alphabetFile;
@@ -81,7 +80,6 @@ public class MaxMarginTraining
 			String alphabetFile, 
 			ArrayList<FrameFeatures> list, 
 			String frFile,
-			String binaryFactorPresent,
 			int numThreads)
 	{
 		mModelFile = modelFile;
@@ -102,17 +100,61 @@ public class MaxMarginTraining
 		params = new Parameters(numFeatures);
 	}	
 	
-	public void trainingIter(int iter) {
-		for (int i = 0; i < mFrameList.size(); i++) {
+	public void trainingIter(int iter, int numIters) {
+		double error = 0.0;
+		for (int i = 0; i < 100; i++) {
 			if((i+1) % 200 == 0) {
                 System.out.print((i+1)+",");
 			}
 			FrameFeatures ff = mFrameList.get(i);
+			int numFes = ff.fElements.size();
+			FeatureVector goldFV = new FeatureVector();
+			for (int j = 0; j < numFes; j++) {
+				int goldSpan = ff.fGoldSpans.get(j);
+				SpanAndCorrespondingFeatures scf = ff.fElementSpansAndFeatures.get(i)[goldSpan];
+				int[] featArray = scf.features;
+				for (int feat: featArray) {
+					goldFV.add(feat, 1.0);
+				}
+			}			
+			double upd = (double)(numIters*mFrameList.size() - 
+					     (mFrameList.size()*(iter-1)+(i+1)) + 1);
 			// assumes all FEs to be there in the map
 			Map<String, String> map = 
 				mJd.getNonOverlappingDecision(ff, mFrameLines.get(i), 0, params.parameters, true);
-						
+			FeatureVector bestFV = new FeatureVector();
+			for (int j = 0; j < numFes; j++) {
+				SpanAndCorrespondingFeatures[] scf = ff.fElementSpansAndFeatures.get(i);
+				String fe = ff.fElements.get(j);
+				String span = map.get(fe);
+				if (span == null) {
+					System.out.println("Problem in i: " + i + " j = " + j + ". span is null.");
+					System.exit(-1);
+				}
+				int index = -1;
+				for (int k = 0; k < scf.length; k++) {
+					String s = scf[k].span[0] + "_" + scf[k].span[1];
+					if (s.equals(span)) {
+						index = k;
+					}
+				}
+				if (index == -1) {
+					System.out.println("Problem in i: " + i + " j = " + j + ". index is null. span: " + span);
+					System.exit(-1);
+				}
+				int[] featArray = scf[index].features;
+				for (int feat: featArray) {
+					bestFV.add(feat, 1.0);
+				}
+			}
+			Map<String, String>[] maps = new Map[1];
+			FeatureVector[] fvs = new FeatureVector[1];
+			maps[0] = map;
+			fvs[0] = bestFV;
+			double e = params.updateParamsMIRA(ff, goldFV, maps, fvs, upd);
+			error += e;
 		}
+		System.out.println("Total error in iteration i: " + error);
 	}
 	
 	public void train(int numIters) {
@@ -120,7 +162,7 @@ public class MaxMarginTraining
 			System.out.print(" Iteration "+i);
             System.out.print("[");
             long start = System.currentTimeMillis();
-            trainingIter(i+1);
+            trainingIter(i+1, i);
             long end = System.currentTimeMillis();
             System.out.println("|Time:"+(end-start)+"]");
 		}
