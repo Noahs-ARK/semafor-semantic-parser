@@ -35,6 +35,8 @@ import riso.numerical.LBFGS;
 import de.saar.coli.salsa.reiter.framenet.FrameNet;
 import edu.cmu.cs.lti.ark.fn.constants.FNConstants;
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
+import edu.cmu.cs.lti.ark.fn.optimization.FeatureVector;
+import edu.cmu.cs.lti.ark.fn.optimization.Parameters;
 import edu.cmu.cs.lti.ark.fn.optimization.SGA;
 import edu.cmu.cs.lti.ark.fn.utils.ThreadPool;
 import edu.cmu.cs.lti.ark.util.FileUtil;
