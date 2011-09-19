@@ -118,7 +118,7 @@ public class MaxMarginTraining
 			FeatureVector goldFV = new FeatureVector();
 			for (int j = 0; j < numFes; j++) {
 				int goldSpan = ff.fGoldSpans.get(j);
-				SpanAndCorrespondingFeatures scf = ff.fElementSpansAndFeatures.get(i)[goldSpan];
+				SpanAndCorrespondingFeatures scf = ff.fElementSpansAndFeatures.get(j)[goldSpan];
 				int[] featArray = scf.features;
 				for (int feat: featArray) {
 					goldFV.add(feat, 1.0);
@@ -131,7 +131,7 @@ public class MaxMarginTraining
 				mJd.getNonOverlappingDecision(ff, mFrameLines.get(i), 0, params.parameters, true);
 			FeatureVector bestFV = new FeatureVector();
 			for (int j = 0; j < numFes; j++) {
-				SpanAndCorrespondingFeatures[] scf = ff.fElementSpansAndFeatures.get(i);
+				SpanAndCorrespondingFeatures[] scf = ff.fElementSpansAndFeatures.get(j);
 				String fe = ff.fElements.get(j);
 				String span = map.get(fe);
 				if (span == null) {
