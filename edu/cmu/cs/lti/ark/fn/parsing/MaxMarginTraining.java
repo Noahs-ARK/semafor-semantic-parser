@@ -109,7 +109,7 @@ public class MaxMarginTraining
 	
 	public void trainingIter(int iter, int numIters) {
 		double error = 0.0;
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < mFrameList.size(); i++) {
 			if((i+1) % 200 == 0) {
                 System.out.print((i+1)+",");
 			}
