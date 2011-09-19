@@ -161,7 +161,7 @@ public class MaxMarginTraining
 			System.out.print(" Iteration "+i);
             System.out.print("[");
             long start = System.currentTimeMillis();
-            trainingIter(i+1, i);
+            trainingIter(i+1, numIters);
             long end = System.currentTimeMillis();
             System.out.println("|Time:"+(end-start)+"]");
 		}
