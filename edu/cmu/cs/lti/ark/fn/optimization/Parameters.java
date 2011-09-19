@@ -24,12 +24,12 @@ public class Parameters {
 			total[j] *= 1.0/((double)avVal);		
 		parameters = total;
 	}
-	
+
 	public double updateParamsMIRA(FrameFeatures actF,
-								 FeatureVector instFv,
-								 Map<String, String>[] pred,
-								 FeatureVector[] bestFv,
-								 double upd) {
+			FeatureVector instFv,
+			Map<String, String>[] pred,
+			FeatureVector[] bestFv,
+			double upd) {
 		FeatureVector actFV = instFv;
 		int K = 0;
 		for(int i = 0; i < bestFv.length && bestFv[i] != null; i++) {
@@ -41,7 +41,7 @@ public class Parameters {
 		double totalError = 0.0;
 		for(int k = 0; k < K; k++) {
 			lam_dist[k] = getScore(actFV) - getScore(bestFv[k]);
-			b[k] = (double) numErrors(actF, pred[k]);
+			b[k] = (double) numErrorsFMeasure(actF, pred[k]);
 			totalError += b[k];
 			b[k] -= lam_dist[k];
 			dist[k] = actFV.getDistVector(bestFv[k]);
@@ -57,7 +57,7 @@ public class Parameters {
 	}
 
 	private double numErrors(FrameFeatures actF, 
-							 Map<String, String> pred) {
+			Map<String, String> pred) {
 		int actSize = actF.fElements.size();
 		if (actSize != pred.size()) {
 			System.out.println("Problem. The sizes do not match. Exiting");
@@ -78,6 +78,41 @@ public class Parameters {
 			}
 		}
 		return totalErrors;
+	}
+	
+	private double numErrorsFMeasure(FrameFeatures actF, 
+			Map<String, String> pred) {
+		int actSize = actF.fElements.size();
+		if (actSize != pred.size()) {
+			System.out.println("Problem. The sizes do not match. Exiting");
+			System.exit(-1);
+		}
+		double matches = 0.0;
+		double totalGold = 0.0;
+		double totalPred = 0.0;
+		for (int i = 0; i < actSize; i++) {
+			String fe = actF.fElements.get(i);
+			SpanAndCorrespondingFeatures[] spans = 
+				actF.fElementSpansAndFeatures.get(i);
+			String actSpan = spans[actF.fGoldSpans.get(i)].span[0] + "_" + spans[actF.fGoldSpans.get(i)].span[1];
+			if (!pred.containsKey(fe)) {
+				System.out.println("Fe: " + fe + " not in map. Exiting.");
+				System.exit(-1);
+			}
+			if (!pred.get(fe).equals("-1_-1")) {
+				totalPred += 1.0;
+				if (pred.get(fe).equals(actSpan)) {
+					matches += 1.0;
+				}
+			}
+			if (!actSpan.equals("-1_-1")) {
+				totalGold += 1.0;
+			}
+		}
+		double p = matches / totalPred;
+		double e = matches / totalGold;
+		double f = 2 * p * e / (p + e);
+		return (1 - f);
 	}
 
 	public double getScore(FeatureVector fv) {
