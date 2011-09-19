@@ -21,6 +21,8 @@
  ******************************************************************************/
 package edu.cmu.cs.lti.ark.fn.parsing;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
@@ -35,15 +37,29 @@ public class MaxMarginTrainingMain
 		String alphabetFile = opts.alphabetFile.get();
 		String frameFeaturesCacheFile = opts.frameFeaturesCacheFile.get();
 		String frFile = opts.trainFrameFile.get();
-		String lexiconObj = opts.lexiconDir.get();
 		int totalpasses = opts.totalPasses.get();
-		int batchsize = opts.batchSize.get();
-		String reg = opts.reg.get();
-		double lambda = opts.lambda.get();
 		ArrayList<FrameFeatures> list = (ArrayList<FrameFeatures>)SerializedObjects.readSerializedObject(frameFeaturesCacheFile);
 		MaxMarginTraining bpt = new MaxMarginTraining();
-		bpt.init(modelFile, alphabetFile, list, lexiconObj, frFile);
-		bpt.train(10);
+		bpt.init(modelFile, alphabetFile, list, frFile);
+		bpt.train(totalpasses);
 		bpt.writeModel();
 	}	
+	
+	public static ArrayList<FrameFeatures> getFFList(String path) {
+		ArrayList<FrameFeatures> ffList = new ArrayList<FrameFeatures>();
+		FilenameFilter filter = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.endsWith("jobj");
+			}
+		};
+		System.out.println("Reading binary event files.");
+		File f = new File(path);
+		String[] list = f.list(filter);
+		for (String l: list) {
+			FrameFeatures fr = (FrameFeatures)SerializedObjects.readSerializedObject(f.getAbsolutePath() + "/" + l);
+			ffList.add(fr);
+		}
+		System.out.println("Finished reading binary event files");
+		return ffList;
+	}
 }

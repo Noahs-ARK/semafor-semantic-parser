@@ -62,8 +62,7 @@ public class MaxMarginTraining
 	
 	public void init(String modelFile, 
 			String alphabetFile, 
-			ArrayList<FrameFeatures> list, 
-			String lexiconFile,
+			ArrayList<FrameFeatures> list,
 			String frFile)
 	{
 		mModelFile = modelFile;
