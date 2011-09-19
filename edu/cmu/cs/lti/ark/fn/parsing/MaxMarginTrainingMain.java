@@ -49,7 +49,7 @@ public class MaxMarginTrainingMain
 		ArrayList<FrameFeatures> ffList = new ArrayList<FrameFeatures>();
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return name.endsWith("jobj");
+				return name.contains("jobj");
 			}
 		};
 		System.out.println("Reading binary event files.");
