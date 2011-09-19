@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Date;
+import java.util.Set;
 
 import riso.numerical.LBFGS;
 
@@ -40,6 +41,7 @@ import edu.cmu.cs.lti.ark.fn.optimization.Parameters;
 import edu.cmu.cs.lti.ark.fn.optimization.SGA;
 import edu.cmu.cs.lti.ark.fn.utils.ThreadPool;
 import edu.cmu.cs.lti.ark.util.FileUtil;
+import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 
 public class MaxMarginTraining
@@ -173,6 +175,10 @@ public class MaxMarginTraining
 		}
 		params.averageParams(numIters*mFrameList.size());
 		writeModel(mModelFile);
+	}
+	
+	public void setMaps(String requiresMap, String excludesMap) {
+		mJd.setMaps(requiresMap, excludesMap);
 	}
 	
 	public void writeModel(String modelFile) {
