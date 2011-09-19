@@ -4,7 +4,7 @@
  * Carnegie Mellon University, 
  * All Rights Reserved.
  * 
- * Training.java is part of SEMAFOR 2.0.
+ * MaxMarginTraining.java is part of SEMAFOR 2.0.
  * 
  * SEMAFOR 2.0 is free software: you can redistribute it and/or modify  it
  * under the terms of the GNU General Public License as published by the
@@ -161,7 +161,7 @@ public class MaxMarginTraining
 			double e = params.updateParamsMIRA(ff, goldFV, maps, fvs, upd);
 			error += e;
 		}
-		System.out.println("Total error in iteration i: " + error);
+		System.out.println("Total error in iteration " + iter + ": " + error);
 	}
 	
 	public void train(int numIters) {
