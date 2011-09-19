@@ -38,7 +38,7 @@ public class MaxMarginTrainingMain
 		String frameFeaturesCacheFile = opts.frameFeaturesCacheFile.get();
 		String frFile = opts.trainFrameFile.get();
 		int totalpasses = opts.totalPasses.get();
-		ArrayList<FrameFeatures> list = (ArrayList<FrameFeatures>)SerializedObjects.readSerializedObject(frameFeaturesCacheFile);
+		ArrayList<FrameFeatures> list = getFFList(frameFeaturesCacheFile);
 		MaxMarginTraining bpt = new MaxMarginTraining();
 		bpt.init(modelFile, alphabetFile, list, frFile);
 		bpt.train(totalpasses);
