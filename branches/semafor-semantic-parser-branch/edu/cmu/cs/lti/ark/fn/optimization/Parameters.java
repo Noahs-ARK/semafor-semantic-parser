@@ -74,7 +74,7 @@ public class Parameters {
 				System.exit(-1);
 			}
 			if (!actSpan.equals(pred.get(fe))) {
-				totalErrors += 0.0;
+				totalErrors += 1.0;
 			}
 		}
 		return totalErrors;
