@@ -111,7 +111,12 @@ public class Parameters {
 		}
 		double p = matches / totalPred;
 		double e = matches / totalGold;
-		double f = 2 * p * e / (p + e);
+		double f;
+		if (matches == 0) {
+			f = 0.0;
+		} else {
+			f = 2 * p * e / (p + e);
+		}
 		return (1 - f);
 	}
 
