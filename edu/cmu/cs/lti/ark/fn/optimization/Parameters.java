@@ -153,7 +153,7 @@ public class Parameters {
 		if (totalPred != 0) {
 			return (1 - p);
 		} else {
-			return 0;
+			return 1;
 		}
 	}
 
