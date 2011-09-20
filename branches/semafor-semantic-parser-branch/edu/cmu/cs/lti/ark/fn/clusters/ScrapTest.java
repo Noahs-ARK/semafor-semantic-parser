@@ -693,7 +693,6 @@ public class ScrapTest {
 					heads[left[i]][i]=i;
 				}
 			}
-		}
-		
+		}		
 	}	
 }

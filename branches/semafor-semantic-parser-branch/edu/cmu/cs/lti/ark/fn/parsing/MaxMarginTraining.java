@@ -172,7 +172,7 @@ public class MaxMarginTraining
             trainingIter(i+1, numIters);
             long end = System.currentTimeMillis();
             System.out.println("|Time:"+(end-start)+"]");
-            writeModel(mModelFile + "_"+i);
+            writeAverageModel(mModelFile + "_"+i, i+1, mFrameList.size());
 		}
 		params.averageParams(numIters*mFrameList.size());
 		writeModel(mModelFile);
@@ -180,6 +180,19 @@ public class MaxMarginTraining
 	
 	public void setMaps(String requiresMap, String excludesMap) {
 		mJd.setMaps(requiresMap, excludesMap);
+	}
+	
+	public void writeAverageModel(String modelFile, int iter, int size) {
+		PrintStream ps = FileUtil.openOutFile(modelFile);
+		// ps.println(w[0]);
+		System.out.println("Writing Model... ...");
+		// for (String key : paramIndex.keySet()) {\
+		for (int i = 0; i < params.parameters.length; i++) {
+			// ps.println(key + "\t" + w[paramIndex.get(key)]);
+			ps.println(params.total[i] / (double)size*iter);
+		}
+		System.out.println("Finished Writing Model");
+		ps.close();
 	}
 	
 	public void writeModel(String modelFile) {
