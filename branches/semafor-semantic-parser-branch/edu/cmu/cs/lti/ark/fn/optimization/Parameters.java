@@ -152,6 +152,8 @@ public class Parameters {
 		double p = matches / totalPred;
 		if (totalPred != 0) {
 			return (1 - p);
+		} else if (totalGold == 0){
+			return 0;
 		} else {
 			return 1;
 		}
