@@ -90,6 +90,8 @@ public class DataPrep {
 
 	public static Set<String> posConstraints = null;
 	
+	
+	
 	public DataPrep()
 	{
 		ps = FileUtil.openOutFile(FEFileName.spanfilename);
@@ -245,8 +247,8 @@ public class DataPrep {
 			tagLines = readLinesInFile(FEFileName.tagFilename);
 		} else {
 			tagLines = tL;
-		}		
-
+		}
+		
 		boolean hasCandidateFile = true;
 
 		Scanner canScanner = FileUtil.openInFile(FEFileName.candidateFilename);
