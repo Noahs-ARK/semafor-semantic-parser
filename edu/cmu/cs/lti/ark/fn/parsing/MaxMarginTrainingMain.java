@@ -40,11 +40,12 @@ public class MaxMarginTrainingMain
 		int totalpasses = opts.totalPasses.get();
 		String reqFile = opts.reqFile.get();
 		String exFile = opts.exFile.get();
+		boolean costAugmented = opts.costAugmented.get().equals("yes");
 		ArrayList<FrameFeatures> list = getFFList(frameFeaturesCacheFile);
 		MaxMarginTraining bpt = new MaxMarginTraining();
 		bpt.init(modelFile, alphabetFile, list, frFile);
 		bpt.setMaps(reqFile, exFile);
-		bpt.train(totalpasses);
+		bpt.train(totalpasses, costAugmented);
 		bpt.writeModel();
 		bpt.wrapUp();
 	}	
