@@ -24,7 +24,6 @@ package edu.cmu.cs.lti.ark.fn.parsing;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import edu.cmu.cs.lti.ark.fn.clusters.ScrapTest;
 import edu.cmu.cs.lti.ark.fn.utils.BitOps;
 import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;

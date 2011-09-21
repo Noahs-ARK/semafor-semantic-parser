@@ -33,8 +33,11 @@ public class FEFileName {
 	public static String wordnetFilename="file_properties.xml";
 	public static String frameDir="../framenet_j";
 	public static String fedictFilename1=null;
-	public static String fedictFilename2=null;	
-	
+	public static String fedictFilename2=null;
+	public static String graphFile=null;
+	public static String graphHeadsFile=null;
+	public static String sortedUniqueHeadsFile=null;
+		
 	public static String tmpDirname="../tmp/";
 	
 	public static String feFilename = "lrdata/semeval.fulltrain.sentences.frame.elements";
