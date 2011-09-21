@@ -48,17 +48,36 @@ public class JointDecoding extends Decoding {
 
 	public String getNonOverlappingDecision(FrameFeatures mFF, 
 			String frameLine, 
+			int offset,
+			boolean costAugmented,
+			FrameFeatures goldFF) {
+		return getNonOverlappingDecision(
+				mFF, 
+				frameLine, 
+				offset, 
+				localW,
+				costAugmented,
+				goldFF);
+	}
+
+	public String getNonOverlappingDecision(FrameFeatures mFF, 
+			String frameLine, 
 			int offset) {
 		return getNonOverlappingDecision(
 				mFF, 
 				frameLine, 
 				offset, 
-				localW);
+				localW,
+				false,
+				null);
 	}
 
+	
 	public Map<String, String> getDecodedMap(FrameFeatures mFF, 
 			String frameLine, 
-			int offset, double[] w) {
+			int offset, double[] w,
+			boolean costAugmented,
+			FrameFeatures goldFF) {
 		String frameName = mFF.frameName;
 		System.out.println("Frame:"+frameName);
 		ArrayList<SpanAndCorrespondingFeatures[]> featsList = mFF.fElementSpansAndFeatures;
@@ -92,14 +111,16 @@ public class JointDecoding extends Decoding {
 				}
 				System.out.println("Frame element:"+frameElements.get(i)+" Found span:"+outcome);
 			}
-			Map<String, String> feMap = ilpd.decode(vs, frameName);
+			Map<String, String> feMap = ilpd.decode(vs, frameName, costAugmented, goldFF);
 			return feMap;
 	}
 
 	public Map<String, String> getNonOverlappingDecision(FrameFeatures mFF, 
 			String frameLine, 
 			int offset, double[] w,
-			boolean returnMap) {
+			boolean returnMap,
+			boolean costAugmented,
+			FrameFeatures goldFF) {
 		Map<String, String> feMap = new THashMap<String, String>();
 		if(mFF.fElements.size()==0) {
 			return feMap;
@@ -108,12 +129,14 @@ public class JointDecoding extends Decoding {
 			return feMap;
 		}
 		// vs is the set of FEs on which joint decoding has to be done
-		return getDecodedMap(mFF, frameLine, offset, w);
+		return getDecodedMap(mFF, frameLine, offset, w, costAugmented, goldFF);
 	}
 
 	public String getNonOverlappingDecision(FrameFeatures mFF, 
 			String frameLine, 
-			int offset, double[] w) {
+			int offset, double[] w,
+			boolean costAugmented,
+			FrameFeatures goldFF) {
 		String frameName = mFF.frameName;
 		String decisionLine=getInitialDecisionLine(frameLine, offset);
 		if(mFF.fElements.size()==0) {
@@ -126,7 +149,7 @@ public class JointDecoding extends Decoding {
 		}
 		System.out.println("Frame:"+frameName);
 		// vs is the set of FEs on which joint decoding has to be done
-		Map<String, String> feMap = getDecodedMap(mFF, frameLine, offset, w);
+		Map<String, String> feMap = getDecodedMap(mFF, frameLine, offset, w, costAugmented, goldFF);
 		Set<String> keySet = feMap.keySet();
 		int count = 1;
 		for(String fe:keySet) {

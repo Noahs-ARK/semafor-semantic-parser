@@ -107,7 +107,7 @@ public class MaxMarginTraining
 		mJd.wrapUp();
 	}
 	
-	public void trainingIter(int iter, int numIters) {
+	public void trainingIter(int iter, int numIters, boolean costAugmented) {
 		double error = 0.0;
 		for (int i = 0; i < mFrameList.size(); i++) {
 			if((i+1) % 200 == 0) {
@@ -128,7 +128,13 @@ public class MaxMarginTraining
 					     (mFrameList.size()*(iter-1)+(i+1)) + 1);
 			// assumes all FEs to be there in the map
 			Map<String, String> map = 
-				mJd.getNonOverlappingDecision(ff, mFrameLines.get(i), 0, params.parameters, true);
+				mJd.getNonOverlappingDecision(ff, 
+											  mFrameLines.get(i), 
+											  0, 
+											  params.parameters, 
+											  true,
+											  true,
+											  ff);
 			FeatureVector bestFV = new FeatureVector();
 			for (int j = 0; j < numFes; j++) {
 				SpanAndCorrespondingFeatures[] scf = ff.fElementSpansAndFeatures.get(j);
@@ -164,12 +170,12 @@ public class MaxMarginTraining
 		System.out.println("Total error in iteration " + iter + ": " + error);
 	}
 	
-	public void train(int numIters) {
+	public void train(int numIters, boolean costAugmented) {
 		for (int i = 0; i < numIters; i++) {
 			System.out.print(" Iteration "+i);
             System.out.print("[");
             long start = System.currentTimeMillis();
-            trainingIter(i+1, numIters);
+            trainingIter(i+1, numIters, costAugmented);
             long end = System.currentTimeMillis();
             System.out.println("|Time:"+(end-start)+"]");
             writeAverageModel(mModelFile + "_"+i, i+1, mFrameList.size());
