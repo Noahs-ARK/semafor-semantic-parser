@@ -41,7 +41,7 @@ public class Parameters {
 		double totalError = 0.0;
 		for(int k = 0; k < K; k++) {
 			lam_dist[k] = getScore(actFV) - getScore(bestFv[k]);
-			b[k] = (double) numErrorsFMeasure(actF, pred[k]);
+			b[k] = (double) numErrorsPrecision(actF, pred[k]);
 			totalError += b[k];
 			b[k] -= lam_dist[k];
 			dist[k] = actFV.getDistVector(bestFv[k]);
