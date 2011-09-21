@@ -109,7 +109,7 @@ public class ILPDecoding {
 				cplex.addEq(cplex.sum(prods), 1.0);
 			}
 			// constraints for overlapping spans
-			/*for (int i = 0; i < max+1; i++) {
+			for (int i = 0; i < max+1; i++) {
 				if (overlapArray[i].size() == 0) {
 					continue;
 				}
@@ -206,7 +206,7 @@ public class ILPDecoding {
 					}
 					cplex.addLe(cplex.sum(prods), 1.0);
 				}
-			}*/
+			}
 			
 			if (cplex.solve()) { 
 				cplex.output().println("Solution status = " + cplex.getStatus()); 
