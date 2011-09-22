@@ -28,9 +28,10 @@ public class GraphFilterCoverage {
 		GraphSpans gs = (GraphSpans) SerializedObjects.readSerializedObject(graphFile);		
 		modifyHeadDist(gs);
 		System.out.println("Finished normalizing potentials");
-		int[][] topKFEs = getTopKFEs(gs, 100);
 		String sertopKFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.top.k.100.jobj";
-		SerializedObjects.writeSerializedObject(topKFEs, sertopKFile);
+		// int[][] topKFEs = getTopKFEs(gs, 100);
+		// SerializedObjects.writeSerializedObject(topKFEs, sertopKFile);
+		int[][] topKFEs = (int[][]) SerializedObjects.readSerializedObject(sertopKFile);
 		System.out.println("Got top K FEs for K="+100);
 		checkCoverage(gs, topKFEs);
 	}
@@ -75,6 +76,8 @@ public class GraphFilterCoverage {
 		ArrayList<String> feLines = ParsePreparation.readSentencesFromFile(feFile);
 		double total = 0.0;
 		double match = 0.0;
+		double totalNaiveSpans = 0.0;
+		double totalFilteredSpans = 0.0;
 		for(String feLine:feLines)
 		{
 			String[] toks = feLine.trim().split("\t");
@@ -106,7 +109,9 @@ public class GraphFilterCoverage {
 			}
 			for(int k = 6; k < toks.length; k = k + 2) {
 				String fe = toks[k];
-				Set<String> filteredSpans = filterSpans(fe, autoSpans, sortedNodes, gs, topKFEs);			
+				Set<String> filteredSpans = filterSpans(fe, autoSpans, sortedNodes, gs, topKFEs);
+				totalNaiveSpans += autoSpans.size();
+				totalFilteredSpans += filteredSpans.size();
 				String[] spans = toks[k+1].split(":");
 				String span;
 				if (spans.length == 1) {
@@ -121,6 +126,8 @@ public class GraphFilterCoverage {
 			}
 		}
 		System.out.println("Recall: " + (match / total));
+		System.out.println("Total naive spans: " + totalNaiveSpans);
+		System.out.println("Total filtered spans: " + totalFilteredSpans);
 	}
 	
 	public static String getSpan(DependencyParse[] nodes, 
