@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.fn.parsing.CoarseDistributions;
+import edu.cmu.cs.lti.ark.fn.parsing.GraphSpans;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
@@ -25,6 +26,9 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 	}
 	
 	public static void headsCollective() {
+		String graphFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.graph.spans.jobj";
+		System.out.println("Reading graph spans file from: " + graphFile);
+		GraphSpans gs = (GraphSpans) SerializedObjects.readSerializedObject(graphFile);		
 		String headsFile = DATA_DIR + "/all.spans.heads";
 		String[] mSortedUniqueHeads = CoarseDistributions.getSortedUniqueHeads(headsFile);
 		String headsSerFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.heads.jobj";
@@ -36,12 +40,14 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 		String[] mSortedFEs = readFEFile(feFile);
 		for (int i = 1; i <= 6; i++) {
 			System.out.println("K = " + i);
-			checkCoverageWithHeadsCollective(mSortedUniqueHeads, mSortedFEs, mHeadDist, i);
+			checkCoverageWithHeadsCollective(gs, mSortedUniqueHeads, mSortedFEs, mHeadDist, i);
 			System.out.println("\n\n");
 		}
 	}
 	
-	public static void checkCoverageWithHeadsCollective(String[] sortedHeads, 
+	public static void checkCoverageWithHeadsCollective(
+			GraphSpans gs,
+			String[] sortedHeads, 
 			String[] sortedFEs, 
 			float[][] headDist,
 			int K) {
@@ -110,9 +116,26 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 				String[] toks1 = autoSpan.split("_");
 				int start = new Integer(toks1[0]);
 				int end = new Integer(toks1[1]);
+				String phrase = getSpan(sortedNodes, start, end);
 				String head = getHead(sortedNodes, start, end);
+				int phraseIndex = Arrays.binarySearch(gs.sortedSpans, phrase);
 				int headIndex = Arrays.binarySearch(sortedHeads, head);
-				if (headIndex < 0) {
+				if (phraseIndex > 0) {
+					Pair<Integer, Double>[] parr = new Pair[fes.size()];
+					for (int i = 0; i < fes.size(); i++) {
+						int feIndex = Arrays.binarySearch(sortedFEs, fesArray[i]);
+						double val = gs.smoothedGraph[headIndex][feIndex];
+						parr[i] = new Pair<Integer, Double>(i, val);
+					}
+					Arrays.sort(parr, comp);
+					int endIndex = K;
+					if (parr.length < K) {
+						endIndex = parr.length;
+					}
+					for (int i = 0; i < endIndex; i++) {
+						filteredSpanArray[parr[i].getFirst()].add(autoSpan);
+					}
+				} else if (headIndex < 0) {
 					for (int i = 0; i < fes.size(); i++) {
 						filteredSpanArray[i].add(autoSpan);
 					}
