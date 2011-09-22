@@ -125,7 +125,7 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 					}
 					Arrays.sort(parr, comp);
 					int endIndex = K;
-					if (K < parr.length) {
+					if (parr.length < K) {
 						endIndex = parr.length;
 					}
 					for (int i = 0; i < endIndex; i++) {
