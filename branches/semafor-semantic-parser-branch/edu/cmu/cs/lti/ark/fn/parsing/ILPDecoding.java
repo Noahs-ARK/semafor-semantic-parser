@@ -150,7 +150,7 @@ public class ILPDecoding {
 				cplex.addLe(cplex.sum(prods), 1.0);
 			}
 			// constraints for required FEs
-			if (requiresMap.containsKey(frame)) {
+			/*if (requiresMap.containsKey(frame)) {
 				Set<Pair<String, String>> set = requiresMap.get(frame);
 				for (Pair<String, String> p: set) {
 					String one = p.getFirst();
@@ -232,7 +232,7 @@ public class ILPDecoding {
 					}
 					cplex.addLe(cplex.sum(prods), 1.0);
 				}
-			}
+			}*/
 			
 			if (cplex.solve()) { 
 				cplex.output().println("Solution status = " + cplex.getStatus()); 
