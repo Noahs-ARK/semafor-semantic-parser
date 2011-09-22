@@ -28,13 +28,18 @@ public class GraphFilterCoverage {
 		GraphSpans gs = (GraphSpans) SerializedObjects.readSerializedObject(graphFile);		
 		modifyHeadDist(gs);
 		System.out.println("Finished normalizing potentials");
-		String sertopKFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.top.k.100.jobj";
-		// int[][] topKFEs = getTopKFEs(gs, 100);
-		// SerializedObjects.writeSerializedObject(topKFEs, sertopKFile);
-		int[][] topKFEs = (int[][]) SerializedObjects.readSerializedObject(sertopKFile);
-		System.out.println("Got top K FEs for K="+100);
-		checkCoverage(gs, topKFEs);
+		for (int K = 200; K <= 1000; K = K + 100)  {
+			int[][] topKFEs = getTopKFEs(gs, K);
+			String sertopKFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.top.k."+K+".jobj";
+			SerializedObjects.writeSerializedObject(topKFEs, sertopKFile);
+			System.out.println("Finished with K: " + sertopKFile);
+		}
+		// int[][] topKFEs = (int[][]) SerializedObjects.readSerializedObject(sertopKFile);
+		// System.out.println("Got top K FEs for K="+100);
+		// checkCoverage(gs, topKFEs);
 	}
+	
+	
 	
 	public static int[][] getTopKFEs(GraphSpans gs, int K) {
 		Comparator<Pair<Integer, Double>> comp = new Comparator<Pair<Integer, Double>>() {
@@ -178,8 +183,6 @@ public class GraphFilterCoverage {
 		return filteredSpans;
 	}
 										  
-											
-	
 	public static void modifyHeadDist(GraphSpans gs) {
 		int len = gs.smoothedGraph.length;
 		int flen = gs.smoothedGraph[0].length;
