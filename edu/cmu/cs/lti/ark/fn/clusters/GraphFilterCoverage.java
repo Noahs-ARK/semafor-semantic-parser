@@ -154,12 +154,13 @@ public class GraphFilterCoverage {
 										  GraphSpans gs,
 										  int[][] topKFEs) {
 		Set<String> filteredSpans = new THashSet<String>();
+		
 		for (String span: autoSpans) {
 			String[] toks = span.split("_");
 			int start = new Integer(toks[0]);
 			int end = new Integer(toks[1]);
 			String phrase = getSpan(sortedNodes, start, end);
-			int foundIndex = Arrays.binarySearch(gs.sortedFEs, phrase);
+			int foundIndex = Arrays.binarySearch(gs.sortedSpans, phrase);
 			if (foundIndex < 0) {
 				filteredSpans.add(span);
 			} else {
