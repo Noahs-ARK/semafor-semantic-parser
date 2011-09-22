@@ -124,7 +124,7 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 					Pair<Integer, Double>[] parr = new Pair[fes.size()];
 					for (int i = 0; i < fes.size(); i++) {
 						int feIndex = Arrays.binarySearch(sortedFEs, fesArray[i]);
-						double val = gs.smoothedGraph[headIndex][feIndex];
+						double val = gs.smoothedGraph[phraseIndex][feIndex];
 						parr[i] = new Pair<Integer, Double>(i, val);
 					}
 					Arrays.sort(parr, comp);
