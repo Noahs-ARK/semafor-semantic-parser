@@ -18,6 +18,60 @@ import gnu.trove.THashSet;
 
 public class DataStructuresForFERelations {
 	public static void main(String[] args) {
+		semTypes();
+	}
+	
+	public static void semTypes() {
+		String dir = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/frame";
+		FilenameFilter filter = new FilenameFilter() {
+			public boolean accept(File arg0, String arg1) {
+				return arg1.endsWith(".xml");
+			}
+		};
+		File f = new File(dir);
+		String[] files = f.list(filter);
+		Map<String, THashSet<String>> semTypesMap = 
+			new THashMap<String, THashSet<String>>();		
+		THashSet<String> setOfSemTypes = new THashSet<String>();
+		for (String file: files) {
+			int index = file.indexOf(".xml");
+			String frame = file.substring(0, index);
+			System.out.println("Frame: " + frame);
+			Document d = XmlUtils.parseXmlFile(f.getAbsolutePath() + "/" + file, false);
+			Element[] eArr = XmlUtils.applyXPath(d, "/frame/FE/semType");
+			if (eArr != null && eArr.length != 0) {
+				System.out.println("Total number of semTypes found: " + eArr.length);
+				for (int i = 0; i < eArr.length; i++) {
+					Element e = eArr[i];
+					String semType = e.getAttribute("name");
+					Node par = e.getParentNode();
+					if (!par.getNodeName().equals("FE")) {
+						System.out.println("Node name is not FE. Exiting.");
+						System.exit(-1);
+					}
+					NamedNodeMap map = par.getAttributes();
+					Node name = map.getNamedItem("name");
+					String feName = name.getNodeValue();
+					if (semTypesMap.containsKey(feName)) {
+						THashSet<String> set = semTypesMap.get(feName);
+						set.add(semType);
+					} else {
+						THashSet<String> set = new THashSet<String>();
+						set.add(semType);
+						semTypesMap.put(feName, set);
+					}
+					setOfSemTypes.add(semType);
+				}
+			}
+		}
+		System.out.println("Total number of FEs in semtypesMap: " + semTypesMap.size());
+		System.out.println("Total number of semTypes: " + setOfSemTypes.size());
+		
+		String file = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/fe2semTypes.map";
+		SerializedObjects.writeSerializedObject(semTypesMap, file);
+	}
+	
+	public static void pairwiseRelations() {
 		String dir = "/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/frame";
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File arg0, String arg1) {
