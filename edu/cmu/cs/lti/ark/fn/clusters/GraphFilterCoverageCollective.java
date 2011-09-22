@@ -21,7 +21,7 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 	public static final String INFIX = "train";
 		
 	public static void main (String[] args) {
-		heads();
+		headsCollective();
 	}
 	
 	public static void headsCollective() {
