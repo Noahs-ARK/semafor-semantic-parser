@@ -17,6 +17,7 @@ public class JointDecoding extends Decoding {
 	private boolean mIgnoreNullSpansWhileJointDecoding;
 	private ILPDecoding ilpd = null;
 	private double[] w2 = null;
+	private double secondModelWeight = 0.0;
 	
 	public JointDecoding()
 	{
@@ -49,7 +50,7 @@ public class JointDecoding extends Decoding {
 		mIgnoreNullSpansWhileJointDecoding = ignoreNullSpansWhileJointDecoding;
 	}	
 	
-	public void setSecondModel(String secondModelFile) {
+	public void setSecondModel(String secondModelFile, double weight) {
 		w2 = new double[numLocalFeatures];
 		Scanner paramsc = FileUtil.openInFile(secondModelFile);
 		for (int i = 0; i < numLocalFeatures; i++) {
@@ -57,6 +58,7 @@ public class JointDecoding extends Decoding {
 			w2[i] = val;
 		}
 		paramsc.close();
+		secondModelWeight = weight;
 	}
 	
 	public String getNonOverlappingDecision(FrameFeatures mFF, 
@@ -109,7 +111,8 @@ public class JointDecoding extends Decoding {
 					int[] feats = featureArray[j].features;
 					double weightFeatSum = getWeightSum(feats, w);
 					if (w2 != null) {
-						weightFeatSum += getWeightSum(feats, w2);
+						weightFeatSum = (1.0 - secondModelWeight) * weightFeatSum + 
+										(secondModelWeight) * getWeightSum(feats, w2);
 					}
 					arr[j] = new Pair<int[], Double>(featureArray[j].span, weightFeatSum);
 					if (weightFeatSum > maxProb) {
