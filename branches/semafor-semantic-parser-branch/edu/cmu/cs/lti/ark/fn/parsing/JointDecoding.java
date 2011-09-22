@@ -51,6 +51,7 @@ public class JointDecoding extends Decoding {
 	}	
 	
 	public void setSecondModel(String secondModelFile, double weight) {
+		System.out.println("Setting second model from: " + secondModelFile);
 		w2 = new double[numLocalFeatures];
 		Scanner paramsc = FileUtil.openInFile(secondModelFile);
 		for (int i = 0; i < numLocalFeatures; i++) {
@@ -59,6 +60,7 @@ public class JointDecoding extends Decoding {
 		}
 		paramsc.close();
 		secondModelWeight = weight;
+		System.out.println("Interpolation weight: " + secondModelWeight);
 	}
 	
 	public String getNonOverlappingDecision(FrameFeatures mFF, 
