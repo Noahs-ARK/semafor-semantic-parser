@@ -135,7 +135,7 @@ public class ILPDecoding {
 				cplex.addEq(cplex.sum(prods), 1.0);
 			}
 			// constraints for overlapping spans
-			for (int i = 0; i < max+1; i++) {
+			/*for (int i = 0; i < max+1; i++) {
 				if (overlapArray[i].size() == 0) {
 					continue;
 				}
@@ -150,7 +150,7 @@ public class ILPDecoding {
 				cplex.addLe(cplex.sum(prods), 1.0);
 			}
 			// constraints for required FEs
-			/*if (requiresMap.containsKey(frame)) {
+			if (requiresMap.containsKey(frame)) {
 				Set<Pair<String, String>> set = requiresMap.get(frame);
 				for (Pair<String, String> p: set) {
 					String one = p.getFirst();
