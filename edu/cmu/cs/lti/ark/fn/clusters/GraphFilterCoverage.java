@@ -29,6 +29,8 @@ public class GraphFilterCoverage {
 		modifyHeadDist(gs);
 		System.out.println("Finished normalizing potentials");
 		int[][] topKFEs = getTopKFEs(gs, 100);
+		String sertopKFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.top.k.100.jobj";
+		SerializedObjects.writeSerializedObject(topKFEs, sertopKFile);
 		System.out.println("Got top K FEs for K="+100);
 		checkCoverage(gs, topKFEs);
 	}
@@ -152,7 +154,7 @@ public class GraphFilterCoverage {
 			String phrase = getSpan(sortedNodes, start, end);
 			int foundIndex = Arrays.binarySearch(gs.sortedFEs, phrase);
 			if (foundIndex < 0) {
-				filteredSpans.add(phrase);
+				filteredSpans.add(span);
 			} else {
 				int[] topK = topKFEs[foundIndex];
 				int feIndex = Arrays.binarySearch(gs.sortedFEs, fe);
@@ -161,7 +163,7 @@ public class GraphFilterCoverage {
 					System.exit(-1);
 				}
 				if (Arrays.binarySearch(topK, feIndex) >= 0) {
-					filteredSpans.add(phrase);
+					filteredSpans.add(span);
 				}
 			}
 		}
