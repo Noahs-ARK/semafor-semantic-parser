@@ -42,7 +42,10 @@ public class JointDecodingMainArgs
 		String requiresMap = args[7];
 		String excludesMap = args[8];
 		String secondModelFile = args[9];
-		
+		double secondModelWeight = 0.0;
+		if (secondModelFile != null && secondModelFile.equals("null") ) {
+			secondModelWeight = new Double(args[10]);
+		}
 		LocalFeatureReading lfr = new LocalFeatureReading(eventsFile, spanFile, frFile);
 		try
 		{
@@ -63,7 +66,7 @@ public class JointDecodingMainArgs
 				);
 		bpd.setMaps(requiresMap, excludesMap);
 		if (secondModelFile != null && secondModelFile.equals("null")) {
-			bpd.setSecondModel(secondModelFile);
+			bpd.setSecondModel(secondModelFile, secondModelWeight);
 		}
 		Date sd = new Date();
 		long st = sd.getTime();
