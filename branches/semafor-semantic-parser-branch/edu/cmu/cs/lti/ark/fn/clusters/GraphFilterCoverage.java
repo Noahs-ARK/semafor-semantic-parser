@@ -1,11 +1,16 @@
 package edu.cmu.cs.lti.ark.fn.clusters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.fn.parsing.GraphSpans;
+import edu.cmu.cs.lti.ark.fn.parsing.ScanPotentialSpans;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
+import edu.cmu.cs.lti.ark.util.ds.Pair;
 import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 import gnu.trove.THashSet;
 
@@ -23,10 +28,41 @@ public class GraphFilterCoverage {
 		GraphSpans gs = (GraphSpans) SerializedObjects.readSerializedObject(graphFile);		
 		modifyHeadDist(gs);
 		System.out.println("Finished normalizing potentials");
-		checkCoverage(gs);
+		int[][] topKFEs = getTopKFEs(gs, 100);
+		System.out.println("Got top K FEs for K="+100);
+		checkCoverage(gs, topKFEs);
 	}
 	
-	public static void checkCoverage(GraphSpans gs) {
+	public static int[][] getTopKFEs(GraphSpans gs, int K) {
+		Comparator<Pair<Integer, Double>> comp = new Comparator<Pair<Integer, Double>>() {
+			public int compare(Pair<Integer, Double> o1,
+					Pair<Integer, Double> o2) {
+				if (o1.getSecond() < o2.getSecond()) {
+					return -1;
+				} else if (o1.getSecond() == o2.getSecond()) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+		};
+		int[][] arr = new int[gs.sortedSpans.length][];
+		for (int i = 0; i < gs.sortedSpans.length; i++) {
+			arr[i] = new int[K];
+			Pair<Integer, Double>[] parr = new Pair[gs.smoothedGraph[i].length];
+			for (int j = 0; j < gs.smoothedGraph[i].length; j++) {
+				parr[j] = new Pair<Integer, Double>(j, (double)gs.smoothedGraph[i][j]);
+			}
+			Arrays.sort(parr, comp);
+			for (int j = 0; j < K; j++) {
+				arr[i][j] = parr[j].getFirst();
+			}
+			Arrays.sort(arr[i]);
+		}
+		return arr;
+	}
+	
+	public static void checkCoverage(GraphSpans gs, int[][] topKFEs) {
 		String parseFile = DATA_DIR + "/cv."+INFIX+".sentences.all.lemma.tags";
 		String feFile = DATA_DIR + "/cv."+INFIX+".sentences.frame.elements";
 		ArrayList<String> parses = ParsePreparation.readSentencesFromFile(parseFile);
@@ -64,6 +100,7 @@ public class GraphFilterCoverage {
 			}
 			for(int k = 6; k < toks.length; k = k + 2) {
 				String fe = toks[k];
+				Set<String> filteredSpans = filterSpans(fe, autoSpans, sortedNodes, gs, topKFEs);			
 				String[] spans = toks[k+1].split(":");
 				String span;
 				if (spans.length == 1) {
@@ -72,13 +109,62 @@ public class GraphFilterCoverage {
 					span = spans[0]+"_"+spans[1];
 				}
 				total++;
-				if (autoSpans.contains(span)) {
+				if (filteredSpans.contains(span)) {
 					match++;
 				}
 			}
 		}
 		System.out.println("Recall: " + (match / total));
 	}
+	
+	public static String getSpan(DependencyParse[] nodes, 
+						  int istart, int iend) {
+		String span = "";
+		for (int i = istart; i <= iend; i++) {
+			String tok = nodes[i+1].getWord();
+			if (tok.equals("-LRB-")) { tok = "("; }
+			if (tok.equals("-RRB-")) { tok = ")"; }
+			if (tok.equals("-RSB-")) { tok = "]"; }
+			if (tok.equals("-LSB-")) { tok = "["; }
+			if (tok.equals("-LCB-")) { tok = "{"; }
+			if (tok.equals("-RCB-")) { tok = "}"; }
+			span += tok + " ";
+		}
+		span = span.trim().toLowerCase();
+		span = ScanPotentialSpans.replaceNumbersWithAt(span.trim());
+		return span;
+	}
+	
+	public static Set<String> filterSpans(String fe, 
+										  THashSet<String> autoSpans,
+										  DependencyParse[] sortedNodes,
+										  GraphSpans gs,
+										  int[][] topKFEs) {
+		Set<String> filteredSpans = new THashSet<String>();
+		for (String span: autoSpans) {
+			String[] toks = span.split("_");
+			int start = new Integer(toks[0]);
+			int end = new Integer(toks[1]);
+			String phrase = getSpan(sortedNodes, start, end);
+			int foundIndex = Arrays.binarySearch(gs.sortedFEs, phrase);
+			if (foundIndex < 0) {
+				filteredSpans.add(phrase);
+			} else {
+				int[] topK = topKFEs[foundIndex];
+				int feIndex = Arrays.binarySearch(gs.sortedFEs, fe);
+				if (feIndex < 0) {
+					System.out.println("Problem. feIndex for fe:" + fe + " is negative. Exiting.");
+					System.exit(-1);
+				}
+				if (Arrays.binarySearch(topK, feIndex) >= 0) {
+					filteredSpans.add(phrase);
+				}
+			}
+		}
+		return filteredSpans;
+	}
+										  
+											
 	
 	public static void modifyHeadDist(GraphSpans gs) {
 		int len = gs.smoothedGraph.length;
