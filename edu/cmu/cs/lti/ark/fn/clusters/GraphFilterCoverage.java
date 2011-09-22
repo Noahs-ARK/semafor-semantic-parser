@@ -60,7 +60,7 @@ public class GraphFilterCoverage {
 						continue;
 					}
 					if (spanMat[i][j]) {
-						String span = i + ":" + j;
+						String span = i + "_" + j;
 						autoSpans.add(span);
 					}
 				}
