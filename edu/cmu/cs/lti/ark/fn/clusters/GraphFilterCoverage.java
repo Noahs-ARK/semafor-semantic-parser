@@ -61,7 +61,7 @@ public class GraphFilterCoverage {
 		System.out.println("Reading sorted FEs");
 		String feFile = DATA_DIR + "/fes.sorted";
 		String[] mSortedFEs = readFEFile(feFile);
-		for (int K = 100; K <= 700; K++) {
+		for (int K = 100; K <= 700; K = K + 100) {
 			int[][] topKFEs = getTopKFEsHeads(mHeadDist, K);
 			String sertopKFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.top.k."+K+".heads.jobj";
 			SerializedObjects.writeSerializedObject(topKFEs, sertopKFile);
@@ -151,7 +151,7 @@ public class GraphFilterCoverage {
 		int[][] arr = new int[headDist.length][];
 		for (int i = 0; i < headDist.length; i++) {
 			arr[i] = new int[K];
-			Pair<Integer, Double>[] parr = new Pair[headDist.length];
+			Pair<Integer, Double>[] parr = new Pair[headDist[i].length];
 			for (int j = 0; j < headDist[i].length; j++) {
 				parr[j] = new Pair<Integer, Double>(j, (double)headDist[i][j]);
 			}
