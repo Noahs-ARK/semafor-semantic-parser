@@ -56,9 +56,6 @@ public class GraphFilterCoverage {
 			THashSet<String> autoSpans = new THashSet<String>();
 			for (int i = 0; i < sortedNodes.length; i++) {
 				for (int j = 0; j < sortedNodes.length; j++) {
-					if (i == j) {
-						continue;
-					}
 					if (spanMat[i][j]) {
 						String span = i + "_" + j;
 						autoSpans.add(span);
