@@ -7,7 +7,6 @@ import java.util.Set;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
 import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
 
 import ilog.concert.*; 
 import ilog.cplex.*;
