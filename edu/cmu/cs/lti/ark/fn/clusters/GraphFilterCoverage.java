@@ -1,5 +1,8 @@
 package edu.cmu.cs.lti.ark.fn.clusters;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -7,6 +10,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
+import edu.cmu.cs.lti.ark.fn.parsing.CoarseDistributions;
 import edu.cmu.cs.lti.ark.fn.parsing.GraphSpans;
 import edu.cmu.cs.lti.ark.fn.parsing.ScanPotentialSpans;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
@@ -23,6 +27,10 @@ public class GraphFilterCoverage {
 	public static final String INFIX = "train";
 	
 	public static void main(String[] args) {
+		heads();
+	}
+	
+	public static void graph() {
 		String graphFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.graph.spans.jobj";
 		System.out.println("Reading graph spans file from: " + graphFile);
 		GraphSpans gs = (GraphSpans) SerializedObjects.readSerializedObject(graphFile);		
@@ -43,7 +51,56 @@ public class GraphFilterCoverage {
 		}
 	}
 	
+	public static void heads() {
+		String headsFile = DATA_DIR + "/all.spans.heads";
+		String[] mSortedUniqueHeads = CoarseDistributions.getSortedUniqueHeads(headsFile);
+		String headsSerFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.heads.jobj";
+		System.out.println("Reading distributions over heads " + headsSerFile);
+		float[][] mHeadDist = (float[][]) SerializedObjects.readSerializedObject(headsSerFile);
+		modifyHeadDist(mHeadDist);
+		System.out.println("Reading sorted FEs");
+		String feFile = DATA_DIR + "/fes.sorted";
+		String[] mSortedFEs = readFEFile(feFile);
+		for (int K = 100; K <= 700; K++) {
+			int[][] topKFEs = getTopKFEsHeads(mHeadDist, K);
+			String sertopKFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.top.k."+K+".heads.jobj";
+			SerializedObjects.writeSerializedObject(topKFEs, sertopKFile);
+			System.out.println("Finished with K: " + sertopKFile);
+		}
+	}
 	
+	public static String[] readFEFile(String feFile) {
+		int count = 0;
+		System.out.println("Reading fe file...");
+		String line = null;
+		try {
+			BufferedReader bReader = new BufferedReader(new FileReader(feFile));
+			while ((line = bReader.readLine()) != null) {
+				count++;
+			}
+			bReader.close();
+		} catch (IOException e) {
+			System.out.println("Could not read file: " + feFile);
+			System.exit(-1);
+		}
+		System.out.println("Total number of fes: " + count);
+		String[] mSortedFEs = new String[count];
+		count = 0;
+		try {
+			BufferedReader bReader = new BufferedReader(new FileReader(feFile));
+			while ((line = bReader.readLine()) != null) {
+				line = line.trim();
+				mSortedFEs[count] = line;
+				count++;
+			}
+			bReader.close();
+		} catch (IOException e) {
+			System.out.println("Could not read file: " + feFile);
+			System.exit(-1);
+		}
+		System.out.println("Stored FEs.");
+		return mSortedFEs;
+	}
 	
 	public static int[][] getTopKFEs(GraphSpans gs, int K) {
 		Comparator<Pair<Integer, Double>> comp = new Comparator<Pair<Integer, Double>>() {
@@ -64,6 +121,39 @@ public class GraphFilterCoverage {
 			Pair<Integer, Double>[] parr = new Pair[gs.smoothedGraph[i].length];
 			for (int j = 0; j < gs.smoothedGraph[i].length; j++) {
 				parr[j] = new Pair<Integer, Double>(j, (double)gs.smoothedGraph[i][j]);
+			}
+			Arrays.sort(parr, comp);
+			for (int j = 0; j < K; j++) {
+				arr[i][j] = parr[j].getFirst();
+			}
+			Arrays.sort(arr[i]);
+			if (i % 10000 == 0) {
+				System.out.print(i + " ");
+			}
+		}
+		System.out.println();
+		return arr;
+	}
+	
+	public static int[][] getTopKFEsHeads(float[][] headDist, int K) {
+		Comparator<Pair<Integer, Double>> comp = new Comparator<Pair<Integer, Double>>() {
+			public int compare(Pair<Integer, Double> o1,
+					Pair<Integer, Double> o2) {
+				if (o1.getSecond() > o2.getSecond()) {
+					return -1;
+				} else if (o1.getSecond() == o2.getSecond()) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+		};
+		int[][] arr = new int[headDist.length][];
+		for (int i = 0; i < headDist.length; i++) {
+			arr[i] = new int[K];
+			Pair<Integer, Double>[] parr = new Pair[headDist.length];
+			for (int j = 0; j < headDist[i].length; j++) {
+				parr[j] = new Pair<Integer, Double>(j, (double)headDist[i][j]);
 			}
 			Arrays.sort(parr, comp);
 			for (int j = 0; j < K; j++) {
@@ -213,5 +303,39 @@ public class GraphFilterCoverage {
 		System.out.println("Average component weight: " + avg);
 	}
 	
-	
+	public static void modifyHeadDist(float[][] mHeadDist) {
+		int len = mHeadDist.length;
+		double avg = 0.0;
+		for (int i = 0; i < len; i++) {
+			double min = Double.MAX_VALUE;
+			double max = - Double.MAX_VALUE;
+			boolean flag1 = false;
+			boolean flag2 = false;
+			for (int j = 0; j < mHeadDist[i].length; j++) {
+				if (mHeadDist[i][j] > max) {
+					max = mHeadDist[i][j];
+					flag1 = true;
+				}
+				if (mHeadDist[i][j] < min) {
+					min = mHeadDist[i][j];
+					flag2 = true;
+				}
+			}
+			if (!flag1 && !flag2) {
+				System.out.println("Problem with distribution.");
+				for (int j = 0; j < mHeadDist[i].length; j++) {
+					System.out.println(mHeadDist[i][j]);
+				}
+				System.exit(-1);
+			}
+			for (int j = 0; j < mHeadDist[i].length; j++) {
+				if (max != min) {
+					 mHeadDist[i][j] = mHeadDist[i][j] / (float)(max - min);
+				}
+				avg += mHeadDist[i][j] / (float) mHeadDist[i].length;
+			}
+		}
+		avg = avg / (double) len;
+		System.out.println("Average component weight: " + avg);
+	}
 }
