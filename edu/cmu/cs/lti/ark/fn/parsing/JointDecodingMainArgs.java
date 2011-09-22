@@ -41,6 +41,7 @@ public class JointDecodingMainArgs
 		String overlap = args[6];
 		String requiresMap = args[7];
 		String excludesMap = args[8];
+		String secondModelFile = args[9];
 		
 		LocalFeatureReading lfr = new LocalFeatureReading(eventsFile, spanFile, frFile);
 		try
@@ -61,6 +62,9 @@ public class JointDecodingMainArgs
 				false
 				);
 		bpd.setMaps(requiresMap, excludesMap);
+		if (secondModelFile != null && secondModelFile.equals("null")) {
+			bpd.setSecondModel(secondModelFile);
+		}
 		Date sd = new Date();
 		long st = sd.getTime();
 		bpd.decodeAll(overlap, 0);
