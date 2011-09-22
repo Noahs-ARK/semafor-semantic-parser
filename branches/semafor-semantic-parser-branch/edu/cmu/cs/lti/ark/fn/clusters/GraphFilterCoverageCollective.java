@@ -24,7 +24,7 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 		heads();
 	}
 	
-	public static void heads() {
+	public static void headsCollective() {
 		String headsFile = DATA_DIR + "/all.spans.heads";
 		String[] mSortedUniqueHeads = CoarseDistributions.getSortedUniqueHeads(headsFile);
 		String headsSerFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.heads.jobj";
@@ -36,12 +36,12 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 		String[] mSortedFEs = readFEFile(feFile);
 		for (int i = 1; i <= 6; i++) {
 			System.out.println("K = " + i);
-			checkCoverageWithHeads(mSortedUniqueHeads, mSortedFEs, mHeadDist, i);
+			checkCoverageWithHeadsCollective(mSortedUniqueHeads, mSortedFEs, mHeadDist, i);
 			System.out.println("\n\n");
 		}
 	}
 	
-	public static void checkCoverageWithHeads(String[] sortedHeads, 
+	public static void checkCoverageWithHeadsCollective(String[] sortedHeads, 
 			String[] sortedFEs, 
 			float[][] headDist,
 			int K) {
