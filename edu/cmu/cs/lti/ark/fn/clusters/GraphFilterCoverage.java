@@ -15,7 +15,7 @@ public class GraphFilterCoverage {
 		"/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012/smoothed";
 	public static final String DATA_DIR = 
 		"/usr2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012";
-	public static final String INFIX = "test";
+	public static final String INFIX = "train";
 	
 	public static void main(String[] args) {
 		String graphFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.graph.spans.jobj";
