@@ -34,10 +34,10 @@ public class GraphFilterCoverage {
 //			SerializedObjects.writeSerializedObject(topKFEs, sertopKFile);
 //			System.out.println("Finished with K: " + sertopKFile);
 //		}
-		for (int K = 200; K <= 800; K++) {
+		for (int K = 200; K <= 700; K++) {
 			String sertopKFile = GRAPH_DIR + "/lp.mu.0.01.nu.0.000001.10.top.k."+K+".jobj";
 			int[][] topKFEs = (int[][]) SerializedObjects.readSerializedObject(sertopKFile);
-			System.out.println("Got top K FEs for K="+100);
+			System.out.println("Got top K FEs for K="+K);
 			checkCoverage(gs, topKFEs);
 			System.out.println("\n\n");
 		}
