@@ -37,7 +37,7 @@ public class GraphFilterCoverage {
 		Comparator<Pair<Integer, Double>> comp = new Comparator<Pair<Integer, Double>>() {
 			public int compare(Pair<Integer, Double> o1,
 					Pair<Integer, Double> o2) {
-				if (o1.getSecond() < o2.getSecond()) {
+				if (o1.getSecond() > o2.getSecond()) {
 					return -1;
 				} else if (o1.getSecond() == o2.getSecond()) {
 					return 0;
