@@ -58,7 +58,11 @@ public class GraphFilterCoverage {
 				arr[i][j] = parr[j].getFirst();
 			}
 			Arrays.sort(arr[i]);
+			if (i % 10000 == 0) {
+				System.out.print(i + " ");
+			}
 		}
+		System.out.println();
 		return arr;
 	}
 	
