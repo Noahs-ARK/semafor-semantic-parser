@@ -3,9 +3,11 @@ package edu.cmu.cs.lti.ark.fn.parsing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Map;
 
+import edu.cmu.cs.lti.ark.util.FileUtil;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
@@ -14,7 +16,8 @@ public class JointDecoding extends Decoding {
 
 	private boolean mIgnoreNullSpansWhileJointDecoding;
 	private ILPDecoding ilpd = null;
-
+	private double[] w2 = null;
+	
 	public JointDecoding()
 	{
 		ilpd = new ILPDecoding();
@@ -34,7 +37,7 @@ public class JointDecoding extends Decoding {
 		super.init(modelFile, alphabetFile, predictionFile, list, frameLines);
 		mIgnoreNullSpansWhileJointDecoding = false;
 	}
-
+	
 	public void init(String modelFile, 
 			String alphabetFile,
 			String predictionFile,
@@ -45,7 +48,17 @@ public class JointDecoding extends Decoding {
 		super.init(modelFile, alphabetFile, predictionFile, list, frameLines);
 		mIgnoreNullSpansWhileJointDecoding = ignoreNullSpansWhileJointDecoding;
 	}	
-
+	
+	public void setSecondModel(String secondModelFile) {
+		w2 = new double[numLocalFeatures];
+		Scanner paramsc = FileUtil.openInFile(secondModelFile);
+		for (int i = 0; i < numLocalFeatures; i++) {
+			double val = Double.parseDouble(paramsc.nextLine());
+			w2[i] = val;
+		}
+		paramsc.close();
+	}
+	
 	public String getNonOverlappingDecision(FrameFeatures mFF, 
 			String frameLine, 
 			int offset,
@@ -95,6 +108,9 @@ public class JointDecoding extends Decoding {
 				for(int j = 0; j < featArrLen; j ++) {
 					int[] feats = featureArray[j].features;
 					double weightFeatSum = getWeightSum(feats, w);
+					if (w2 != null) {
+						weightFeatSum += getWeightSum(feats, w2);
+					}
 					arr[j] = new Pair<int[], Double>(featureArray[j].span, weightFeatSum);
 					if (weightFeatSum > maxProb) {
 						maxProb = weightFeatSum;

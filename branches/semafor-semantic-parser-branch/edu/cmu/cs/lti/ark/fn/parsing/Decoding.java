@@ -37,7 +37,7 @@ import edu.cmu.cs.lti.ark.fn.optimization.*;
 
 public class Decoding
 {
-	private int numLocalFeatures;
+	protected int numLocalFeatures;
 	protected double[] localW;
 	private String mLocalAlphabetFile;
 	private String mLocalModelFile;
@@ -92,7 +92,8 @@ public class Decoding
 		}
 	}
 	
-	public ArrayList<String> decodeAll(String overlapCheck, int offset)
+	public ArrayList<String> decodeAll(String overlapCheck, 
+									   int offset)
 	{
 		int size = mFrameList.size();
 		ArrayList<String> result = new ArrayList<String>();
