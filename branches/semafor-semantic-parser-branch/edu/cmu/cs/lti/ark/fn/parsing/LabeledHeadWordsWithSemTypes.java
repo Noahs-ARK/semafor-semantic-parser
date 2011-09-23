@@ -111,7 +111,7 @@ public class LabeledHeadWordsWithSemTypes {
 		}
 		int index = head.getIndex();
 		String lemma = lemmas[index-1].toLowerCase();
-		System.out.println(head + "\t" + lemma);
+		System.out.println(head.getWord() + "\t" + lemma);
 		String hw = ScanPotentialSpans.replaceNumbersWithAt(lemma);
 		if (pos != null) {
 			return hw + "." + pos;
