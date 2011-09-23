@@ -97,7 +97,9 @@ public class LabeledHeadWordsWithSemTypes {
 				}
 			}
 		}
-		System.out.println("Total number of heads in map: " + headsToSemTypeMap.size());	
+		System.out.println("Total number of heads in map: " + headsToSemTypeMap.size());
+		String file = DATA_DIR + "/headsToSemTypes.map";
+		SerializedObjects.writeSerializedObject(headsToSemTypeMap, file);
 	}
 	
 	public static String getHeadWithPOS(DependencyParse[] nodes, String[] lemmas, int istart, int iend) {
