@@ -114,7 +114,7 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 				String[] toks1 = autoSpan.split("_");
 				int start = new Integer(toks1[0]);
 				int end = new Integer(toks1[1]);
-				String head = LabeledHeadWordsWithSemTypes.getHeadWithPOS(sortedNodes, data[6], start, end);
+				String head = LabeledHeadWordsWithSemTypes.getHeadWithPOS(sortedNodes, data[5], start, end);
 				if (!headsToSemTypesMap.containsKey(head)) {
 					for (int i = 0; i < fes.size(); i++) {
 						filteredSpanArray[i].add(autoSpan);
