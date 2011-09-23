@@ -29,7 +29,7 @@ public class GraphFilterCoverageCollective extends GraphFilterCoverage {
 	}
 	
 	public static void semTypesCollective() {
-		String semTypesMapFile = DATA_DIR + "/headstoSemTypes.map";
+		String semTypesMapFile = DATA_DIR + "/headsToSemTypes.map";
 		THashMap<String, THashSet<String>> headsToSemTypesMap = 
 				(THashMap<String, THashSet<String>>) SerializedObjects.readSerializedObject(semTypesMapFile);
 		String feToSemTypesMapFile = DATA_DIR + "/fe2semTypes.map";
