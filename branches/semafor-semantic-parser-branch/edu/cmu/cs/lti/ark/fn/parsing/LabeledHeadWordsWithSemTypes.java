@@ -75,7 +75,7 @@ public class LabeledHeadWordsWithSemTypes {
 						start=new Integer(spanS[0]);
 						end=new Integer(spanS[1]);
 					}
-					String head = getHeadWithPOS(dpnodes, data[6], start, end);
+					String head = getHeadWithPOS(dpnodes, data[5], start, end);
 					String frel = feToks[k];
 					if (!semTypesMap.containsKey(frel)) {
 						continue;
