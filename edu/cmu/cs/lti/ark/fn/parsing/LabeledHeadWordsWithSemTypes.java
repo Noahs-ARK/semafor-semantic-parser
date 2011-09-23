@@ -1,6 +1,7 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
@@ -25,6 +26,7 @@ public class LabeledHeadWordsWithSemTypes {
 		String[] labeledProcessedFiles = 
 			{DATA_DIR + "/framenet.original.sentences.all.lemma.tags"};
 		String[] labeledFEFiles = {DATA_DIR + "/framenet.original.sentences.frame.elements"};
+		THashMap<String, THashSet<String>> headsToSemTypeMap = new THashMap<String, THashSet<String>>();
 		for (int i = 0; i < labeledProcessedFiles.length; i++) {
 			String file = labeledProcessedFiles[i];
 			ArrayList<String> parses = ParsePreparation.readSentencesFromFile(file);
@@ -84,9 +86,18 @@ public class LabeledHeadWordsWithSemTypes {
 						continue;
 					}
 					System.out.println("Head: " + head);
+					Set<String> feSemTypes = semTypesMap.get(frel);
+					if (headsToSemTypeMap.contains(head)) {
+						headsToSemTypeMap.get(head).addAll(feSemTypes);
+					} else {
+						THashSet<String> set = new THashSet<String>();
+						set.addAll(feSemTypes);
+						headsToSemTypeMap.put(head, set);
+					}
 				}
 			}
-		}	
+		}
+		System.out.println("Total number of heads in map: " + headsToSemTypeMap.size());	
 	}
 	
 	public static String getHeadWithPOS(DependencyParse[] nodes, String[] lemmas, int istart, int iend) {
@@ -111,7 +122,6 @@ public class LabeledHeadWordsWithSemTypes {
 		}
 		int index = head.getIndex();
 		String lemma = lemmas[index-1].toLowerCase();
-		System.out.println(head.getWord() + "\t" + lemma);
 		String hw = ScanPotentialSpans.replaceNumbersWithAt(lemma);
 		if (pos != null) {
 			return hw + "." + pos;
