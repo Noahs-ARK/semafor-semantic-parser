@@ -15,7 +15,7 @@ public class LabeledHeadWordsWithSemTypes {
 			"/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/NAACL2012";
 
 	public static void main(String[] args) {
-
+		headWordsAndSemTypes();
 	}	
 
 	public static void headWordsAndSemTypes() {
