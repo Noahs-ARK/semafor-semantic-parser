@@ -34,8 +34,8 @@ public class LabeledHeadWordsWithSemTypes {
 				int sentNum = new Integer(feToks[5]);
 				StringTokenizer st = new StringTokenizer(parses.get(sentNum),"\t");
 				int tokensInFirstSent = new Integer(st.nextToken());
-				String[][] data = new String[5][tokensInFirstSent];
-				for(int k = 0; k < 5; k ++) {
+				String[][] data = new String[6][tokensInFirstSent];
+				for(int k = 0; k < 6; k ++) {
 					data[k]=new String[tokensInFirstSent];
 					for(int l = 0; l < tokensInFirstSent; l ++) {
 						String tok = st.nextToken().trim();
@@ -75,7 +75,7 @@ public class LabeledHeadWordsWithSemTypes {
 						start=new Integer(spanS[0]);
 						end=new Integer(spanS[1]);
 					}
-					String head = getHeadWithPOS(dpnodes, start, end);
+					String head = getHeadWithPOS(dpnodes, data[6], start, end);
 					String frel = feToks[k];
 					if (!semTypesMap.containsKey(frel)) {
 						continue;
@@ -89,7 +89,7 @@ public class LabeledHeadWordsWithSemTypes {
 		}	
 	}
 	
-	public static String getHeadWithPOS(DependencyParse[] nodes, int istart, int iend) {
+	public static String getHeadWithPOS(DependencyParse[] nodes, String[] lemmas, int istart, int iend) {
 		int[] tokNums = new int[iend - istart + 1];
 		for (int m = istart; m <= iend; m++) {
 			tokNums[m-istart] = m;
@@ -109,8 +109,10 @@ public class LabeledHeadWordsWithSemTypes {
 		} else {
 			pos = null;
 		}
-		String hw = head.getLemma().toLowerCase();
-		hw = ScanPotentialSpans.replaceNumbersWithAt(hw);
+		int index = head.getIndex();
+		String lemma = lemmas[index-1].toLowerCase();
+		System.out.println(head + "\t" + lemma);
+		String hw = ScanPotentialSpans.replaceNumbersWithAt(lemma);
 		if (pos != null) {
 			return hw + "." + pos;
 		} else {
