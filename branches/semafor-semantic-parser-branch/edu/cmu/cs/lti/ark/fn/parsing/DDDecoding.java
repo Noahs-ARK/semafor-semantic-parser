@@ -18,7 +18,6 @@ public class DDDecoding {
 	public static final double TAU = 1.5;
 	public static final double RHO_START = 0.03;
 	
-	
 	public DDDecoding() {
 	}
 	
