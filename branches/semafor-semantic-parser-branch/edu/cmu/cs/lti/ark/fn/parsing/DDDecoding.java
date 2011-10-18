@@ -169,10 +169,10 @@ public class DDDecoding implements JDecoding {
 			Arrays.sort(partslaves[i]);
 		}
 		
-		for (int i = 0; i < slavelen; i++) {
-			System.out.println("Slave: " + i);
-			for (int j = 0; j < slaveparts[i].length; j++) {
-				System.out.print(slaveparts[i][j] + " ");
+		for (int i = 0; i < len; i++) {
+			System.out.println("Part: " + i);
+			for (int j = 0; j < partslaves[i].length; j++) {
+				System.out.print(partslaves[i][j] + " ");
 			}
 			System.out.println();
 		}
