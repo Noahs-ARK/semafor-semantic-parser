@@ -190,10 +190,10 @@ public class DDDecoding implements JDecoding {
 			
 			// making u update
 			double[] oldus = Arrays.copyOf(u, u.length);
-			
 			for (int i = 0; i < len; i++) {
 				double sum = 0.0;
-				for (int s = 0; s < slavelen; s++) {
+				for (int j = 0; j < partslaves[i].length; j++) {
+					int s = partslaves[i][j];
 					sum += zs[s][i];
 				}
 				u[i] = sum / deltaarray[i];
@@ -201,7 +201,8 @@ public class DDDecoding implements JDecoding {
 			
 			// making lambda update
 			for (int s = 0; s < slavelen; s++) {
-				for (int i = 0; i < len; i++) {
+				for (int r = 0; r < slaveparts[s].length; r++) {
+					int i = slaveparts[s][r];
 					lambdas[s][i] = lambdas[s][i] - eta * (zs[s][i] - u[i]);
 				}
 			}
