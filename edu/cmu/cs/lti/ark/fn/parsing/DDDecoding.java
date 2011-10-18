@@ -286,8 +286,10 @@ public class DDDecoding implements JDecoding {
 			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 			double maxVal = -Double.MAX_VALUE;
 			int maxIndex = -1;
+			System.out.println(keys[i]);
 			for (int j = 0; j < arr.length; j++) {
-				System.out.println(u[count] + " ");
+				String span = arr[maxIndex].getFirst()[0] + "_" + arr[maxIndex].getFirst()[1];
+				System.out.println(span + " " + u[count]);
 				if (u[count] > maxVal) {
 					maxVal = u[count];
 					maxIndex = j;
