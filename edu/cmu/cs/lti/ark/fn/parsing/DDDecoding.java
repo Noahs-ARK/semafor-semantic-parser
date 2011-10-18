@@ -245,6 +245,22 @@ public class DDDecoding implements JDecoding {
 			}
 		}		
 		/** end of optimization procedure **/
+		count = 0;
+		for (int i = 0; i < keys.length; i++) {
+			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
+			double maxVal = -Double.MAX_VALUE;
+			int maxIndex = -1;
+			for (int j = 0; j < arr.length; j++) {
+				if (u[count] > maxVal) {
+					maxVal = u[count];
+					maxIndex = j;
+				}
+				count++;
+			}
+			if (maxIndex != -1 && maxVal > 0) {
+				res.put(keys[i], arr[maxIndex].getFirst()[0] + "_" + arr[maxIndex].getFirst()[1]);
+			}  			
+		}
 		return res;
 	}
 
