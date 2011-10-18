@@ -158,7 +158,7 @@ public class DDDecoding implements JDecoding {
 		double[][] lambdas = new double[slavelen][len];
 		
 		Arrays.fill(u, 0.5);
-		for (int i = 0; i < len; i++) {
+		for (int i = 0; i < slavelen; i++) {
 			lambdas[i] = new double[len];
 			Arrays.fill(lambdas[i], 0.0);
 			zs[i] = new double[len];
