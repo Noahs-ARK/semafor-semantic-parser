@@ -123,7 +123,8 @@ public class DDDecoding implements JDecoding {
 		
 		int len = objVals.length;
 		int[] deltaarray = new int[len];
-		int slavelen = keys.length + max + 1;
+		// int slavelen = keys.length + max + 1;
+		int slavelen = keys.length;
 		int[][] slaveparts = new int[slavelen][];
 		int[][] partslaves = new int[len][];
 		Arrays.fill(deltaarray, 0);
@@ -140,14 +141,14 @@ public class DDDecoding implements JDecoding {
 				slaveparts[i][j] = mappedIndices[i][j];
 			}
 		}
-		for (int i = keys.length; i < keys.length + max + 1; i++) {
+		/*for (int i = keys.length; i < keys.length + max + 1; i++) {
 			int[] vars = overlapArray[i-keys.length].toArray();
 			slaves[i] = new OverlapSlave(objVals, vars);
 			for (int v: vars) {
 				deltaarray[v] += 1;
 			}
 			slaveparts[i] = vars;
-		}
+		}*/
 		
 		for (int s = 0; s < slaveparts.length; s++) {
 			Arrays.sort(slaveparts[s]);
