@@ -209,7 +209,7 @@ public class DDDecoding implements JDecoding {
 				}
 			}
 			
-			// computing primal residual
+			// computing the primal residual
 			double pr = 0.0;
 			for (int s = 0; s < slavelen; s++) {
 				for (int p = 0; p < slaveparts[s].length; p++) {
@@ -231,16 +231,16 @@ public class DDDecoding implements JDecoding {
 			if (pr > dr) {
 				double rat = pr / dr;
 				if (rat > 10.0) {
-					rho = rho / 2.0;
+					rho = rho * 2.0;
 				}
 			} else {
 				double rat = dr / pr;
 				if (rat > 10.0) {
-					rho = rho * 2.0;
+					rho = rho / 2.0;
 				}
 			}			
 			itr++;
-			if (itr >= 100) {
+			if (itr >= 20) {
 				break;
 			}
 		}		
