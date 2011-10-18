@@ -231,18 +231,34 @@ public class DDDecoding implements JDecoding {
 			System.out.println(itr + ": Primal residual: " + pr);
 			System.out.println(itr + ": Dual residual: " + dr);
 			if (pr > dr) {
-				double rat = pr / dr;
+				double rat;
+				if (dr == 0.0) {
+					rat = 20.0;
+				} else {
+					rat = pr / dr;
+				}
 				if (rat > 10.0) {
 					rho = rho * 2.0;
 				}
 			} else {
-				double rat = dr / pr;
+				double rat = 0;
+				if (pr == 0) {
+					if (dr != 0) {
+						rat = 20.0;
+					}
+				} else {
+					rat = dr / pr;
+				}
 				if (rat > 10.0) {
 					rho = rho / 2.0;
 				}
 			}			
 			itr++;
 			if (itr >= 10) {
+				break;
+			}
+			if (pr < 0.001 && dr < 0.001) {
+				System.out.println("Optimization converged: " + pr + " " + dr);
 				break;
 			}
 		}		
