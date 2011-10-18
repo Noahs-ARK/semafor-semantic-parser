@@ -142,4 +142,5 @@ public final class FNModelOptions extends CommandLineOptions
 	public StringOption reqFile = new StringOption("reqmapfile");
 	public StringOption exFile = new StringOption("exmapfile");
 	public StringOption costAugmented = new StringOption("costaugmented");
+	public StringOption decodingType = new StringOption("decodingType");
 }

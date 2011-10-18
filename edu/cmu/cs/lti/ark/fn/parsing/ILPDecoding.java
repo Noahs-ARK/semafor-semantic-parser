@@ -12,7 +12,7 @@ import gnu.trove.TIntIterator;
 import ilog.concert.*; 
 import ilog.cplex.*;
 
-public class ILPDecoding {
+public class ILPDecoding implements JDecoding {
 	private IloCplex cplex = null;
 	private Map<String, Set<Pair<String, String>>> excludesMap;
 	private Map<String, Set<Pair<String, String>>> requiresMap;

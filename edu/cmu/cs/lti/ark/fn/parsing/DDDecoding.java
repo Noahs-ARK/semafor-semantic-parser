@@ -12,7 +12,7 @@ import gnu.trove.TIntIterator;
 import ilog.concert.*; 
 import ilog.cplex.*;
 
-public class DDDecoding {
+public class DDDecoding implements JDecoding {
 	private Map<String, Set<Pair<String, String>>> excludesMap;
 	private Map<String, Set<Pair<String, String>>> requiresMap;
 	public static final double TAU = 1.5;
@@ -40,6 +40,9 @@ public class DDDecoding {
 		Arrays.sort(keys);	
 		int totalCount = 0;
 		int max = -Integer.MAX_VALUE;
+		
+		// counting the total number of z variables needed
+		// also mapping the role and span indices to a variable index
 		int[][] mappedIndices = new int[keys.length][];
 		int count = 0;
 		for (int i = 0; i < keys.length; i++) {
@@ -70,6 +73,7 @@ public class DDDecoding {
 		for (int i = 0; i < max+1; i++) {
 			overlapArray[i] = new TIntHashSet();
 		}
+		// adding costs to the objVals for cost augmented decoding
 		if (costAugmented) {
 			ArrayList<String> fes = goldFF.fElements;
 			for (int i = 0; i < fes.size(); i++) {
@@ -109,9 +113,114 @@ public class DDDecoding {
 				count++;
 			}
 		}
+		// finished adding costs
+				
+		int len = objVals.length;
+		int[] deltaarray = new int[len];
+		int slavelen = keys.length + max + 1;
+		int[][] slaveparts = new int[slavelen][];
+		Arrays.fill(deltaarray, 0);
+		// for a set of dummy variables for the OverlapSlave
 		for (int i = 0; i < max + 1; i++) {
 			objVals[i + totalCount] = 0.0;
+			overlapArray[i].add(i + totalCount);
+		}						
+		
+		// creating slaves
+		Slave[] slaves = new Slave[slavelen];
+		for (int i = 0; i < keys.length; i++) {
+			slaves[i] = new UniqueSpanSlave(objVals, 
+					   						mappedIndices[i][0], 
+					   						mappedIndices[i][mappedIndices[i].length-1] + 1);
+			slaveparts[i] = new int[mappedIndices[i].length];
+			for (int j = 0; j < mappedIndices[i].length; j++) {
+				deltaarray[mappedIndices[i][j]] += 1;
+				slaveparts[i][j] = mappedIndices[i][j];
+			}
 		}
+		for (int i = keys.length; i < keys.length + max + 1; i++) {
+			int[] vars = overlapArray[i-keys.length].toArray();
+			slaves[i] = new OverlapSlave(objVals, vars);
+			for (int v: vars) {
+				deltaarray[v] += 1;
+			}
+			slaveparts[i] = vars;
+		}
+		
+		double totalDelta = 0.0;
+		for (int i = 0; i < len; i++) {
+			totalDelta += deltaarray[i];
+		}
+		
+		/** starting optimization procedure **/		
+		double[] u = new double[len]; 
+		double[][] zs = new double[slavelen][len]; 
+		double[][] lambdas = new double[slavelen][len];
+		
+		Arrays.fill(u, 0.5);
+		for (int i = 0; i < len; i++) {
+			lambdas[i] = new double[len];
+			Arrays.fill(lambdas[i], 0.0);
+			zs[i] = new double[len];
+			Arrays.fill(zs[i], 0.0);
+		}		
+		double rho = RHO_START;
+		int itr = 0;		
+		while (true) {
+			double nu = TAU * rho;
+			// making z-update
+			for (int s = 0; s < slavelen; s++) {
+				zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
+			}
+			
+			// making u update
+			double[] oldus = Arrays.copyOf(u, u.length);
+			for (int i = 0; i < len; i++) {
+				double sum = 0.0;
+				for (int s = 0; s < slavelen; s++) {
+					sum += zs[s][i];
+				}
+				u[i] = sum / deltaarray[i];
+			}
+			
+			// making lambda update
+			for (int s = 0; s < slavelen; s++) {
+				for (int i = 0; i < len; i++) {
+					lambdas[s][i] = lambdas[s][i] - nu * (zs[s][i] - u[i]);
+				}
+			}
+			
+			// computing primal residual
+			double pr = 0.0;
+			for (int s = 0; s < slavelen; s++) {
+				for (int p = 0; p < slaveparts[s].length; p++) {
+					pr += (zs[s][slaveparts[s][p]] - u[slaveparts[s][p]]) *
+						   (zs[s][slaveparts[s][p]] - u[slaveparts[s][p]]);
+				}
+			}
+			pr /= totalDelta;
+			
+			// computing the dual residual
+			double dr = 0.0;
+			for (int i = 0; i < len; i++) {
+				dr += deltaarray[i] * (u[i] - oldus[i]) * (u[i] - oldus[i]); 
+			}
+			dr /= totalDelta;
+			
+			System.out.println(itr + ": Primal residual: " + pr);
+			System.out.println(itr + ": Dual residual: " + dr);
+			itr++;
+			if (itr >= 10) {
+				break;
+			}
+		}		
+		/** end of optimization procedure **/
 		return res;
+	}
+
+	@Override
+	public void end() {
+		// TODO Auto-generated method stub
+		
 	}
 }
