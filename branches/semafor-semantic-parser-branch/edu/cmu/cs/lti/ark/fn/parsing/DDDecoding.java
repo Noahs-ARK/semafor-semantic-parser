@@ -127,7 +127,24 @@ public class DDDecoding implements JDecoding {
 		int[][] slaveparts = new int[slavelen][];
 		int[][] partslaves = new int[len][];
 		Arrays.fill(deltaarray, 0);
-				
+		
+		
+		// creating deltaarray
+		for (int i = 0; i < keys.length; i++) {
+			for (int j = 0; j < mappedIndices[i].length; j++) {
+				deltaarray[mappedIndices[i][j]] += 1;
+			}
+		}		
+		for (int i = keys.length; i < keys.length + max + 1; i++) {
+			int[] vars = overlapArray[i-keys.length].toArray();
+			for (int v: vars) {
+				deltaarray[v] += 1;
+			}
+		}
+		for (int i = 0; i < len; i++) {
+			objVals[i] /= (double)deltaarray[i];
+		}
+		
 		// creating slaves
 		Slave[] slaves = new Slave[slavelen];
 		for (int i = 0; i < keys.length; i++) {
@@ -159,6 +176,7 @@ public class DDDecoding implements JDecoding {
 		for (int i = 0; i < len; i++) {
 			totalDelta += deltaarray[i];
 			partslavessets[i] = new TIntHashSet();
+			
 			for (int s = 0; s < slavelen; s++) {
 				if (Arrays.binarySearch(slaveparts[s], i) >= 0) {
 					partslavessets[i].add(s);
@@ -166,15 +184,7 @@ public class DDDecoding implements JDecoding {
 			}
 			partslaves[i] = partslavessets[i].toArray();
 			Arrays.sort(partslaves[i]);
-		}
-		
-		for (int i = 0; i < partslaves.length; i++) {
-			System.out.print(i + ": ");
-			for (int j = 0; j < partslaves[i].length; j++) {
-				System.out.print(partslaves[i][j] + " ");
-			}
-			System.out.println();
-		}				
+		}		
 		
 		/** starting optimization procedure **/		
 		double[] u = new double[len]; 
