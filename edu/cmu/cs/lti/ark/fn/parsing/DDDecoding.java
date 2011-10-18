@@ -68,8 +68,7 @@ public class DDDecoding implements JDecoding {
 		}		
 		System.out.println("Max index:" + max);
 		TIntHashSet[] overlapArray = new TIntHashSet[max+1];
-		// double[] objVals = new double[totalCount + max + 1];
-		double[] objVals = new double[totalCount];
+		double[] objVals = new double[totalCount + max + 1];
 		double[] costs = new double[totalCount];
 		for (int i = 0; i < max+1; i++) {
 			overlapArray[i] = new TIntHashSet();
@@ -115,17 +114,16 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		// for a set of dummy variables for the OverlapSlave
-//		for (int i = 0; i < max + 1; i++) {
-//			objVals[i + totalCount] = 0.0;
-//			overlapArray[i].add(i + totalCount);
-//		}	
+		for (int i = 0; i < max + 1; i++) {
+			objVals[i + totalCount] = 0.0;
+			overlapArray[i].add(i + totalCount);
+		}	
 		// finished adding costs
 		
 		
 		int len = objVals.length;
 		int[] deltaarray = new int[len];
-		// int slavelen = keys.length + max + 1;
-		int slavelen = keys.length;
+		int slavelen = keys.length + max + 1;
 		int[][] slaveparts = new int[slavelen][];
 		int[][] partslaves = new int[len][];
 		Arrays.fill(deltaarray, 0);
@@ -143,18 +141,23 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		
-		/*for (int i = keys.length; i < keys.length + max + 1; i++) {
+		for (int i = keys.length; i < keys.length + max + 1; i++) {
 			int[] vars = overlapArray[i-keys.length].toArray();
 			slaves[i] = new OverlapSlave(objVals, vars);
 			for (int v: vars) {
 				deltaarray[v] += 1;
 			}
 			slaveparts[i] = vars;
-		}*/
+		}
 		
 		for (int s = 0; s < slaveparts.length; s++) {
 			Arrays.sort(slaveparts[s]);
 		}
+		
+		for (int i = 0; i < deltaarray.length; i++) {
+			System.out.println(i + ": " + deltaarray[i]);
+		}		
+		
 		
 		double totalDelta = 0.0;
 		TIntHashSet[] partslavessets = new TIntHashSet[len];
@@ -254,7 +257,7 @@ public class DDDecoding implements JDecoding {
 				}
 			}			
 			itr++;
-			if (itr >= 10) {
+			if (itr >= 0) {
 				break;
 			}
 			if (pr < 0.001 && dr < 0.001) {
