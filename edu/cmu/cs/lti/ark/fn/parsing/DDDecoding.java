@@ -169,15 +169,6 @@ public class DDDecoding implements JDecoding {
 			Arrays.sort(partslaves[i]);
 		}
 		
-		for (int i = 0; i < len; i++) {
-			System.out.println("Part: " + i);
-			for (int j = 0; j < partslaves[i].length; j++) {
-				System.out.print(partslaves[i][j] + " ");
-			}
-			System.out.println();
-		}
-		
-		
 		/** starting optimization procedure **/		
 		double[] u = new double[len]; 
 		double[][] zs = new double[slavelen][len]; 
@@ -199,8 +190,11 @@ public class DDDecoding implements JDecoding {
 			// making z-update
 			for (int s = 0; s < slavelen; s++) {
 				zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
-			}
-			
+				for (double z: zs[s]) {
+					System.out.print(z + " ");
+				}
+				System.out.println();
+			}			
 			// making u update
 			double[] oldus = Arrays.copyOf(u, u.length);
 			for (int i = 0; i < len; i++) {
@@ -251,7 +245,7 @@ public class DDDecoding implements JDecoding {
 				}
 			}			
 			itr++;
-			if (itr >= 20) {
+			if (itr >= 0) {
 				break;
 			}
 		}		
