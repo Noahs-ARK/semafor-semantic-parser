@@ -23,16 +23,17 @@ public class OverlapSlave implements Slave {
 					   (1.0 / rho) * (mObjVals[mIndices[i]] + lambdas[mIndices[i]]);
 			as[i] = a;
 		}
-		Arrays.sort(as, mDesc);
+		Double[] bs = Arrays.copyOf(as, mIndices.length);
+		Arrays.sort(bs, mDesc);
 		double[] sums = new double[as.length];
 		Arrays.fill(sums, 0);
 		sums[0] = as[0];
 		for (int i = 1; i < as.length; i++) {
-			sums[i] = sums[i-1] + as[i];
+			sums[i] = sums[i-1] + bs[i];
 		}
 		int tempRho = 0;
 		for (int i = 0; i < as.length; i++) {
-			double temp = as[i] - (1.0 / (double)(i+1)) * (sums[i] - 1.0);
+			double temp = bs[i] - (1.0 / (double)(i+1)) * (sums[i] - 1.0);
 			if (temp <= 0) {
 				break;
 			}

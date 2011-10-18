@@ -63,7 +63,13 @@ public class DDDecoding {
 				count++;
 			}
 		}		
+		System.out.println("Max index:" + max);
+		TIntHashSet[] overlapArray = new TIntHashSet[max+1];
+		double[] objVals = new double[totalCount + max + 1];
 		double[] costs = new double[totalCount];
+		for (int i = 0; i < max+1; i++) {
+			overlapArray[i] = new TIntHashSet();
+		}
 		if (costAugmented) {
 			ArrayList<String> fes = goldFF.fElements;
 			for (int i = 0; i < fes.size(); i++) {
@@ -84,13 +90,7 @@ public class DDDecoding {
 					}
 				}
 			}
-		}
-		double[] objVals = new double[totalCount];
-		System.out.println("Max index:" + max);
-		TIntHashSet[] overlapArray = new TIntHashSet[max+1];
-		for (int i = 0; i < max+1; i++) {
-			overlapArray[i] = new TIntHashSet();
-		}
+		}		
 		count = 0;
 		for (int i = 0; i < keys.length; i++) {
 			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
@@ -108,7 +108,10 @@ public class DDDecoding {
 				}
 				count++;
 			}
-		}	
+		}
+		for (int i = 0; i < max + 1; i++) {
+			objVals[i + totalCount] = 0.0;
+		}
 		return res;
 	}
 }
