@@ -8,6 +8,7 @@ public class UniqueSpanSlave implements Slave {
 	public int mStart;
 	public int mEnd;
 	public DescComparator mDesc;
+	public int mTotLen;
 	
 	public UniqueSpanSlave(double[] objVals, 
 						   int start, 
@@ -19,6 +20,7 @@ public class UniqueSpanSlave implements Slave {
 		mStart = start;
 		mEnd = end;
 		mDesc = new DescComparator();
+		mTotLen = objVals.length;
 	}
 	
 	@Override
@@ -48,7 +50,7 @@ public class UniqueSpanSlave implements Slave {
 			tempRho = i;
 		}
 		double tau = (1.0 / (double)(tempRho+1)) * (sums[tempRho] - 1.0);
-		double[] updZs = new double[mObjVals.length];
+		double[] updZs = new double[mTotLen];
 		Arrays.fill(updZs, 0);
 		for (int i = mStart; i < mEnd; i++) {
 			updZs[i] = Math.max(as[i-mStart] - tau, 0);
