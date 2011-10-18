@@ -113,19 +113,20 @@ public class DDDecoding implements JDecoding {
 				count++;
 			}
 		}
+		// for a set of dummy variables for the OverlapSlave
+		for (int i = 0; i < max + 1; i++) {
+			objVals[i + totalCount] = 0.0;
+			overlapArray[i].add(i + totalCount);
+		}	
 		// finished adding costs
-				
+		
+		
 		int len = objVals.length;
 		int[] deltaarray = new int[len];
 		int slavelen = keys.length + max + 1;
 		int[][] slaveparts = new int[slavelen][];
 		Arrays.fill(deltaarray, 0);
-		// for a set of dummy variables for the OverlapSlave
-		for (int i = 0; i < max + 1; i++) {
-			objVals[i + totalCount] = 0.0;
-			overlapArray[i].add(i + totalCount);
-		}						
-		
+				
 		// creating slaves
 		Slave[] slaves = new Slave[slavelen];
 		for (int i = 0; i < keys.length; i++) {
@@ -167,7 +168,7 @@ public class DDDecoding implements JDecoding {
 		double rho = RHO_START;
 		int itr = 0;		
 		while (true) {
-			double nu = TAU * rho;
+			double eta = TAU * rho;
 			// making z-update
 			for (int s = 0; s < slavelen; s++) {
 				zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
@@ -186,7 +187,7 @@ public class DDDecoding implements JDecoding {
 			// making lambda update
 			for (int s = 0; s < slavelen; s++) {
 				for (int i = 0; i < len; i++) {
-					lambdas[s][i] = lambdas[s][i] - nu * (zs[s][i] - u[i]);
+					lambdas[s][i] = lambdas[s][i] - eta * (zs[s][i] - u[i]);
 				}
 			}
 			
@@ -221,7 +222,7 @@ public class DDDecoding implements JDecoding {
 				}
 			}			
 			itr++;
-			if (itr >= 10) {
+			if (itr >= 100) {
 				break;
 			}
 		}		
