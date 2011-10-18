@@ -125,6 +125,7 @@ public class DDDecoding implements JDecoding {
 		int[] deltaarray = new int[len];
 		int slavelen = keys.length + max + 1;
 		int[][] slaveparts = new int[slavelen][];
+		int[][] partslaves = new int[len][];
 		Arrays.fill(deltaarray, 0);
 				
 		// creating slaves
@@ -148,9 +149,22 @@ public class DDDecoding implements JDecoding {
 			slaveparts[i] = vars;
 		}
 		
+		for (int s = 0; s < slaveparts.length; s++) {
+			Arrays.sort(slaveparts[s]);
+		}
+		
 		double totalDelta = 0.0;
+		TIntHashSet[] partslavessets = new TIntHashSet[len];
 		for (int i = 0; i < len; i++) {
 			totalDelta += deltaarray[i];
+			partslavessets[i] = new TIntHashSet();
+			for (int s = 0; s < slavelen; s++) {
+				if (Arrays.binarySearch(slaveparts[s], i) >= 0) {
+					partslavessets[i].add(s);
+				}
+			}
+			partslaves[i] = partslavessets[i].toArray();
+			Arrays.sort(partslaves[i]);
 		}
 		
 		/** starting optimization procedure **/		
@@ -176,6 +190,7 @@ public class DDDecoding implements JDecoding {
 			
 			// making u update
 			double[] oldus = Arrays.copyOf(u, u.length);
+			
 			for (int i = 0; i < len; i++) {
 				double sum = 0.0;
 				for (int s = 0; s < slavelen; s++) {
