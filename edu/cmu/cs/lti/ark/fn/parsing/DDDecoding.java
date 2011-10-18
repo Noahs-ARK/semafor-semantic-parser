@@ -287,12 +287,14 @@ public class DDDecoding implements JDecoding {
 			double maxVal = -Double.MAX_VALUE;
 			int maxIndex = -1;
 			for (int j = 0; j < arr.length; j++) {
+				System.out.println(u[count] + " ");
 				if (u[count] > maxVal) {
 					maxVal = u[count];
 					maxIndex = j;
 				}
 				count++;
 			}
+			System.out.println();
 			if (maxIndex != -1 && maxVal > 0) {
 				res.put(keys[i], arr[maxIndex].getFirst()[0] + "_" + arr[maxIndex].getFirst()[1]);
 			}  			
