@@ -115,10 +115,10 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		// for a set of dummy variables for the OverlapSlave
-		for (int i = 0; i < max + 1; i++) {
-			objVals[i + totalCount] = 0.0;
-			overlapArray[i].add(i + totalCount);
-		}	
+//		for (int i = 0; i < max + 1; i++) {
+//			objVals[i + totalCount] = 0.0;
+//			overlapArray[i].add(i + totalCount);
+//		}	
 		// finished adding costs
 		
 		
