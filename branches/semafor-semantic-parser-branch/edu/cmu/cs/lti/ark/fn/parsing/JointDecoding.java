@@ -15,18 +15,25 @@ import gnu.trove.THashMap;
 public class JointDecoding extends Decoding {
 
 	private boolean mIgnoreNullSpansWhileJointDecoding;
-	private ILPDecoding ilpd = null;
+	private JDecoding jd = null;
 	private double[] w2 = null;
 	private double secondModelWeight = 0.0;
-	
-	public JointDecoding()
-	{
-		ilpd = new ILPDecoding();
+	public static final String ILP_DECODING = "ilp";
+	public static final String DD_DECODING = "dd";
+		
+	public JointDecoding(String jointType) {
+		if (jointType.equals(ILP_DECODING)) {
+			jd = new ILPDecoding();
+		} else {
+			jd = new DDDecoding();
+		}
 		mIgnoreNullSpansWhileJointDecoding = false;
 	}
 
 	public void wrapUp() {
-		ilpd.end();
+		if (jd != null) {
+			jd.end();
+		}
 	}
 
 	public void init(String modelFile, 
@@ -132,7 +139,7 @@ public class JointDecoding extends Decoding {
 				}
 				System.out.println("Frame element:"+frameElements.get(i)+" Found span:"+outcome);
 			}
-			Map<String, String> feMap = ilpd.decode(vs, frameName, costAugmented, goldFF);
+			Map<String, String> feMap = jd.decode(vs, frameName, costAugmented, goldFF);
 			return feMap;
 	}
 
@@ -200,7 +207,7 @@ public class JointDecoding extends Decoding {
 			(Map<String, Set<Pair<String, String>>>) SerializedObjects.readSerializedObject(excludesMap);
 		Map<String, Set<Pair<String, String>>> requiresMapObj = 
 			(Map<String, Set<Pair<String, String>>>) SerializedObjects.readSerializedObject(requiresMap);
-		ilpd.setMaps(exclusionMap, requiresMapObj);
+		jd.setMaps(exclusionMap, requiresMapObj);
 	}
 }
 

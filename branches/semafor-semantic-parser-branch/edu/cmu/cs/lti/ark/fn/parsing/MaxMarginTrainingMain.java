@@ -41,8 +41,9 @@ public class MaxMarginTrainingMain
 		String reqFile = opts.reqFile.get();
 		String exFile = opts.exFile.get();
 		boolean costAugmented = opts.costAugmented.get().equals("yes");
+		String decodingType = opts.decodingType.get();
 		ArrayList<FrameFeatures> list = getFFList(frameFeaturesCacheFile);
-		MaxMarginTraining bpt = new MaxMarginTraining();
+		MaxMarginTraining bpt = new MaxMarginTraining(decodingType);
 		bpt.init(modelFile, alphabetFile, list, frFile);
 		bpt.setMaps(reqFile, exFile);
 		bpt.train(totalpasses, costAugmented);

@@ -31,21 +31,22 @@ public class JointDecodingMainArgs
 {
 	public static void main(String[] args)
 	{
-		JointDecoding bpd = new JointDecoding();
-		String modelFile = args[0];
-		String alphabetFile = args[1];
-		String eventsFile = args[2];
-		String spanFile = args[3];
-		String predictionFile = args[4];
-		String frFile = args[5];
-		String overlap = args[6];
-		String requiresMap = args[7];
-		String excludesMap = args[8];
-		String secondModelFile = args[9];
+		String decodingType = args[0];
+		String modelFile = args[1];
+		String alphabetFile = args[2];
+		String eventsFile = args[3];
+		String spanFile = args[4];
+		String predictionFile = args[5];
+		String frFile = args[6];
+		String overlap = args[7];
+		String requiresMap = args[8];
+		String excludesMap = args[9];
+		String secondModelFile = args[10];
 		double secondModelWeight = 0.0;
 		if (secondModelFile != null && !secondModelFile.equals("null") ) {
-			secondModelWeight = new Double(args[10]);
+			secondModelWeight = new Double(args[11]);
 		}
+		JointDecoding bpd = new JointDecoding(decodingType);
 		LocalFeatureReading lfr = new LocalFeatureReading(eventsFile, spanFile, frFile);
 		try
 		{
