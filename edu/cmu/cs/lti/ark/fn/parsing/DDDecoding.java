@@ -142,6 +142,11 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		
+		for (int i = 0; i < deltaarray.length; i++) {
+			System.out.print(deltaarray[i] + " ");
+		}
+		System.out.println();
+		
 		/*for (int i = keys.length; i < keys.length + max + 1; i++) {
 			int[] vars = overlapArray[i-keys.length].toArray();
 			slaves[i] = new OverlapSlave(objVals, vars);
