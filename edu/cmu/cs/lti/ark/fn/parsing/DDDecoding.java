@@ -182,7 +182,9 @@ public class DDDecoding implements JDecoding {
 		double rho = RHO_START;
 		int itr = 0;		
 		while (true) {
+			System.out.println("Rho: " + rho);
 			double eta = TAU * rho;
+			System.out.println("Eta: " + eta);
 			// making z-update
 			for (int s = 0; s < slavelen; s++) {
 				zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
@@ -238,7 +240,7 @@ public class DDDecoding implements JDecoding {
 				}
 			}			
 			itr++;
-			if (itr >= 100) {
+			if (itr >= 20) {
 				break;
 			}
 		}		
