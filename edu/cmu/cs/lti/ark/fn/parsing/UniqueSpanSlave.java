@@ -54,7 +54,9 @@ public class UniqueSpanSlave implements Slave {
 		Arrays.fill(updZs, 0);
 		for (int i = mStart; i < mEnd; i++) {
 			updZs[i] = Math.max(as[i-mStart] - tau, 0);
+			System.out.print(updZs[i] + " ");
 		}
+		System.out.println();
 		return updZs;
 	}
 }
