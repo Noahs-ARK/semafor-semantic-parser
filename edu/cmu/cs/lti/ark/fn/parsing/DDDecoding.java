@@ -270,7 +270,7 @@ public class DDDecoding implements JDecoding {
 				}
 			}			
 			itr++;
-			if (itr >= 0) {
+			if (itr >= 10) {
 				break;
 			}
 			if (pr < 0.001 && dr < 0.001) {
