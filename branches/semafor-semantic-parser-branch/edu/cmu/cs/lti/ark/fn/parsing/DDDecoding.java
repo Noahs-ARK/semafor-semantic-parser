@@ -68,7 +68,8 @@ public class DDDecoding implements JDecoding {
 		}		
 		System.out.println("Max index:" + max);
 		TIntHashSet[] overlapArray = new TIntHashSet[max+1];
-		double[] objVals = new double[totalCount + max + 1];
+		// double[] objVals = new double[totalCount + max + 1];
+		double[] objVals = new double[totalCount];
 		double[] costs = new double[totalCount];
 		for (int i = 0; i < max+1; i++) {
 			overlapArray[i] = new TIntHashSet();
@@ -190,10 +191,6 @@ public class DDDecoding implements JDecoding {
 			// making z-update
 			for (int s = 0; s < slavelen; s++) {
 				zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
-				for (double z: zs[s]) {
-					System.out.print(z + " ");
-				}
-				System.out.println();
 			}			
 			// making u update
 			double[] oldus = Arrays.copyOf(u, u.length);
