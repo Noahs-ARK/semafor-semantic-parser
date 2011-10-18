@@ -275,7 +275,7 @@ public class DDDecoding implements JDecoding {
 			if (itr >= 100) {
 				break;
 			}
-			if (pr < 0.001 && dr < 0.001) {
+			if (pr < 0.000001 && dr < 0.000001) {
 				System.out.println("Optimization converged: " + pr + " " + dr);
 				break;
 			}
@@ -289,8 +289,8 @@ public class DDDecoding implements JDecoding {
 			System.out.println(keys[i]);
 			for (int j = 0; j < arr.length; j++) {
 				String span = arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1];
-				System.out.println(span + " " + zs[i][count]);
-				if (zs[i][count] > maxVal) {
+				System.out.println(span + " " + u[count]);
+				if (u[count] > maxVal) {
 					maxVal = u[count];
 					maxIndex = j;
 				}
