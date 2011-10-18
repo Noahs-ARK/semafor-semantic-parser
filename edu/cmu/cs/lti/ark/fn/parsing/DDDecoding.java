@@ -141,14 +141,16 @@ public class DDDecoding implements JDecoding {
 				deltaarray[v] += 1;
 			}
 		}
+		
+		double[] thetas = new double[objVals.length];
 		for (int i = 0; i < len; i++) {
-			objVals[i] /= (double)deltaarray[i];
+			thetas[i] = objVals[i] / (double)deltaarray[i];
 		}
 		
 		// creating slaves
 		Slave[] slaves = new Slave[slavelen];
 		for (int i = 0; i < keys.length; i++) {
-			slaves[i] = new UniqueSpanSlave(objVals, 
+			slaves[i] = new UniqueSpanSlave(thetas, 
 					   						mappedIndices[i][0], 
 					   						mappedIndices[i][mappedIndices[i].length-1] + 1);
 			slaveparts[i] = new int[mappedIndices[i].length];
@@ -160,7 +162,7 @@ public class DDDecoding implements JDecoding {
 		
 		for (int i = keys.length; i < keys.length + max + 1; i++) {
 			int[] vars = overlapArray[i-keys.length].toArray();
-			slaves[i] = new OverlapSlave(objVals, vars);
+			slaves[i] = new OverlapSlave(thetas, vars);
 			for (int v: vars) {
 				deltaarray[v] += 1;
 			}
