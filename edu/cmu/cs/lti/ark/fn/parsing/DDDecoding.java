@@ -154,8 +154,12 @@ public class DDDecoding implements JDecoding {
 			Arrays.sort(slaveparts[s]);
 		}
 		
-		for (int i = 0; i < deltaarray.length; i++) {
-			System.out.println(i + ": " + deltaarray[i]);
+		for (int i = 0; i < partslaves.length; i++) {
+			System.out.print(i + ": ");
+			for (int j = 0; j < partslaves[i].length; j++) {
+				System.out.print(partslaves[i][j] + " ");
+			}
+			System.out.println();
 		}		
 		
 		
