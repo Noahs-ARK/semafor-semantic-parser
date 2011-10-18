@@ -154,15 +154,6 @@ public class DDDecoding implements JDecoding {
 			Arrays.sort(slaveparts[s]);
 		}
 		
-		for (int i = 0; i < partslaves.length; i++) {
-			System.out.print(i + ": ");
-			for (int j = 0; j < partslaves[i].length; j++) {
-				System.out.print(partslaves[i][j] + " ");
-			}
-			System.out.println();
-		}		
-		
-		
 		double totalDelta = 0.0;
 		TIntHashSet[] partslavessets = new TIntHashSet[len];
 		for (int i = 0; i < len; i++) {
@@ -176,6 +167,14 @@ public class DDDecoding implements JDecoding {
 			partslaves[i] = partslavessets[i].toArray();
 			Arrays.sort(partslaves[i]);
 		}
+		
+		for (int i = 0; i < partslaves.length; i++) {
+			System.out.print(i + ": ");
+			for (int j = 0; j < partslaves[i].length; j++) {
+				System.out.print(partslaves[i][j] + " ");
+			}
+			System.out.println();
+		}				
 		
 		/** starting optimization procedure **/		
 		double[] u = new double[len]; 
