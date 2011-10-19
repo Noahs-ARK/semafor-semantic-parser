@@ -1,13 +1,13 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 
 public class UniqueSpanSlave implements Slave {
 	public double[] mObjVals;
 	public int mStart;
 	public int mEnd;
-	public DescComparator mDesc;
 	public int mTotLen;
 	
 	public UniqueSpanSlave(double[] objVals, 
@@ -19,7 +19,6 @@ public class UniqueSpanSlave implements Slave {
 		}
 		mStart = start;
 		mEnd = end;
-		mDesc = new DescComparator();
 		mTotLen = objVals.length;
 	}
 	
@@ -34,7 +33,7 @@ public class UniqueSpanSlave implements Slave {
 			as[i-mStart] = a;
 		}
 		Double[] bs = Arrays.copyOf(as, as.length);
-		Arrays.sort(bs, mDesc);
+		Arrays.sort(bs, Collections.reverseOrder());
 		double[] sums = new double[bs.length];
 		Arrays.fill(sums, 0);
 		sums[0] = bs[0];
@@ -61,17 +60,5 @@ public class UniqueSpanSlave implements Slave {
 			updZs[i] = Math.max(as[i-mStart] - tau, 0);
 		}
 		return updZs;
-	}
-}
-
-class DescComparator implements Comparator<Double> {
-	public int compare(Double o1, Double o2) {
-		if (o1 > o2) {
-			return -1;
-		} else if (o1 == o2) {
-			return 0;
-		} else {
-			return 1;
-		}
 	}
 }
