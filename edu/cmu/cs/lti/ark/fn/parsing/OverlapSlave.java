@@ -8,8 +8,6 @@ public class OverlapSlave implements Slave {
 	public double[] mObjVals;
 	public int[] mIndices;
 	
-	public DescComparator mDesc;
-	
 	public OverlapSlave(double[] objVals, 
 						int[] indices) {
 		mObjVals = objVals;
@@ -37,10 +35,6 @@ public class OverlapSlave implements Slave {
 		}		
 		Double[] bs = Arrays.copyOf(as, mIndices.length);
 		Arrays.sort(bs, Collections.reverseOrder());
-		for (Double b: bs) {
-			System.out.print(b + " ");
-		}
-		System.out.println();
 		double[] sums = new double[as.length];
 		Arrays.fill(sums, 0);
 		sums[0] = bs[0];
