@@ -1,6 +1,7 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class OverlapSlave implements Slave {
 
@@ -35,7 +36,7 @@ public class OverlapSlave implements Slave {
 			return updZs;
 		}		
 		Double[] bs = Arrays.copyOf(as, mIndices.length);
-		Arrays.sort(bs, mDesc);
+		Arrays.sort(bs, Collections.reverseOrder());
 		for (Double b: bs) {
 			System.out.print(b + " ");
 		}
