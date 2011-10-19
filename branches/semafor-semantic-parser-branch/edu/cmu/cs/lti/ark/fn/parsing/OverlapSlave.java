@@ -31,6 +31,7 @@ public class OverlapSlave implements Slave {
 			sum += updZs[mIndices[i]];
 		}
 		if (sum <= 1.0) {
+			System.out.println("Sum :" + sum);
 			return updZs;
 		}		
 		Double[] bs = Arrays.copyOf(as, mIndices.length);
