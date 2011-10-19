@@ -271,7 +271,7 @@ public class DDDecoding implements JDecoding {
 			if (itr >= 100) {
 				break;
 			}
-			if (pr < 0.0001 && dr < 0.0001) {
+			if (pr < 0.000001 && dr < 0.000001) {
 				System.out.println("Optimization converged: " + pr + " " + dr);
 				break;
 			}
