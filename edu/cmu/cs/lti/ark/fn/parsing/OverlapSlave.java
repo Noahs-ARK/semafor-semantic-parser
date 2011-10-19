@@ -56,9 +56,12 @@ public class OverlapSlave implements Slave {
 		}
 		double tau = (1.0 / (double)(tempRho+1)) * (sums[tempRho] - 1.0);
 		Arrays.fill(updZs, 0);
+		sum = 0.0;
 		for (int i = 0; i < mIndices.length; i++) {
 			updZs[mIndices[i]] = Math.max(as[i] - tau, 0);
+			sum += updZs[mIndices[i]];
 		}
+		System.out.println("Sum : " + sum);
 		return updZs;
 	}
 }
