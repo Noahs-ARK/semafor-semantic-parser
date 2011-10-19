@@ -68,7 +68,8 @@ public class DDDecoding implements JDecoding {
 		}		
 		System.out.println("Max index:" + max);
 		TIntHashSet[] overlapArray = new TIntHashSet[max+1];
-		double[] objVals = new double[totalCount + max + 1];
+		// double[] objVals = new double[totalCount + max + 1];
+		double[] objVals = new double[totalCount];
 		double[] costs = new double[totalCount];
 		for (int i = 0; i < max+1; i++) {
 			overlapArray[i] = new TIntHashSet();
@@ -114,10 +115,10 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		// for a set of dummy variables for the OverlapSlave
-		for (int i = 0; i < max + 1; i++) {
-			objVals[i + totalCount] = 0.0;
-			overlapArray[i].add(i + totalCount);
-		}	
+//		for (int i = 0; i < max + 1; i++) {
+//			objVals[i + totalCount] = 0.0;
+//			overlapArray[i].add(i + totalCount);
+//		}	
 		// finished adding costs
 		
 		
@@ -127,8 +128,7 @@ public class DDDecoding implements JDecoding {
 		int[][] slaveparts = new int[slavelen][];
 		int[][] partslaves = new int[len][];
 		Arrays.fill(deltaarray, 0);
-		
-		
+				
 		// creating deltaarray
 		for (int i = 0; i < keys.length; i++) {
 			for (int j = 0; j < mappedIndices[i].length; j++) {
