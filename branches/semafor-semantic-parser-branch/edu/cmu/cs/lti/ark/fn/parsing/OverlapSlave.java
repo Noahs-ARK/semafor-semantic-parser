@@ -37,7 +37,7 @@ public class OverlapSlave implements Slave {
 		Arrays.sort(bs, mDesc);
 		double[] sums = new double[as.length];
 		Arrays.fill(sums, 0);
-		sums[0] = as[0];
+		sums[0] = bs[0];
 		for (int i = 1; i < as.length; i++) {
 			sums[i] = sums[i-1] + bs[i];
 		}
