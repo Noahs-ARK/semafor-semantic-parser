@@ -48,7 +48,7 @@ public class UniqueSpanSlave implements Slave {
 				if (i > tempRho) {
 					tempRho = i;
 				}
-			}
+			}	
 		}
 		if (tempRho == -1) {
 			System.out.println("Problem. tempRho is -1");
