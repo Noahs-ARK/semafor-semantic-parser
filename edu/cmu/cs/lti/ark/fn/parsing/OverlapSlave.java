@@ -31,7 +31,7 @@ public class OverlapSlave implements Slave {
 			sum += updZs[mIndices[i]];
 		}
 		if (sum <= 1.0) {
-			System.out.println("Sum :" + sum);
+			System.out.println("Sum1 :" + sum);
 			return updZs;
 		}		
 		Double[] bs = Arrays.copyOf(as, mIndices.length);
@@ -62,7 +62,7 @@ public class OverlapSlave implements Slave {
 			updZs[mIndices[i]] = Math.max(as[i] - tau, 0);
 			sum += updZs[mIndices[i]];
 		}
-		System.out.println("Sum : " + sum);
+		System.out.println("Sum2 : " + sum);
 		return updZs;
 	}
 }
