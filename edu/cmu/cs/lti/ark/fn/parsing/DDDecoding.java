@@ -7,10 +7,6 @@ import java.util.Set;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
 import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
-
-import ilog.concert.*; 
-import ilog.cplex.*;
 
 public class DDDecoding implements JDecoding {
 	private Map<String, Set<Pair<String, String>>> excludesMap;
@@ -68,7 +64,6 @@ public class DDDecoding implements JDecoding {
 		}		
 		System.out.println("Max index:" + max);
 		TIntHashSet[] overlapArray = new TIntHashSet[max+1];
-		// double[] objVals = new double[totalCount + max + 1];
 		double[] objVals = new double[totalCount];
 		double[] costs = new double[totalCount];
 		for (int i = 0; i < max+1; i++) {
@@ -114,14 +109,9 @@ public class DDDecoding implements JDecoding {
 				count++;
 			}
 		}
-		// for a set of dummy variables for the OverlapSlave
-//		for (int i = 0; i < max + 1; i++) {
-//			objVals[i + totalCount] = 0.0;
-//			overlapArray[i].add(i + totalCount);
-//		}	
+		
+		
 		// finished adding costs
-		
-		
 		int len = objVals.length;
 		int[] deltaarray = new int[len];
 		int slavelen = keys.length + max + 1;
