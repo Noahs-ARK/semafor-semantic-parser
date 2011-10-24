@@ -58,6 +58,7 @@ public class JointDecoding extends Decoding {
 		super.init(modelFile, alphabetFile, predictionFile, list, frameLines);
 		mIgnoreNullSpansWhileJointDecoding = ignoreNullSpansWhileJointDecoding;
 		mNumThreads = numThreads;
+		jd.setNumThreads(mNumThreads);
 	}	
 	
 	public void setSecondModel(String secondModelFile, double weight) {
