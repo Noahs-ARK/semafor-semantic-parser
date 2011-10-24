@@ -1,5 +1,7 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
+import ilog.concert.IloNumExpr;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -110,27 +112,76 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		
+		// counting number of exclusion slaves
+		ArrayList<int[]> exclusionSets = new ArrayList<int[]>();
+		if (excludesMap.containsKey(frame)) {
+			Set<Pair<String, String>> set = excludesMap.get(frame);	
+			for (Pair<String, String> p: set) {
+				String one = p.getFirst();
+				String two = p.getSecond();
+				int oneIndex = Arrays.binarySearch(keys, one);
+				if (oneIndex < 0) {
+					continue;
+				}
+				int twoIndex = Arrays.binarySearch(keys, two);
+				if (twoIndex < 0) {
+					continue;
+				}
+				System.out.println("Found two mutually exclusive FEs: " + one + "\t" + two);
+				TIntHashSet eSet = new TIntHashSet();
+				count = 0;
+				Pair<int[], Double>[] arr1 = scoreMap.get(one);
+				Pair<int[], Double>[] arr2 = scoreMap.get(two);
+				for (int j = 0; j < scoreMap.get(one).length; j++) {
+					if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
+						continue;
+					}
+					eSet.add(mappedIndices[oneIndex][j]);
+					count++;
+				}
+				for (int j = 0; j < scoreMap.get(two).length; j++) {
+					if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
+						continue;
+					}
+					eSet.add(mappedIndices[twoIndex][j]);
+					count++;
+				}
+				int[] arr = eSet.toArray();
+				exclusionSets.add(arr);
+			}
+		}		
 		
 		// finished adding costs
 		int len = objVals.length;
 		int[] deltaarray = new int[len];
-		int slavelen = keys.length + max + 1;
+		int numExclusionSlaves = exclusionSets.size();
+		int slavelen = keys.length + max + 1 + numExclusionSlaves;
 		int[][] slaveparts = new int[slavelen][];
 		int[][] partslaves = new int[len][];
 		Arrays.fill(deltaarray, 0);
 				
 		// creating deltaarray
+		// for every unique span slave
 		for (int i = 0; i < keys.length; i++) {
 			for (int j = 0; j < mappedIndices[i].length; j++) {
 				deltaarray[mappedIndices[i][j]] += 1;
 			}
 		}		
+		// for the overlap slaves
 		for (int i = keys.length; i < keys.length + max + 1; i++) {
 			int[] vars = overlapArray[i-keys.length].toArray();
 			for (int v: vars) {
 				deltaarray[v] += 1;
 			}
 		}
+		// for the exclusion slaves
+		for (int[] vars: exclusionSets) {
+			for (int v: vars) {
+				deltaarray[v] += 1;
+			}
+		}
+		// end of creation of deltaarray
+		
 		
 		double[] thetas = new double[objVals.length];
 		for (int i = 0; i < len; i++) {
@@ -154,6 +205,14 @@ public class DDDecoding implements JDecoding {
 			slaves[i] = new OverlapSlave(thetas, vars);
 			slaveparts[i] = Arrays.copyOf(vars, vars.length);
 		}
+		
+		for (int i = keys.length + max + 1; 
+				 i < keys.length + max + 1 + numExclusionSlaves; 
+				 i++) {
+			int[] vars = exclusionSets.get(i - (keys.length + max + 1));
+			slaves[i] = new ExclusionSlave(thetas, vars);
+			slaveparts[i] = Arrays.copyOf(vars, vars.length);
+		}		
 		
 		for (int s = 0; s < slaveparts.length; s++) {
 			Arrays.sort(slaveparts[s]);
