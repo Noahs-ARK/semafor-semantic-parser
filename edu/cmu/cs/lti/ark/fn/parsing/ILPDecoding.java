@@ -300,4 +300,10 @@ public class ILPDecoding implements JDecoding {
 		ilp.decodeTrivial();
 		ilp.end();
 	}
+
+	@Override
+	public void setNumThreads(int nt) {
+		// TODO Auto-generated method stub
+		
+	}
 }
