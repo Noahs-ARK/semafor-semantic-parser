@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+
+import edu.cmu.cs.lti.ark.fn.utils.ThreadPool;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
 import gnu.trove.TIntHashSet;
@@ -13,6 +15,8 @@ public class DDDecoding implements JDecoding {
 	private Map<String, Set<Pair<String, String>>> requiresMap;
 	public static final double TAU = 1.5;
 	public static final double RHO_START = 0.03;
+	private int mNumThreads = 1;
+	private double[][] zs;
 	
 	public DDDecoding() {
 	}
@@ -233,7 +237,7 @@ public class DDDecoding implements JDecoding {
 		
 		/** starting optimization procedure **/		
 		double[] u = new double[len]; 
-		double[][] zs = new double[slavelen][len]; 
+		zs = new double[slavelen][len]; 
 		double[][] lambdas = new double[slavelen][len];
 		
 		Arrays.fill(u, 0.5);
@@ -250,9 +254,23 @@ public class DDDecoding implements JDecoding {
 			double eta = TAU * rho;
 			// System.out.println("Eta: " + eta);
 			// making z-update
-			for (int s = 0; s < slavelen; s++) {
-				zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
+			if (this.mNumThreads == 1) {
+				for (int s = 0; s < slavelen; s++) {
+					zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
+				}
+			} else {
+				ThreadPool threadPool = new ThreadPool(mNumThreads);
+				for (int s = 0; s < slavelen; s++) {
+					threadPool.runTask(createTask(rho, 
+							  					  u, 
+							  					  lambdas[s], 
+							  					  zs[s],
+							  					  slaves[s],
+							  					  s));
+				}
+				threadPool.join();
 			}			
+			
 			// making u update
 			double[] oldus = Arrays.copyOf(u, u.length);
 			for (int i = 0; i < len; i++) {
@@ -348,9 +366,32 @@ public class DDDecoding implements JDecoding {
 		return res;
 	}
 
+	public Runnable createTask(final double rho, 
+									  final double[] us, 
+									  final double[] lambdas, 
+									  final double[] z,
+									  final Slave slave,
+									  final int s)                                                                                                     
+	{                                                                                                                                                                           
+		return new Runnable() {                                                                                                                                             
+			public void run() {                                                                                                                                           
+				System.out.println("Task " + s + " : start");
+				zs[s] = slave.makeZUpdate(rho, us, lambdas, z);                                                                                                                                    
+				System.out.println("Task " + s + " : end");                                                                                                             
+			}
+		};
+	}
+
+	
 	@Override
 	public void end() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setNumThreads(int nt) {
+		// TODO Auto-generated method stub
+		mNumThreads = nt;
 	}
 }

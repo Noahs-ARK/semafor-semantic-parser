@@ -20,6 +20,7 @@ public class JointDecoding extends Decoding {
 	private double secondModelWeight = 0.0;
 	public static final String ILP_DECODING = "ilp";
 	public static final String DD_DECODING = "dd";
+	private int mNumThreads = 1;
 		
 	public JointDecoding(String jointType) {
 		if (jointType.equals(ILP_DECODING)) {
@@ -51,10 +52,12 @@ public class JointDecoding extends Decoding {
 			String predictionFile,
 			ArrayList<FrameFeatures> list,
 			ArrayList<String> frameLines,
-			boolean ignoreNullSpansWhileJointDecoding)
+			boolean ignoreNullSpansWhileJointDecoding,
+			int numThreads)
 	{
 		super.init(modelFile, alphabetFile, predictionFile, list, frameLines);
 		mIgnoreNullSpansWhileJointDecoding = ignoreNullSpansWhileJointDecoding;
+		mNumThreads = numThreads;
 	}	
 	
 	public void setSecondModel(String secondModelFile, double weight) {

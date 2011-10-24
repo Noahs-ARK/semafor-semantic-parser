@@ -13,4 +13,5 @@ public interface JDecoding {
 			  boolean costAugmented,
 			  FrameFeatures goldFF);
 	public void end();
+	public void setNumThreads(int nt);
 }

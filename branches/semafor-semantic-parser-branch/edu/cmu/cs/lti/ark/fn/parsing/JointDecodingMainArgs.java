@@ -41,10 +41,11 @@ public class JointDecodingMainArgs
 		String overlap = args[7];
 		String requiresMap = args[8];
 		String excludesMap = args[9];
-		String secondModelFile = args[10];
+		int numThreads = new Integer(args[10]);
+		String secondModelFile = args[11];
 		double secondModelWeight = 0.0;
 		if (secondModelFile != null && !secondModelFile.equals("null") ) {
-			secondModelWeight = new Double(args[11]);
+			secondModelWeight = new Double(args[12]);
 		}
 		JointDecoding bpd = new JointDecoding(decodingType);
 		LocalFeatureReading lfr = new LocalFeatureReading(eventsFile, spanFile, frFile);
@@ -63,7 +64,8 @@ public class JointDecodingMainArgs
 				predictionFile,
 				list,
 				ParsePreparation.readSentencesFromFile(frFile),
-				false
+				false,
+				numThreads
 				);
 		bpd.setMaps(requiresMap, excludesMap);
 		if (secondModelFile != null && !secondModelFile.equals("null")) {
