@@ -1,7 +1,5 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
-import ilog.concert.IloNumExpr;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
