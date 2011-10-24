@@ -375,9 +375,9 @@ public class DDDecoding implements JDecoding {
 	{                                                                                                                                                                           
 		return new Runnable() {                                                                                                                                             
 			public void run() {                                                                                                                                           
-				System.out.println("Task " + s + " : start");
+				// System.out.println("Task " + s + " : start");
 				zs[s] = slave.makeZUpdate(rho, us, lambdas, z);                                                                                                                                    
-				System.out.println("Task " + s + " : end");                                                                                                             
+				// System.out.println("Task " + s + " : end");                                                                                                             
 			}
 		};
 	}
