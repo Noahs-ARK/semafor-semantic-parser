@@ -260,13 +260,14 @@ public class DDDecoding implements JDecoding {
 				}
 			} else {
 				ThreadPool threadPool = new ThreadPool(mNumThreads);
-				for (int s = 0; s < slavelen; s++) {
+				for (int i = 0; i < mNumThreads; i++) {
 					threadPool.runTask(createTask(rho, 
 							  					  u, 
-							  					  lambdas[s], 
-							  					  zs[s],
-							  					  slaves[s],
-							  					  s));
+							  					  lambdas, 
+							  					  zs,
+							  					  slaves,
+							  					  i,
+							  					  slavelen));
 				}
 				threadPool.join();
 			}			
@@ -368,15 +369,24 @@ public class DDDecoding implements JDecoding {
 
 	public Runnable createTask(final double rho, 
 									  final double[] us, 
-									  final double[] lambdas, 
-									  final double[] z,
-									  final Slave slave,
-									  final int s)                                                                                                     
+									  final double[][] lambdas, 
+									  final double[][] z,
+									  final Slave[] slave,
+									  final int i,
+									  final int slavelen)                                                                                                     
 	{                                                                                                                                                                           
 		return new Runnable() {                                                                                                                                             
 			public void run() {                                                                                                                                           
 				// System.out.println("Task " + s + " : start");
-				zs[s] = slave.makeZUpdate(rho, us, lambdas, z);                                                                                                                                    
+				int batchSize = (int)(Math.ceil((double) slavelen / (double) mNumThreads));
+				int start = i * batchSize;
+				int end = start + batchSize;
+				if (end > slavelen) {
+					end = slavelen;
+				}
+				for (int s = start; s < end; s++) {
+					zs[s] = slave[s].makeZUpdate(rho, us, lambdas[s], z[s]);
+				}
 				// System.out.println("Task " + s + " : end");                                                                                                             
 			}
 		};
