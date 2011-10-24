@@ -2,6 +2,8 @@ package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -249,6 +251,12 @@ public class DDDecoding implements JDecoding {
 		}		
 		double rho = RHO_START;
 		int itr = 0;		
+		
+		
+		List<Slave> slist = Arrays.asList(slaves);
+		Collections.shuffle(slist);
+		slist.toArray(slaves);
+		
 		while (true) {
 			// System.out.println("Rho: " + rho);
 			double eta = TAU * rho;
