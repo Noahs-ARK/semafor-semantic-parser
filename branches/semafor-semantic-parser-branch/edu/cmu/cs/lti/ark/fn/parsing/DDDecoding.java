@@ -338,9 +338,9 @@ public class DDDecoding implements JDecoding {
 		int itr = 0;		
 		
 		
-		List<Slave> slist = Arrays.asList(slaves);
-		Collections.shuffle(slist);
-		slist.toArray(slaves);
+//		List<Slave> slist = Arrays.asList(slaves);
+//		Collections.shuffle(slist);
+//		slist.toArray(slaves);
 		
 		while (true) {
 			// System.out.println("Rho: " + rho);
@@ -401,8 +401,8 @@ public class DDDecoding implements JDecoding {
 			}
 			dr /= totalDelta;
 			
-			//System.out.println(itr + ": Primal residual: " + pr);
-			//System.out.println(itr + ": Dual residual: " + dr);
+			// System.out.println(itr + ": Primal residual: " + pr);
+			// System.out.println(itr + ": Dual residual: " + dr);
 			if (pr > dr) {
 				double rat;
 				if (dr == 0.0) {
@@ -445,9 +445,9 @@ public class DDDecoding implements JDecoding {
 			System.out.println(keys[i]);
 			for (int j = 0; j < arr.length; j++) {
 				String span = arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1];
-				System.out.println(span + " " + zs[j][count]);
+				System.out.println(span + " " + u[count]);
 				if (u[count] > maxVal) {
-					maxVal = zs[j][count];
+					maxVal = u[count];
 					maxIndex = j;
 				}
 				count++;
