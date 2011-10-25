@@ -97,7 +97,7 @@ public class Decoding
 	{
 		int size = mFrameList.size();
 		ArrayList<String> result = new ArrayList<String>();
-		for(int i = 0; i < size; i ++)
+		for(int i = 7; i < 8; i ++)
 		{
 			System.out.println("Decoding index:"+i);
 			String decisionLine = decode(i,overlapCheck, offset);
