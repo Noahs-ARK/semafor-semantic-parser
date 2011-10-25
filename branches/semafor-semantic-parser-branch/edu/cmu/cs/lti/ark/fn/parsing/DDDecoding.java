@@ -188,42 +188,42 @@ public class DDDecoding implements JDecoding {
 		
 		// counting number of exclusion slaves
 		ArrayList<int[]> exclusionSets = new ArrayList<int[]>();
-//		if (excludesMap.containsKey(frame)) {
-//			Set<Pair<String, String>> set = excludesMap.get(frame);	
-//			for (Pair<String, String> p: set) {
-//				String one = p.getFirst();
-//				String two = p.getSecond();
-//				int oneIndex = Arrays.binarySearch(keys, one);
-//				if (oneIndex < 0) {
-//					continue;
-//				}
-//				int twoIndex = Arrays.binarySearch(keys, two);
-//				if (twoIndex < 0) {
-//					continue;
-//				}
-//				System.out.println("Found two mutually exclusive FEs: " + one + "\t" + two);
-//				TIntHashSet eSet = new TIntHashSet();
-//				count = 0;
-//				Pair<int[], Double>[] arr1 = scoreMap.get(one);
-//				Pair<int[], Double>[] arr2 = scoreMap.get(two);
-//				for (int j = 0; j < scoreMap.get(one).length; j++) {
-//					if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
-//						continue;
-//					}
-//					eSet.add(mappedIndices[oneIndex][j]);
-//					count++;
-//				}
-//				for (int j = 0; j < scoreMap.get(two).length; j++) {
-//					if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
-//						continue;
-//					}
-//					eSet.add(mappedIndices[twoIndex][j]);
-//					count++;
-//				}
-//				int[] arr = eSet.toArray();
-//				exclusionSets.add(arr);
-//			}
-//		}
+		if (excludesMap.containsKey(frame)) {
+			Set<Pair<String, String>> set = excludesMap.get(frame);	
+			for (Pair<String, String> p: set) {
+				String one = p.getFirst();
+				String two = p.getSecond();
+				int oneIndex = Arrays.binarySearch(keys, one);
+				if (oneIndex < 0) {
+					continue;
+				}
+				int twoIndex = Arrays.binarySearch(keys, two);
+				if (twoIndex < 0) {
+					continue;
+				}
+				System.out.println("Found two mutually exclusive FEs: " + one + "\t" + two);
+				TIntHashSet eSet = new TIntHashSet();
+				count = 0;
+				Pair<int[], Double>[] arr1 = scoreMap.get(one);
+				Pair<int[], Double>[] arr2 = scoreMap.get(two);
+				for (int j = 0; j < scoreMap.get(one).length; j++) {
+					if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
+						continue;
+					}
+					eSet.add(mappedIndices[oneIndex][j]);
+					count++;
+				}
+				for (int j = 0; j < scoreMap.get(two).length; j++) {
+					if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
+						continue;
+					}
+					eSet.add(mappedIndices[twoIndex][j]);
+					count++;
+				}
+				int[] arr = eSet.toArray();
+				exclusionSets.add(arr);
+			}
+		}
 		
 		// finished adding costs
 		int len = objVals.length;
