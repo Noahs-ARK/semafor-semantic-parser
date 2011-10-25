@@ -182,6 +182,7 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		
+		System.out.println("Count: " + count + " len: " + objVals.length);
 		for (int i = count; i < objVals.length; i++) {
 			objVals[i] = 0.0;
 		}
