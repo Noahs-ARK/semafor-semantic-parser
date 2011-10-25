@@ -79,64 +79,64 @@ public class DDDecoding implements JDecoding {
 		// counting number of required slaves
 		// doing this to add slack variables for required slaves
 		ArrayList<int[]> requiredSets = new ArrayList<int[]>();
-//		if (requiresMap.containsKey(frame)) {
-//			Set<Pair<String, String>> set = requiresMap.get(frame);
-//			for (Pair<String, String> p: set) {
-//				String one = p.getFirst();
-//				String two = p.getSecond();
-//				int oneIndex = Arrays.binarySearch(keys, one);
-//				if (oneIndex < 0) {
-//					continue;
-//				}
-//				int twoIndex = Arrays.binarySearch(keys, two);
-//				if (twoIndex < 0) {
-//					continue;
-//				}
-//				System.out.println("Found two FEs with a requires relationship: " + one + "\t" + two);
-//				
-//				int nullIndex1 = -1;
-//				int nullIndex2 = -1;
-//				count = 0;
-//				TIntHashSet rSet1 = new TIntHashSet();
-//				TIntHashSet rSet2 = new TIntHashSet();
-//				Pair<int[], Double>[] arr1 = scoreMap.get(one);
-//				Pair<int[], Double>[] arr2 = scoreMap.get(two);
-//				for (int j = 0; j < scoreMap.get(one).length; j++) {
-//					if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
-//						nullIndex1 = mappedIndices[oneIndex][j];
-//						continue;
-//					}
-//					rSet1.add(mappedIndices[oneIndex][j]);
-//					count++;
-//				}
-//				rSet1.add(totalCount);
-//				requiredSets.add(rSet1.toArray());				
-//				count = 0;
-//				for (int j = 0; j < scoreMap.get(two).length; j++) {
-//					if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
-//						nullIndex2 = mappedIndices[twoIndex][j];
-//						continue;
-//					}
-//					rSet2.add(mappedIndices[twoIndex][j]);
-//					count++;
-//				}
-//				rSet2.add(totalCount);
-//				totalCount++;				
-//				requiredSets.add(rSet2.toArray());
-//				
-//				int[] a1 = new int[2];
-//				a1[0] = nullIndex1;
-//				a1[1] = totalCount;
-//				requiredSets.add(a1);
-//				
-//				
-//				int[] a2 = new int[2];
-//				a2[0] = nullIndex2;
-//				a2[1] = totalCount;
-//				totalCount++;
-//				requiredSets.add(a2);
-//			}
-//		}
+		if (requiresMap.containsKey(frame)) {
+			Set<Pair<String, String>> set = requiresMap.get(frame);
+			for (Pair<String, String> p: set) {
+				String one = p.getFirst();
+				String two = p.getSecond();
+				int oneIndex = Arrays.binarySearch(keys, one);
+				if (oneIndex < 0) {
+					continue;
+				}
+				int twoIndex = Arrays.binarySearch(keys, two);
+				if (twoIndex < 0) {
+					continue;
+				}
+				System.out.println("Found two FEs with a requires relationship: " + one + "\t" + two);
+				
+				int nullIndex1 = -1;
+				int nullIndex2 = -1;
+				count = 0;
+				TIntHashSet rSet1 = new TIntHashSet();
+				TIntHashSet rSet2 = new TIntHashSet();
+				Pair<int[], Double>[] arr1 = scoreMap.get(one);
+				Pair<int[], Double>[] arr2 = scoreMap.get(two);
+				for (int j = 0; j < scoreMap.get(one).length; j++) {
+					if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
+						nullIndex1 = mappedIndices[oneIndex][j];
+						continue;
+					}
+					rSet1.add(mappedIndices[oneIndex][j]);
+					count++;
+				}
+				rSet1.add(totalCount);
+				requiredSets.add(rSet1.toArray());				
+				count = 0;
+				for (int j = 0; j < scoreMap.get(two).length; j++) {
+					if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
+						nullIndex2 = mappedIndices[twoIndex][j];
+						continue;
+					}
+					rSet2.add(mappedIndices[twoIndex][j]);
+					count++;
+				}
+				rSet2.add(totalCount);
+				totalCount++;				
+				requiredSets.add(rSet2.toArray());
+				
+				int[] a1 = new int[2];
+				a1[0] = nullIndex1;
+				a1[1] = totalCount;
+				requiredSets.add(a1);
+				
+				
+				int[] a2 = new int[2];
+				a2[0] = nullIndex2;
+				a2[1] = totalCount;
+				totalCount++;
+				requiredSets.add(a2);
+			}
+		}
 		
 		double[] objVals = new double[totalCount];
 		double[] costs = new double[totalCount];
