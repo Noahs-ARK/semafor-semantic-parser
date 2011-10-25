@@ -182,7 +182,6 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		
-		System.out.println("Count: " + count + " len: " + objVals.length);
 		for (int i = count; i < objVals.length; i++) {
 			objVals[i] = 0.0;
 		}
@@ -446,9 +445,9 @@ public class DDDecoding implements JDecoding {
 			System.out.println(keys[i]);
 			for (int j = 0; j < arr.length; j++) {
 				String span = arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1];
-				System.out.println(span + " " + u[count]);
+				System.out.println(span + " " + zs[j][count]);
 				if (u[count] > maxVal) {
-					maxVal = u[count];
+					maxVal = zs[s][count];
 					maxIndex = j;
 				}
 				count++;
