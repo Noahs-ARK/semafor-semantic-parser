@@ -447,7 +447,7 @@ public class DDDecoding implements JDecoding {
 				String span = arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1];
 				System.out.println(span + " " + zs[j][count]);
 				if (u[count] > maxVal) {
-					maxVal = zs[s][count];
+					maxVal = zs[j][count];
 					maxIndex = j;
 				}
 				count++;
