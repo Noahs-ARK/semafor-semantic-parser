@@ -351,7 +351,7 @@ public class DDDecoding implements JDecoding {
 				for (int s = 0; s < slavelen; s++) {
 					zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
 				}
-			} else {
+			} else { // does not work
 				ThreadPool threadPool = new ThreadPool(mNumThreads);
 				for (int i = 0; i < mNumThreads; i++) {
 					threadPool.runTask(createTask(rho, 
