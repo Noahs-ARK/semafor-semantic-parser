@@ -32,11 +32,11 @@ public class ILPDecoding implements JDecoding {
 		this.requiresMap = requiresMap;
 	}
 	
-	public Map<String, String> decode(Map<String, Pair<int[], Double>[]> scoreMap, 
+	public Map<String, Pair<String, Double>> decode(Map<String, Pair<int[], Double>[]> scoreMap, 
 									  String frame,
 									  boolean costAugmented,
 									  FrameFeatures goldFF) {
-		Map<String, String> res = new THashMap<String, String>();
+		Map<String, Pair<String, Double>> res = new THashMap<String, Pair<String, Double>>();
 		if (scoreMap.size() == 0) {
 			return res;
 		}
@@ -248,7 +248,10 @@ public class ILPDecoding implements JDecoding {
 					Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 					for (int j = 0; j < arr.length; j++) {
 						if (val[count] > 0.0) {
-							res.put(keys[i], arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1]);
+							double score = objVals[count];
+							Pair<String, Double> p = new Pair<String, Double>
+								(arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1], score);
+							res.put(keys[i], p);
 						}
 						count++;
 					}
