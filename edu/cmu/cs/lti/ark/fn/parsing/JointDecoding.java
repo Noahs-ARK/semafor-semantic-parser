@@ -156,6 +156,16 @@ public class JointDecoding extends Decoding {
 				SpanAndCorrespondingFeatures[] featureArray = featsList.get(i);
 				int featArrLen = featureArray.length;
 				Pair<int[], Double>[] arr = new Pair[featArrLen];
+				double sum = 0.0;
+				for(int j = 0; j < featArrLen; j ++) {
+					int[] feats = featureArray[j].features;
+					double weightFeatSum = getWeightSum(feats, w);
+					if (w2 != null) {
+						weightFeatSum = (1.0 - secondModelWeight) * weightFeatSum + 
+						(secondModelWeight) * getWeightSum(feats, w2);
+					}
+					sum += Math.exp(weightFeatSum);
+				}
 				double maxProb = -Double.MAX_VALUE;
 				String outcome = null;
 				for(int j = 0; j < featArrLen; j ++) {
@@ -165,12 +175,13 @@ public class JointDecoding extends Decoding {
 						weightFeatSum = (1.0 - secondModelWeight) * weightFeatSum + 
 						(secondModelWeight) * getWeightSum(feats, w2);
 					}
-					arr[j] = new Pair<int[], Double>(featureArray[j].span, weightFeatSum);
-					if (weightFeatSum > maxProb) {
-						maxProb = weightFeatSum;
+					double prob = Math.exp(weightFeatSum) / sum;
+					arr[j] = new Pair<int[], Double>(featureArray[j].span, prob);
+					if (prob > maxProb) {
+						maxProb = prob;
 						outcome = featureArray[j].span[0]+"_"+featureArray[j].span[1];
 					}
-				}			
+				}
 				// null span is the best span
 				if (outcome.equals("-1_-1")) {
 					if (!mIgnoreNullSpansWhileJointDecoding) {
