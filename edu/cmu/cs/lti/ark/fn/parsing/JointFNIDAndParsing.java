@@ -166,7 +166,7 @@ public class JointFNIDAndParsing {
 			}
 			ArrayList<FrameFeatures> frList = lfr.getMFrameFeaturesList();
 			decoding.setData(null, frList, idResult);
-			ArrayList<String> argResult = decoding.decodeAll("overlapcheck", 0);	
+			ArrayList<String> argResult = decoding.decodeAll("overlapcheck", 0, true);	
 			System.out.println("Arg results:");
 			for (String res: argResult) {
 				System.out.println(res);

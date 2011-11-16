@@ -42,9 +42,9 @@ public class Decoding
 	private String mLocalAlphabetFile;
 	private String mLocalModelFile;
 	public static long count=0;
-	private ArrayList<FrameFeatures> mFrameList;
-	private String mPredictionFile;	
-	private ArrayList<String> mFrameLines; 
+	protected ArrayList<FrameFeatures> mFrameList;
+	protected String mPredictionFile;	
+	protected ArrayList<String> mFrameLines; 
 	
 	public Decoding()
 	{

@@ -135,7 +135,8 @@ public class MaxMarginTraining
 											  params.parameters, 
 											  true,
 											  true,
-											  ff);
+											  ff,
+											  false).getFirst();
 			FeatureVector bestFV = new FeatureVector();
 			for (int j = 0; j < numFes; j++) {
 				SpanAndCorrespondingFeatures[] scf = ff.fElementSpansAndFeatures.get(j);

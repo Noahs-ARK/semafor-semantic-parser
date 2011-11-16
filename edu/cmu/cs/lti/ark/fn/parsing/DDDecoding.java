@@ -31,11 +31,11 @@ public class DDDecoding implements JDecoding {
 		this.requiresMap = requiresMap;
 	}
 	
-	public Map<String, String> decode(Map<String, Pair<int[], Double>[]> scoreMap, 
+	public Map<String, Pair<String, Double>> decode(Map<String, Pair<int[], Double>[]> scoreMap, 
 									  String frame,
 									  boolean costAugmented,
 									  FrameFeatures goldFF) {
-		Map<String, String> res = new THashMap<String, String>();
+		Map<String, Pair<String, Double>> res = new THashMap<String, Pair<String, Double>>();
 		if (scoreMap.size() == 0) {
 			return res;
 		}
@@ -443,18 +443,22 @@ public class DDDecoding implements JDecoding {
 			double maxVal = -Double.MAX_VALUE;
 			int maxIndex = -1;
 			// System.out.println(keys[i]);
+			double score = 0.0;
 			for (int j = 0; j < arr.length; j++) {
 				// String span = arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1];
 				// System.out.println(span + " " + u[count]);
 				if (u[count] > maxVal) {
 					maxVal = u[count];
 					maxIndex = j;
+					score = objVals[count];
 				}
 				count++;
 			}
 			// System.out.println();
 			if (maxIndex != -1 && maxVal > 0) {
-				res.put(keys[i], arr[maxIndex].getFirst()[0] + "_" + arr[maxIndex].getFirst()[1]);
+				Pair<String, Double> p = 
+					new Pair<String, Double>(arr[maxIndex].getFirst()[0] + "_" + arr[maxIndex].getFirst()[1], score);
+				res.put(keys[i], p);
 			}  			
 		}
 		return res;

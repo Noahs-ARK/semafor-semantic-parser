@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.Map;
 
+import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.util.FileUtil;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
@@ -21,7 +22,7 @@ public class JointDecoding extends Decoding {
 	public static final String ILP_DECODING = "ilp";
 	public static final String DD_DECODING = "dd";
 	private int mNumThreads = 1;
-		
+
 	public JointDecoding(String jointType) {
 		if (jointType.equals(ILP_DECODING)) {
 			jd = new ILPDecoding();
@@ -46,7 +47,7 @@ public class JointDecoding extends Decoding {
 		super.init(modelFile, alphabetFile, predictionFile, list, frameLines);
 		mIgnoreNullSpansWhileJointDecoding = false;
 	}
-	
+
 	public void init(String modelFile, 
 			String alphabetFile,
 			String predictionFile,
@@ -60,13 +61,13 @@ public class JointDecoding extends Decoding {
 		mNumThreads = numThreads;
 		jd.setNumThreads(mNumThreads);
 	}	
-	
+
 	public void init(String modelFile, String alphabetFile) {
 		super.init(modelFile, alphabetFile);
 		mIgnoreNullSpansWhileJointDecoding = false;
 		jd.setNumThreads(1);
 	}
-	
+
 	public void setSecondModel(String secondModelFile, double weight) {
 		System.out.println("Setting second model from: " + secondModelFile);
 		w2 = new double[numLocalFeatures];
@@ -79,7 +80,7 @@ public class JointDecoding extends Decoding {
 		secondModelWeight = weight;
 		System.out.println("Interpolation weight: " + secondModelWeight);
 	}
-	
+
 	public String getNonOverlappingDecision(FrameFeatures mFF, 
 			String frameLine, 
 			int offset,
@@ -91,23 +92,54 @@ public class JointDecoding extends Decoding {
 				offset, 
 				localW,
 				costAugmented,
-				goldFF);
+				goldFF,
+				false);
 	}
 
 	public String getNonOverlappingDecision(FrameFeatures mFF, 
 			String frameLine, 
-			int offset) {
+			int offset, 
+			boolean returnScores) {
 		return getNonOverlappingDecision(
 				mFF, 
 				frameLine, 
 				offset, 
 				localW,
 				false,
-				null);
+				null,
+				returnScores);
 	}
 
-	
-	public Map<String, String> getDecodedMap(FrameFeatures mFF, 
+	public ArrayList<String> decodeAll(String overlapCheck, 
+			int offset,
+			boolean returnScores) {
+		int size = mFrameList.size();
+		ArrayList<String> result = new ArrayList<String>();
+		for(int i = 0; i < size; i ++)
+		{
+			System.out.println("Decoding index:"+i);
+			String decisionLine = decode(i,overlapCheck, offset, returnScores);
+			result.add(decisionLine);
+		}
+		if (mPredictionFile != null) {
+			ParsePreparation.writeSentencesToTempFile(mPredictionFile, result);
+		}
+		return result;
+			}
+
+	public String decode(int index, String overlapCheck, int offset, boolean returnScores)
+	{
+		FrameFeatures f = mFrameList.get(index);
+		String dec = null;
+		if(overlapCheck.equals("overlapcheck"))
+			dec = getNonOverlappingDecision(f,mFrameLines.get(index), offset, returnScores);
+		else
+			dec = getDecision(f,mFrameLines.get(index), offset); // return scores not supported
+		return dec;
+	}
+
+	public Pair<Map<String, String>, Double> 
+	getDecodedMap(FrameFeatures mFF, 
 			String frameLine, 
 			int offset, double[] w,
 			boolean costAugmented,
@@ -131,7 +163,7 @@ public class JointDecoding extends Decoding {
 					double weightFeatSum = getWeightSum(feats, w);
 					if (w2 != null) {
 						weightFeatSum = (1.0 - secondModelWeight) * weightFeatSum + 
-										(secondModelWeight) * getWeightSum(feats, w2);
+						(secondModelWeight) * getWeightSum(feats, w2);
 					}
 					arr[j] = new Pair<int[], Double>(featureArray[j].span, weightFeatSum);
 					if (weightFeatSum > maxProb) {
@@ -149,32 +181,50 @@ public class JointDecoding extends Decoding {
 				}
 				System.out.println("Frame element:"+frameElements.get(i)+" Found span:"+outcome);
 			}
-			Map<String, String> feMap = jd.decode(vs, frameName, costAugmented, goldFF);
-			return feMap;
+			Map<String, Pair<String, Double>> feMap = jd.decode(vs, frameName, costAugmented, goldFF);
+			double score = -1.0;
+			Map<String, String> retMap = new THashMap<String, String>();
+			Set<String> keys = feMap.keySet();
+			if (keys.size() > 0) {
+				score = 0.0;
+				for (String fe: keys) {
+					score += feMap.get(fe).getSecond();
+					retMap.put(fe, feMap.get(fe).getFirst());
+				}
+				score /= (double) keys.size();
+			}			
+			Pair<Map<String, String>, Double> ret = 
+				new Pair<Map<String, String>, Double>(retMap, score);
+			return ret;
 	}
 
-	public Map<String, String> getNonOverlappingDecision(FrameFeatures mFF, 
+	public Pair<Map<String, String>, Double> getNonOverlappingDecision(FrameFeatures mFF, 
 			String frameLine, 
 			int offset, double[] w,
 			boolean returnMap,
 			boolean costAugmented,
-			FrameFeatures goldFF) {
+			FrameFeatures goldFF,
+			boolean returnScores) {
 		Map<String, String> feMap = new THashMap<String, String>();
 		if(mFF.fElements.size()==0) {
-			return feMap;
+			Pair<Map<String, String>, Double> p = new Pair<Map<String, String>, Double>(feMap, -1.0);
+			return p;
 		}
 		if(mFF.fElements.size()==0) {
-			return feMap;
+			Pair<Map<String, String>, Double> p = new Pair<Map<String, String>, Double>(feMap, -1.0);
+			return p;
 		}
 		// vs is the set of FEs on which joint decoding has to be done
-		return getDecodedMap(mFF, frameLine, offset, w, costAugmented, goldFF);
+		Pair<Map<String, String>, Double> pair = getDecodedMap(mFF, frameLine, offset, w, costAugmented, goldFF);
+		return pair;
 	}
 
 	public String getNonOverlappingDecision(FrameFeatures mFF, 
 			String frameLine, 
 			int offset, double[] w,
 			boolean costAugmented,
-			FrameFeatures goldFF) {
+			FrameFeatures goldFF,
+			boolean returnScores) {
 		String frameName = mFF.frameName;
 		String decisionLine=getInitialDecisionLine(frameLine, offset);
 		if(mFF.fElements.size()==0) {
@@ -187,7 +237,8 @@ public class JointDecoding extends Decoding {
 		}
 		System.out.println("Frame:"+frameName);
 		// vs is the set of FEs on which joint decoding has to be done
-		Map<String, String> feMap = getDecodedMap(mFF, frameLine, offset, w, costAugmented, goldFF);
+		Pair<Map<String, String>, Double> pair = getDecodedMap(mFF, frameLine, offset, w, costAugmented, goldFF);
+		Map<String, String> feMap = pair.getFirst();
 		Set<String> keySet = feMap.keySet();
 		int count = 1;
 		for(String fe:keySet) {
@@ -208,6 +259,9 @@ public class JointDecoding extends Decoding {
 			decisionLine+=fe+"\t"+modToks+"\t";
 		}		
 		decisionLine="0\t"+count+"\t"+decisionLine.trim();
+		if (returnScores) {
+			decisionLine = decisionLine + "\t" + pair.getSecond();
+		}
 		System.out.println(decisionLine);
 		return decisionLine;
 	}
