@@ -61,6 +61,12 @@ public class JointDecoding extends Decoding {
 		jd.setNumThreads(mNumThreads);
 	}	
 	
+	public void init(String modelFile, String alphabetFile) {
+		super.init(modelFile, alphabetFile);
+		mIgnoreNullSpansWhileJointDecoding = false;
+		jd.setNumThreads(1);
+	}
+	
 	public void setSecondModel(String secondModelFile, double weight) {
 		System.out.println("Setting second model from: " + secondModelFile);
 		w2 = new double[numLocalFeatures];

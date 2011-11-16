@@ -143,4 +143,8 @@ public final class FNModelOptions extends CommandLineOptions
 	public StringOption exFile = new StringOption("exmapfile");
 	public StringOption costAugmented = new StringOption("costaugmented");
 	public StringOption decodingType = new StringOption("decodingType");
+	public StringOption posConstraintsFile = new StringOption("posconstraintsfile");
+	public StringOption requiresMap = new StringOption("requiresmap");
+	public StringOption excludesMap = new StringOption("excludesmap");
+	
 }

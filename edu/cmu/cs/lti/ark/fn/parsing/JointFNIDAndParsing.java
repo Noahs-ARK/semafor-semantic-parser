@@ -36,6 +36,7 @@ import edu.cmu.cs.lti.ark.fn.identification.FastFrameIdentifier;
 import edu.cmu.cs.lti.ark.fn.identification.RequiredDataForFrameIdentification;
 import edu.cmu.cs.lti.ark.fn.identification.SmoothedGraph;
 import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
+import edu.cmu.cs.lti.ark.fn.wordnet.WordNetRelations;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
 import edu.cmu.cs.lti.ark.util.optimization.LDouble;
 import gnu.trove.THashMap;
@@ -49,6 +50,8 @@ public class JointFNIDAndParsing {
 		ArrayList<String> parses = new ArrayList<String>();
 		int start = options.startIndex.get();
 		int end = options.endIndex.get();
+		WordNetRelations wnr = 
+			new WordNetRelations(options.stopWordsFile.get(), options.wnConfigFile.get());
 		int count = 0;
 		ArrayList<String> tokenNums = new ArrayList<String>();
 		ArrayList<String> orgSentenceLines = new ArrayList<String>();
@@ -114,6 +117,10 @@ public class JointFNIDAndParsing {
 										options.frameNetElementsMapFile.get(),
 										options.eventsFile.get(),
 										options.spansFile.get());
+		JointDecoding decoding = new JointDecoding("ilp");
+		decoding.init(options.modelFile.get(), 
+					  options.alphabetFile.get());
+		decoding.setMaps(options.requiresMap.get(), options.excludesMap.get());		
 		
 		System.out.println("Start Time:"+(new Date()));
 		for(String input: inputForFrameId) {
@@ -140,7 +147,30 @@ public class JointFNIDAndParsing {
 			for (int j = 0; j < frames.length; j++) {
 				idResult.add(1+"\t"+frames1[j]+"\t"+split[0]+"\t"+toks[1]+"\t"+split[1]+"\t"+sentCount);
 				System.out.println("1"+"\t"+frames1[j]+"\t"+split[0]+"\t"+toks[1]+"\t"+split[1]+"\t"+sentCount+"\t"+scores[j]);
-			}	
+			}
+			// 3. argument identification
+			CreateAlphabet.run(false, parses, idResult, wnr, false, options.posConstraintsFile.get());
+			LocalFeatureReading lfr = 
+					new LocalFeatureReading(options.eventsFile.get(),
+											options.spansFile.get(),
+											idResult);
+			try
+			{
+				lfr.readLocalFeatures(false, null);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				System.err.println("Could not read local features. Exiting.");
+				System.exit(-1);
+			}
+			ArrayList<FrameFeatures> frList = lfr.getMFrameFeaturesList();
+			decoding.setData(null, frList, idResult);
+			ArrayList<String> argResult = decoding.decodeAll("overlapcheck", 0);	
+			System.out.println("Arg results:");
+			for (String res: argResult) {
+				System.out.println(res);
+			}
 		}
 		System.out.println("End Time:"+(new Date()));
 		String feFile = options.frameElementsOutputFile.get();
