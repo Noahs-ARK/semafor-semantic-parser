@@ -50,6 +50,7 @@ public class JointFNIDAndParsing {
 		ArrayList<String> parses = new ArrayList<String>();
 		int start = options.startIndex.get();
 		int end = options.endIndex.get();
+		double argidweight = options.argidWeight.get();
 		WordNetRelations wnr = 
 			new WordNetRelations(options.stopWordsFile.get(), options.wnConfigFile.get());
 		int count = 0;
@@ -176,7 +177,7 @@ public class JointFNIDAndParsing {
 				System.out.println(res);
 				String[] toksRes = res.split("\t");
 				double score = new Double(toksRes[toksRes.length-1]);
-				double totalScore = Math.log(scores[j]) + score;
+				double totalScore = Math.log(scores[j]) + argidweight * score;
 				if (totalScore > max) {
 					maxLine = res;
 					max = totalScore;

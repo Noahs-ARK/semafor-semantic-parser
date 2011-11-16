@@ -146,5 +146,5 @@ public final class FNModelOptions extends CommandLineOptions
 	public StringOption posConstraintsFile = new StringOption("posconstraintsfile");
 	public StringOption requiresMap = new StringOption("requiresmap");
 	public StringOption excludesMap = new StringOption("excludesmap");
-	
+	public DoubleOption argidWeight = new DoubleOption("argidweight");	
 }
