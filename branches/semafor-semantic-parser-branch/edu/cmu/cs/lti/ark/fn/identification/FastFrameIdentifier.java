@@ -493,6 +493,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 			}			
 		};	
 		Arrays.sort(frames, c);
+		System.out.println("Size of set: " + frames.length);
 		String[] results = new String[frames.length];
 		for (int i = 0; i < results.length; i ++) {
 			results[i] = frames[i].getFirst() + "\t" + (frames[i].getSecond() / sum);
