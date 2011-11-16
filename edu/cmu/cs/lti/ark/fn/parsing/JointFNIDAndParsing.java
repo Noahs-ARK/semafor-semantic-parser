@@ -123,6 +123,7 @@ public class JointFNIDAndParsing {
 		decoding.setMaps(options.requiresMap.get(), options.excludesMap.get());		
 		
 		System.out.println("Start Time:"+(new Date()));
+		ArrayList<String> argResults = new ArrayList<String>();
 		for(String input: inputForFrameId) {
 			String[] toks = input.split("\t");
 			int sentNum = new Integer(toks[2]);	// offset of the sentence within the loaded data (relative to options.startIndex)
@@ -168,13 +169,30 @@ public class JointFNIDAndParsing {
 			decoding.setData(null, frList, idResult);
 			ArrayList<String> argResult = decoding.decodeAll("overlapcheck", 0, true);	
 			System.out.println("Arg results:");
-			for (String res: argResult) {
+			double max = -Double.MAX_VALUE;
+			String maxLine = null;
+			for (int j = 0; j < argResult.size(); j++) {
+				String res = argResult.get(j);
 				System.out.println(res);
+				String[] toksRes = res.split("\t");
+				double score = new Double(toksRes[toksRes.length-1]);
+				double totalScore = Math.log(scores[j]) + score;
+				if (totalScore > max) {
+					maxLine = res;
+					max = totalScore;
+				}
 			}
+			String argLine = "";
+			String[] toksRes = maxLine.split("\t");
+			for (int j = 0; j < toksRes.length - 1; j++) {
+				argLine = argLine + toksRes[j] + "\t";
+			}
+			argLine = argLine.trim();
+			argResults.add(argLine);
 		}
 		System.out.println("End Time:"+(new Date()));
 		String feFile = options.frameElementsOutputFile.get();
-		ParsePreparation.writeSentencesToTempFile(feFile, idResult);
+		ParsePreparation.writeSentencesToTempFile(feFile, argResults);
 	}	
 	
 	public static TObjectDoubleHashMap<String> parseParamFile(String paramsFile)
