@@ -134,7 +134,7 @@ public class JointDecoding extends Decoding {
 		if(overlapCheck.equals("overlapcheck"))
 			dec = getNonOverlappingDecision(f,mFrameLines.get(index), offset, returnScores);
 		else
-			dec = getDecision(f,mFrameLines.get(index), offset); // return scores not supported
+			dec = getDecision(f,mFrameLines.get(index), offset);
 		return dec;
 	}
 
@@ -156,16 +156,6 @@ public class JointDecoding extends Decoding {
 				SpanAndCorrespondingFeatures[] featureArray = featsList.get(i);
 				int featArrLen = featureArray.length;
 				Pair<int[], Double>[] arr = new Pair[featArrLen];
-				double sum = 0.0;
-				for(int j = 0; j < featArrLen; j ++) {
-					int[] feats = featureArray[j].features;
-					double weightFeatSum = getWeightSum(feats, w);
-					if (w2 != null) {
-						weightFeatSum = (1.0 - secondModelWeight) * weightFeatSum + 
-						(secondModelWeight) * getWeightSum(feats, w2);
-					}
-					sum += Math.exp(weightFeatSum);
-				}
 				double maxProb = -Double.MAX_VALUE;
 				String outcome = null;
 				for(int j = 0; j < featArrLen; j ++) {
@@ -175,13 +165,12 @@ public class JointDecoding extends Decoding {
 						weightFeatSum = (1.0 - secondModelWeight) * weightFeatSum + 
 						(secondModelWeight) * getWeightSum(feats, w2);
 					}
-					double prob = Math.exp(weightFeatSum) / sum;
-					arr[j] = new Pair<int[], Double>(featureArray[j].span, prob);
-					if (prob > maxProb) {
-						maxProb = prob;
+					arr[j] = new Pair<int[], Double>(featureArray[j].span, weightFeatSum);
+					if (weightFeatSum > maxProb) {
+						maxProb = weightFeatSum;
 						outcome = featureArray[j].span[0]+"_"+featureArray[j].span[1];
 					}
-				}
+				}			
 				// null span is the best span
 				if (outcome.equals("-1_-1")) {
 					if (!mIgnoreNullSpansWhileJointDecoding) {
