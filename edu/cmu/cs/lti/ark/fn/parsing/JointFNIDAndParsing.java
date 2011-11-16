@@ -108,6 +108,13 @@ public class JointFNIDAndParsing {
 		if (usegraph) {
 			sg = (SmoothedGraph)SerializedObjects.readSerializedObject(options.useGraph.get());
 		}
+		// initializing argument identification
+		System.out.println("Initializing alphabet for argument identification..");
+		CreateAlphabet.setDataFileNames(options.alphabetFile.get(), 
+										options.frameNetElementsMapFile.get(),
+										options.eventsFile.get(),
+										options.spansFile.get());
+		
 		System.out.println("Start Time:"+(new Date()));
 		for(String input: inputForFrameId) {
 			String[] toks = input.split("\t");
