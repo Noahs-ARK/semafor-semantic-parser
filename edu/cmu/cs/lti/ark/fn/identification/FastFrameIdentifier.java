@@ -428,6 +428,9 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 				} else {
 					set = null;
 				}
+				if (set != null) {
+					System.out.println("Found in graph: " + coarsetoken);
+				}
 			} else {
 				String lemma = data[5][intTokNums[0]];
 				String pos = data[1][intTokNums[0]];
@@ -464,6 +467,9 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 					} else {
 						set = null;
 					}
+				}
+				if (set != null) {
+					System.out.println("Found in graph: " + lemma + "." + pos);
 				}
 			}
 		}
