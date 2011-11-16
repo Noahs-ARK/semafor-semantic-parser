@@ -330,14 +330,14 @@ public class ParserDriver {
 					idResult.add(1+"\t"+bestFrame+"\t"+split[0]+"\t"+toks[1]+"\t"+split[1]+"\t"+sentNum);	// BestFrame\tTargetTokenNum(s)\tSentenceOffset
 				}
 				// 3. argument identification
-				CreateAlphabet.run(false, allLemmaTagsSentences, idResult, wnr, false);
+				CreateAlphabet.run(false, allLemmaTagsSentences, idResult, wnr, false, options.posConstraintsFile.get());
 				LocalFeatureReading lfr = 
 						new LocalFeatureReading(options.eventsFile.get(),
 												options.spansFile.get(),
 												idResult);
 				try
 				{
-					lfr.readLocalFeatures();
+					lfr.readLocalFeatures(false, null);
 				}
 				catch(Exception e)
 				{
