@@ -228,7 +228,10 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 	}
 	
 	
-	public String[] getBestFrame(String frameLine, String parseLine, boolean printConf)
+	public String[] getBestFrame(String frameLine, 
+								 String parseLine, 
+								 boolean printConf,
+								 int KK)
 	{
 		if (!printConf) {
 			return new String[] {getBestFrame(frameLine, parseLine)};
@@ -282,7 +285,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 			}			
 		};	
 		Arrays.sort(frames, c);
-		int K = frames.length < 10 ? frames.length : 10;
+		int K = frames.length < KK ? frames.length : KK;
 		String[] results = new String[K];
 		for (int i = 0; i < K; i ++) {
 			results[i] = frames[i].getFirst() + "\t" + (frames[i].getSecond() / sum);
@@ -290,8 +293,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		return results;
 	}	
 	
-	public String getBestFrame(String frameLine, String parseLine, SmoothedGraph sg)
-	{
+	public String getBestFrame(String frameLine, String parseLine, SmoothedGraph sg) {
 		String result = null;
 		double maxVal = -Double.MIN_VALUE;
 		String[] toks = frameLine.split("\t");
@@ -371,7 +373,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		if(set==null)
 		{
 			set = mFrameMap.keySet();
-		}
+		}		
 		for(String frame: set)
 		{
 			double val =  getNumeratorValue(frame, intTokNums, data);
@@ -385,8 +387,120 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		return result;
 	}	
 	
-	public String getBestFrame(String orgFELine, String frameLine, String parseLine)
-	{
+	public String[] getBestFrame(String frameLine, 
+							   String parseLine, 
+							   SmoothedGraph sg,
+							   boolean printConf) {
+		if (!printConf) {
+			return new String[] {getBestFrame(frameLine, parseLine, sg)};
+		}		
+		String[] toks = frameLine.split("\t");
+		String[] tokNums = toks[1].split("_");
+		int[] intTokNums = new int[tokNums.length];
+		for(int j = 0; j < tokNums.length; j ++)
+			intTokNums[j] = new Integer(tokNums[j]);
+		Arrays.sort(intTokNums);
+		StringTokenizer st = new StringTokenizer(parseLine,"\t");
+		int tokensInFirstSent = new Integer(st.nextToken());
+		String[][] data = new String[6][tokensInFirstSent];
+		for(int k = 0; k < 6; k ++)
+		{
+			data[k]=new String[tokensInFirstSent];
+			for(int j = 0; j < tokensInFirstSent; j ++)
+			{
+				data[k][j]=""+st.nextToken().trim();
+			}
+		}	
+		String finetoken = null;
+		String coarsetoken = null;
+		Set<String> set = checkPresenceOfTokensInMap(intTokNums,data);
+		if (set == null) {
+			if (intTokNums.length > 1) {
+				coarsetoken = "";
+				for (int j = 0; j < intTokNums.length; j++) {
+					coarsetoken += data[0][intTokNums[j]].toLowerCase() + " ";
+				}
+				coarsetoken = coarsetoken.trim();
+				coarsetoken = 
+					ScanAdverbsAndAdjectives.getCanonicalForm(coarsetoken);
+				if (sg.getCoarseMap().containsKey(coarsetoken)) {
+					set = sg.getCoarseMap().get(coarsetoken);
+				} else {
+					set = null;
+				}
+			} else {
+				String lemma = data[5][intTokNums[0]];
+				String pos = data[1][intTokNums[0]];
+				if (pos.startsWith("N")) {
+					pos = "n";
+				} else if (pos.startsWith("V")) {
+					pos = "v";
+				} else if (pos.startsWith("J")) {
+					pos = "a";
+				} else if (pos.startsWith("RB")) {
+					pos = "adv";
+				} else if (pos.startsWith("I") || pos.startsWith("TO")) {
+					pos = "prep";
+				} else {
+					pos = null;
+				}
+				if (pos != null) {
+					finetoken = 
+						ScanAdverbsAndAdjectives.getCanonicalForm(lemma + "." + pos);
+					coarsetoken = 
+						ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
+					if (sg.getFineMap().containsKey(finetoken)) {
+						set = sg.getFineMap().get(finetoken);
+					} else if (sg.getCoarseMap().containsKey(coarsetoken)){
+						set = sg.getCoarseMap().get(coarsetoken);
+					} else {
+						set = null;
+					}
+				} else {
+					coarsetoken = 
+						ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
+					if (sg.getCoarseMap().containsKey(coarsetoken)){
+						set = sg.getCoarseMap().get(coarsetoken);
+					} else {
+						set = null;
+					}
+				}
+			}
+		}
+		if(set==null) {
+			set = mFrameMap.keySet();
+		}
+		Pair<String, Double>[] frames = new Pair[set.size()];
+		double sum = 0.0;
+		int count = 0;
+		for(String frame: set)
+		{
+			double val =  getNumeratorValue(frame, intTokNums, data);
+			frames[count] = new Pair<String, Double>(frame, val);
+			count++;
+ 			sum += val;
+		}
+		Comparator<Pair<String, Double>> c = new Comparator<Pair<String, Double>>() {
+			public int compare(Pair<String, Double> arg0,
+					Pair<String, Double> arg1) {
+				if (arg0.getSecond() > arg1.getSecond()) {
+					return -1;
+				} else if (arg0.getSecond() == arg1.getSecond()) {
+					return 0;
+				} else { 
+					return 1;
+				}
+			}			
+		};	
+		Arrays.sort(frames, c);
+		String[] results = new String[frames.length];
+		for (int i = 0; i < results.length; i ++) {
+			results[i] = frames[i].getFirst() + "\t" + (frames[i].getSecond() / sum);
+  		}
+		return results;
+	}	
+	
+	public String getBestFrame(String orgFELine, String frameLine, String parseLine) {
 		String result = null;
 		double maxVal = -Double.MIN_VALUE;
 		String[] toks = frameLine.split("\t");

@@ -146,7 +146,7 @@ public class FrameIdentificationRelease
 			String[] toks = input.split("\t");
 			int sentNum = new Integer(toks[2]);	// offset of the sentence within the loaded data (relative to options.startIndex)
 			if (printconf) {
-				String[] bestFrames = idModel.getBestFrame(input,parses.get(sentNum), printconf);
+				String[] bestFrames = idModel.getBestFrame(input,parses.get(sentNum), printconf, 10);
 				for (String bestFrame: bestFrames) {
 					String tokenRepresentation = getTokenRepresentation(toks[1],parses.get(sentNum));  
 					String[] split = tokenRepresentation.trim().split("\t");
