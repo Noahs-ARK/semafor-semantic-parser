@@ -73,7 +73,7 @@ public class JointDecodingMainArgs
 		}
 		Date sd = new Date();
 		long st = sd.getTime();
-		bpd.decodeAll(overlap, 0);
+		bpd.decodeAll(overlap, 0, false);
 		Date ed = new Date();
 		long et = ed.getTime();
 		bpd.wrapUp();
