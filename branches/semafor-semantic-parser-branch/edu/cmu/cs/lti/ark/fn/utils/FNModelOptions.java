@@ -107,7 +107,6 @@ public final class FNModelOptions extends CommandLineOptions
 	public NewFilePathOption logOutputFile = new NewFilePathOption("logoutputfile");
 	public StringOption printFNIDConfidence = new StringOption("printfnidconfidence");
 	public IntOption numThreads = new IntOption("numthreads");
-	public StringOption noHV = new StringOption("nohv");
 	
 	public StringOption eventsFile = new StringOption("eventsfile");
 	public StringOption spansFile = new StringOption("spansfile");
@@ -147,5 +146,6 @@ public final class FNModelOptions extends CommandLineOptions
 	public StringOption posConstraintsFile = new StringOption("posconstraintsfile");
 	public StringOption requiresMap = new StringOption("requiresmap");
 	public StringOption excludesMap = new StringOption("excludesmap");
-	public DoubleOption argidWeight = new DoubleOption("argidweight");	
+	public DoubleOption argidWeight = new DoubleOption("argidweight");
+	public StringOption noHV = new StringOption("nohv");
 }
