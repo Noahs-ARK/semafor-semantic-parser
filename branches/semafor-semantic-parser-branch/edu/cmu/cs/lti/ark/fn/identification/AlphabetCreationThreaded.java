@@ -94,7 +94,7 @@ public class AlphabetCreationThreaded
 		Map<String, Map<String, Set<String>>> revisedRelationsMap = 
 			r.getRevisedRelMap();
 		Map<String, String> hvLemmas = r.getHvLemmaCache();
-		boolean nohv = options.noHV.get();
+		boolean nohv = options.noHV.get().equals("nohv");
 		if (nohv) {
 			System.out.println("No hidden variable for frame identification");
 		} else {
