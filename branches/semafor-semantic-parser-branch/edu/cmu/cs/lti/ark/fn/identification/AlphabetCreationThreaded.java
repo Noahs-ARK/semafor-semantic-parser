@@ -59,6 +59,7 @@ public class AlphabetCreationThreaded
 	private int mNumThreads = 0;
 	private Map<String, Map<String, Set<String>>> mRevisedRelationsMap;
 	private Map<String, String> mHVLemmas;
+	private boolean mNoHV = false;
 
 	public static void main(String[] args)
 	{
@@ -93,6 +94,12 @@ public class AlphabetCreationThreaded
 		Map<String, Map<String, Set<String>>> revisedRelationsMap = 
 			r.getRevisedRelMap();
 		Map<String, String> hvLemmas = r.getHvLemmaCache();
+		boolean nohv = options.noHV.get();
+		if (nohv) {
+			System.out.println("No hidden variable for frame identification");
+		} else {
+			System.out.println("Using hidden variable for frame identification");
+		}
 		AlphabetCreationThreaded events = 
 				new AlphabetCreationThreaded(alphabetFile, 
 						eventDir, 
@@ -105,7 +112,8 @@ public class AlphabetCreationThreaded
 						logger,
 						options.numThreads.get(),
 						revisedRelationsMap,
-						hvLemmas);
+						hvLemmas,
+						nohv);
 			events.createEvents();
 	} 
 
@@ -120,7 +128,8 @@ public class AlphabetCreationThreaded
 			Logger logger,
 			int numThreads,
 			Map<String, Map<String, Set<String>>> rMap,
-			Map<String, String> lemmaCache)
+			Map<String, String> lemmaCache,
+			boolean nohv)
 	{
 		mFrameMap=frameMap;
 		mParseFile=parseFile;
@@ -134,6 +143,7 @@ public class AlphabetCreationThreaded
 		mNumThreads = numThreads; 
 		mHVLemmas = lemmaCache;
 		mRevisedRelationsMap = rMap;
+		mNoHV = nohv;
 	}
 	
 	public void createEvents() {
@@ -236,9 +246,29 @@ public class AlphabetCreationThreaded
 		    };
 	}
 
-	private int[][] getFeatures(String frame,int[] intTokNums,String[][] data, Map<String, Integer> alphabet)
+	private THashSet<String> getHiddenUnits(String frame, 
+											int[] intTokNums, 
+											String[][] data) {
+		THashSet<String> hus = mFrameMap.get(frame);
+		for (String hu: hus) {
+			System.out.println(hu);
+		}
+		if (true) {
+			System.exit(-1);
+		}
+		if (!mNoHV) {
+			return mFrameMap.get(frame);
+		} else {
+			return mFrameMap.get(frame);
+		}
+	}
+	
+	private int[][] getFeatures(String frame, 
+								int[] intTokNums, 
+								String[][] data, 
+								Map<String, Integer> alphabet)
 	{
-		THashSet<String> hiddenUnits = mFrameMap.get(frame);
+		THashSet<String> hiddenUnits = getHiddenUnits(frame, intTokNums, data);
 		DependencyParse parse = DependencyParse.processFN(data, 0.0);
 		int hSize = hiddenUnits.size();
 		int[][] res = new int[hSize][];
