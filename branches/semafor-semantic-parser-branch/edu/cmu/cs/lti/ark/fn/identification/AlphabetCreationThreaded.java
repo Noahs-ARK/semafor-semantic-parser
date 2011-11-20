@@ -60,6 +60,7 @@ public class AlphabetCreationThreaded
 	private Map<String, Map<String, Set<String>>> mRevisedRelationsMap;
 	private Map<String, String> mHVLemmas;
 	private boolean mNoHV = false;
+	private boolean mSupportedOnly = false;
 
 	public static void main(String[] args)
 	{
@@ -100,6 +101,10 @@ public class AlphabetCreationThreaded
 		} else {
 			System.out.println("Using hidden variable for frame identification");
 		}
+		boolean supportedOnly = options.supportedOnly.get();
+		if (supportedOnly) {
+			System.out.println("Using only supported features.");
+		}
 		AlphabetCreationThreaded events = 
 				new AlphabetCreationThreaded(alphabetFile, 
 						eventDir, 
@@ -113,7 +118,8 @@ public class AlphabetCreationThreaded
 						options.numThreads.get(),
 						revisedRelationsMap,
 						hvLemmas,
-						nohv);
+						nohv,
+						supportedOnly);
 			events.createEvents();
 	} 
 
@@ -129,7 +135,8 @@ public class AlphabetCreationThreaded
 			int numThreads,
 			Map<String, Map<String, Set<String>>> rMap,
 			Map<String, String> lemmaCache,
-			boolean nohv)
+			boolean nohv,
+			boolean supportedOnly)
 	{
 		mFrameMap=frameMap;
 		mParseFile=parseFile;
@@ -144,6 +151,7 @@ public class AlphabetCreationThreaded
 		mHVLemmas = lemmaCache;
 		mRevisedRelationsMap = rMap;
 		mNoHV = nohv;
+		mSupportedOnly = supportedOnly;
 	}
 	
 	public void createEvents() {
@@ -356,13 +364,15 @@ public class AlphabetCreationThreaded
 		int size = set.size();
 		int[][][] allFeatures = new int[size][][];
 		allFeatures[0]=getFeatures(frameName,intTokNums,data, alphabet);
-		int count = 1;
-		for(String f:set)
-		{
-			if(f.equals(frameName))
-				continue;
-			allFeatures[count]=getFeatures(f,intTokNums,data, alphabet);
-			count++;
+		if (!mSupportedOnly) {
+			int count = 1;
+			for(String f:set)
+			{
+				if(f.equals(frameName))
+					continue;
+				allFeatures[count]=getFeatures(f,intTokNums,data, alphabet);
+				count++;
+			}
 		}
 		mLogger.info("Processed index:"+index+" alphsize:"+alphabet.size());
 		return new Pair<String, Integer>(parseLine, parseOffset);
