@@ -59,6 +59,7 @@ public class CreateEventsUnsupported
 	private int mNumThreads = 0;
 	private Map<String, Map<String, Set<String>>> mRevisedRelationsMap;
 	private Map<String, String> mHVLemmas;
+	private boolean mNoHV = false;
 
 	public static void main(String[] args)
 	{
@@ -90,10 +91,16 @@ public class CreateEventsUnsupported
 		int revisedStart = startIndex;
 		int revisedEnd = endIndex;
 		Map<String, Map<String, Set<String>>> revisedRelationsMap = 
-			r.getRevisedRelMap();
+				r.getRevisedRelMap();
 		Map<String, String> hvLemmas = r.getHvLemmaCache();
+		boolean nohv = options.noHV.get().equals("nohv");
+		if (nohv) {
+			System.out.println("No hidden variable for frame identification");
+		} else {
+			System.out.println("Using hidden variable for frame identification");
+		}
 		logger.info("Start:"+ revisedStart + " end:" + revisedEnd);
-			CreateEventsUnsupported events = 
+		CreateEventsUnsupported events = 
 				new CreateEventsUnsupported(alphabetFile, 
 						eventDir, 
 						feFile, 
@@ -105,8 +112,9 @@ public class CreateEventsUnsupported
 						logger,
 						options.numThreads.get(),
 						revisedRelationsMap,
-						hvLemmas);
-			events.createEvents();
+						hvLemmas,
+						nohv);
+		events.createEvents();
 	} 
 
 	public CreateEventsUnsupported(String alphabetFile,
@@ -120,7 +128,8 @@ public class CreateEventsUnsupported
 			Logger logger,
 			int numThreads,
 			Map<String, Map<String, Set<String>>> rMap,
-			Map<String, String> lemmaCache
+			Map<String, String> lemmaCache,
+			boolean nohv
 			)
 	{
 		mFrameMap=frameMap;
@@ -136,8 +145,9 @@ public class CreateEventsUnsupported
 		mNumThreads = numThreads; 
 		mHVLemmas = lemmaCache;
 		mRevisedRelationsMap = rMap;
+		mNoHV = nohv;
 	}
-	
+
 	public void createEvents() {
 		try {
 			readAlphabetFile();
@@ -155,7 +165,7 @@ public class CreateEventsUnsupported
 			System.exit(-1);
 		}
 	}
-	
+
 	public void processBatch(int i, int start, int end)
 	{
 		mLogger.info("Thread " + i +": Creating events....");
@@ -166,11 +176,11 @@ public class CreateEventsUnsupported
 		try
 		{
 			BufferedReader bReader = 
-				new BufferedReader(new FileReader(mFrameElementsFile));
+					new BufferedReader(new FileReader(mFrameElementsFile));
 			String line = null;
 			int count = 0;
 			BufferedReader parseReader = 
-				new BufferedReader(new FileReader(mParseFile));
+					new BufferedReader(new FileReader(mParseFile));
 			String parseLine = parseReader.readLine();
 			int parseOffset = 0;
 			while((line=bReader.readLine())!=null)
@@ -182,7 +192,7 @@ public class CreateEventsUnsupported
 				line=line.trim();
 				mLogger.info("Thread + " + i + ": Processing:"+count);
 				Pair<String, Integer> pair = 
-					processLine(line, count, parseLine, parseOffset, parseReader);
+						processLine(line, count, parseLine, parseOffset, parseReader);
 				count++;
 				if (count == end) {
 					break;
@@ -203,14 +213,14 @@ public class CreateEventsUnsupported
 	public Runnable createTask(final int count, final int start, final int end)
 	{
 		return new Runnable() {
-		      public void run() {
-		        mLogger.info("Task " + count + " : start");
-		        processBatch(count, start, end);
-		        mLogger.info("Task " + count + " : end");
-		      }
-		    };
+			public void run() {
+				mLogger.info("Task " + count + " : start");
+				processBatch(count, start, end);
+				mLogger.info("Task " + count + " : end");
+			}
+		};
 	}
-	
+
 	private void readAlphabetFile()
 	{
 		BufferedReader bReader = BasicFileIO.openFileToRead(mAlphabetFile);
@@ -225,9 +235,29 @@ public class CreateEventsUnsupported
 		BasicFileIO.closeFileAlreadyRead(bReader);
 	}
 
+	private THashSet<String> getHiddenUnits(String frame, 
+			int[] mTokenNums, 
+			String[][] parseData) {
+		if (!mNoHV) {
+			return mFrameMap.get(frame);
+		} else {
+			String actualTokens = "";
+			for(int i = 0; i < mTokenNums.length; i ++)
+			{
+				String lexUnit = parseData[0][mTokenNums[i]];
+				String pos = parseData[1][mTokenNums[i]];	
+				actualTokens+=lexUnit+"_"+pos+" ";
+			}
+			actualTokens=actualTokens.trim();
+			THashSet<String> set = new THashSet<String>();
+			set.add(actualTokens);
+			return set;
+		}
+	}
+
 	private int[][] getFeatures(String frame,int[] intTokNums,String[][] data)
 	{
-		THashSet<String> hiddenUnits = mFrameMap.get(frame);
+		THashSet<String> hiddenUnits = getHiddenUnits(frame, intTokNums, data);
 		DependencyParse parse = DependencyParse.processFN(data, 0.0);
 		int hSize = hiddenUnits.size();
 		int[][] res = new int[hSize][];
