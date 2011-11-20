@@ -59,16 +59,18 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 	private Map<String, Map<String, Set<String>>> mRevisedRelationsMap;
 	private Map<String, String> mHVLemmas;
 	private int K;
-	
+	private boolean mNoHV = false;
+
 	public FastFrameIdentifier(TObjectDoubleHashMap<String> paramList, 
-									  String reg, 
-									  double l, 
-									  THashMap<String, THashSet<String>> frameMap, 
-									  THashMap<String, THashSet<String>> wnRelationCache,
-									  THashMap<String,THashSet<String>> hvCorrespondenceMap,
-									  Map<String, Set<String>> relatedWordsForWord,
-									  Map<String, Map<String, Set<String>>> revisedRelationsMap,
-									  Map<String, String> hvLemmas)
+			String reg, 
+			double l, 
+			THashMap<String, THashSet<String>> frameMap, 
+			THashMap<String, THashSet<String>> wnRelationCache,
+			THashMap<String,THashSet<String>> hvCorrespondenceMap,
+			Map<String, Set<String>> relatedWordsForWord,
+			Map<String, Map<String, Set<String>>> revisedRelationsMap,
+			Map<String, String> hvLemmas,
+			boolean nohv)
 	{
 		super(paramList,reg,l,null,frameMap);
 		initializeParameterIndexes();
@@ -83,8 +85,9 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		mRelatedWordsForWord = relatedWordsForWord;
 		mRevisedRelationsMap = revisedRelationsMap;
 		mHVLemmas = hvLemmas;
+		mNoHV = nohv;
 	}
-	
+
 	private double getNumeratorValue(String frameName, int[] intTokNums, String[][] data)
 	{
 		m_current = 0;
@@ -92,10 +95,30 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		double idVal = getValueForFrame(frameName, intTokNums,data);
 		return idVal;
 	}	
-	
+
+	private THashSet<String> getHiddenUnits(String frame, 
+			int[] mTokenNums, 
+			String[][] parseData) {
+		if (!mNoHV) {
+			return mFrameMap.get(frame);
+		} else {
+			String actualTokens = "";
+			for(int i = 0; i < mTokenNums.length; i ++)
+			{
+				String lexUnit = parseData[0][mTokenNums[i]];
+				String pos = parseData[1][mTokenNums[i]];	
+				actualTokens+=lexUnit+"_"+pos+" ";
+			}
+			actualTokens=actualTokens.trim();
+			THashSet<String> set = new THashSet<String>();
+			set.add(actualTokens);
+			return set;
+		}
+	}
+
 	private double getValueForFrame(String frame, int[] intTokNums, String[][] data)	
 	{
-		THashSet<String> hiddenUnits = mFrameMap.get(frame);
+		THashSet<String> hiddenUnits = getHiddenUnits(frame, intTokNums, data);
 		double result = 0.0;
 		DependencyParse parse = DependencyParse.processFN(data, 0.0);
 		for (String unit : hiddenUnits)
@@ -104,18 +127,18 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 			FeatureExtractor featex = new FeatureExtractor();
 			if(clusterMap==null) {
 				valMap =  
-					featex.extractFeaturesLessMemory(frame, 
-							intTokNums, 
-							unit, 
-							data,
-							"test", 
-							mRelatedWordsForWord, 
-							mRevisedRelationsMap,
-							mHVLemmas,
-							parse);
+						featex.extractFeaturesLessMemory(frame, 
+								intTokNums, 
+								unit, 
+								data,
+								"test", 
+								mRelatedWordsForWord, 
+								mRevisedRelationsMap,
+								mHVLemmas,
+								parse);
 			} else { // not supported
 				valMap =  
-					featex.extractFeaturesWithClusters(frame, intTokNums, unit, data, mWNR, "test", null, null,parse,clusterMap,K);
+						featex.extractFeaturesWithClusters(frame, intTokNums, unit, data, mWNR, "test", null, null,parse,clusterMap,K);
 			}
 			Set<String> features = valMap.keySet();
 			double featSum = 0.0;
@@ -132,7 +155,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		}
 		return result;
 	}
-	
+
 	private String getMaxHiddenVariable(String frame, int[] intTokNums, String[][] data)
 	{
 		THashSet<String> hiddenUnits = mFrameMap.get(frame);
@@ -143,15 +166,15 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		{
 			FeatureExtractor featex = new FeatureExtractor();
 			IntCounter<String> valMap =
-				featex.extractFeaturesLessMemory(frame, 
-						intTokNums, 
-						unit, 
-						data,
-						"test", 
-						mRelatedWordsForWord, 
-						mRevisedRelationsMap,
-						mHVLemmas,
-						parse);
+					featex.extractFeaturesLessMemory(frame, 
+							intTokNums, 
+							unit, 
+							data,
+							"test", 
+							mRelatedWordsForWord, 
+							mRevisedRelationsMap,
+							mHVLemmas,
+							parse);
 			Set<String> features = valMap.keySet();
 			double featSum = 0.0;
 			for (String feat : features)
@@ -171,9 +194,9 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		}
 		return maxHV;
 	}
-	
-	
-	
+
+
+
 	public Set<String> checkPresenceOfTokensInMap(int[] intTokNums, String[][] data)
 	{
 		String lemmatizedTokens = "";
@@ -187,7 +210,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		lemmatizedTokens=lemmatizedTokens.trim();
 		return mHvCorrespondenceMap.get(lemmatizedTokens);
 	}
-	
+
 	public String getHuStat(String bestFrame, String frameLine, String parseLine)
 	{
 		String[] toks = frameLine.split("\t");
@@ -212,26 +235,26 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		{
 			set = mFrameMap.keySet();
 		}
-//		else
-//		{
-//			System.out.println("Problem in finding the set. Exiting.");
-//			System.exit(0);
-//		}
+		//		else
+		//		{
+		//			System.out.println("Problem in finding the set. Exiting.");
+		//			System.exit(0);
+		//		}
 		String hv =  getMaxHiddenVariable(bestFrame, intTokNums, data);
 		return hv;
 	}
-	
+
 	public void setClusterInfo(THashMap<String,THashSet<String>> clusterMap,int K)
 	{
 		this.clusterMap=clusterMap;
 		this.K=K;
 	}
-	
-	
+
+
 	public String[] getBestFrame(String frameLine, 
-								 String parseLine, 
-								 boolean printConf,
-								 int KK)
+			String parseLine, 
+			boolean printConf,
+			int KK)
 	{
 		if (!printConf) {
 			return new String[] {getBestFrame(frameLine, parseLine)};
@@ -269,7 +292,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 			double val =  getNumeratorValue(frame, intTokNums, data);
 			frames[count] = new Pair<String, Double>(frame, val);
 			count++;
- 			sum += val;
+			sum += val;
 			//System.out.println("Considered "+frame+" for frameLine:"+frameLine);
 		}
 		Comparator<Pair<String, Double>> c = new Comparator<Pair<String, Double>>() {
@@ -289,10 +312,10 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		String[] results = new String[K];
 		for (int i = 0; i < K; i ++) {
 			results[i] = frames[i].getFirst() + "\t" + (frames[i].getSecond() / sum);
-  		}
+		}
 		return results;
 	}	
-	
+
 	public String getBestFrame(String frameLine, String parseLine, SmoothedGraph sg) {
 		String result = null;
 		double maxVal = -Double.MIN_VALUE;
@@ -324,13 +347,13 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 				}
 				coarsetoken = coarsetoken.trim();
 				coarsetoken = 
-					ScanAdverbsAndAdjectives.getCanonicalForm(coarsetoken);
+						ScanAdverbsAndAdjectives.getCanonicalForm(coarsetoken);
 				if (sg.getCoarseMap().containsKey(coarsetoken)) {
 					set = sg.getCoarseMap().get(coarsetoken);
 				} else {
 					set = null;
 				}
-				
+
 			} else {
 				String lemma = data[5][intTokNums[0]];
 				String pos = data[1][intTokNums[0]];
@@ -349,9 +372,9 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 				}
 				if (pos != null) {
 					finetoken = 
-						ScanAdverbsAndAdjectives.getCanonicalForm(lemma + "." + pos);
+							ScanAdverbsAndAdjectives.getCanonicalForm(lemma + "." + pos);
 					coarsetoken = 
-						ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
+							ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
 					if (sg.getFineMap().containsKey(finetoken)) {
 						set = sg.getFineMap().get(finetoken);
 					} else if (sg.getCoarseMap().containsKey(coarsetoken)){
@@ -361,7 +384,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 					}
 				} else {
 					coarsetoken = 
-						ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
+							ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
 					if (sg.getCoarseMap().containsKey(coarsetoken)){
 						set = sg.getCoarseMap().get(coarsetoken);
 					} else {
@@ -386,11 +409,11 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		}
 		return result;
 	}	
-	
+
 	public String[] getBestFrame(String frameLine, 
-							   String parseLine, 
-							   SmoothedGraph sg,
-							   boolean printConf) {
+			String parseLine, 
+			SmoothedGraph sg,
+			boolean printConf) {
 		if (!printConf) {
 			return new String[] {getBestFrame(frameLine, parseLine, sg)};
 		}		
@@ -422,7 +445,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 				}
 				coarsetoken = coarsetoken.trim();
 				coarsetoken = 
-					ScanAdverbsAndAdjectives.getCanonicalForm(coarsetoken);
+						ScanAdverbsAndAdjectives.getCanonicalForm(coarsetoken);
 				if (sg.getCoarseMap().containsKey(coarsetoken)) {
 					set = sg.getCoarseMap().get(coarsetoken);
 				} else {
@@ -449,9 +472,9 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 				}
 				if (pos != null) {
 					finetoken = 
-						ScanAdverbsAndAdjectives.getCanonicalForm(lemma + "." + pos);
+							ScanAdverbsAndAdjectives.getCanonicalForm(lemma + "." + pos);
 					coarsetoken = 
-						ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
+							ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
 					if (sg.getFineMap().containsKey(finetoken)) {
 						set = sg.getFineMap().get(finetoken);
 					} else if (sg.getCoarseMap().containsKey(coarsetoken)){
@@ -461,7 +484,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 					}
 				} else {
 					coarsetoken = 
-						ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
+							ScanAdverbsAndAdjectives.getCanonicalForm(lemma);
 					if (sg.getCoarseMap().containsKey(coarsetoken)){
 						set = sg.getCoarseMap().get(coarsetoken);
 					} else {
@@ -484,7 +507,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 			double val =  getNumeratorValue(frame, intTokNums, data);
 			frames[count] = new Pair<String, Double>(frame, val);
 			count++;
- 			sum += val;
+			sum += val;
 		}
 		Comparator<Pair<String, Double>> c = new Comparator<Pair<String, Double>>() {
 			public int compare(Pair<String, Double> arg0,
@@ -503,10 +526,10 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		String[] results = new String[K];
 		for (int i = 0; i < K; i ++) {
 			results[i] = frames[i].getFirst() + "\t" + (frames[i].getSecond() / sum);
-  		}
+		}
 		return results;
 	}	
-	
+
 	public String getBestFrame(String orgFELine, String frameLine, String parseLine) {
 		String result = null;
 		double maxVal = -Double.MIN_VALUE;
@@ -545,7 +568,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		}
 		return result;
 	}
-	
+
 	public String getBestFrame(String frameLine, String parseLine)
 	{
 		String result = null;
@@ -585,12 +608,12 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		}
 		return result;
 	}	
-	
+
 	public void getAccuracyOnTestSet(ArrayList<String> parses, ArrayList<String> frameLines)
 	{
 		int total=0;
 		int correct=0;
-		
+
 		for(String frameLine: frameLines)
 		{
 			String[] toks = frameLine.split("\t");
@@ -606,7 +629,7 @@ public class FastFrameIdentifier extends LRIdentificationModelSingleNode
 		double accuracy = (double)correct/(double)total;
 		System.out.println("Accuracy:"+accuracy);
 	}
-	
+
 	private static TObjectDoubleHashMap<String> parseParamFile(String paramsFile)
 	{
 		TObjectDoubleHashMap<String> startParamList = new TObjectDoubleHashMap<String>(); 

@@ -96,6 +96,7 @@ public class JointFNIDAndParsing {
 		ArrayList<String> idResult = new ArrayList<String>();
 		TObjectDoubleHashMap<String> paramList = parseParamFile(options.idParamFile.get());
 		Map<String, String> hvLemmas = r.getHvLemmaCache();
+		boolean nohv = options.noHV.get().equals("nohv");
 		FastFrameIdentifier idModel = new FastFrameIdentifier(
 				paramList, 
 				"reg", 

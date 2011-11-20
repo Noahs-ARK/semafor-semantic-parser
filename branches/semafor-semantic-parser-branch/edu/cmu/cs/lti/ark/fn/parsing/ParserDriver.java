@@ -163,7 +163,8 @@ public class ParserDriver {
 				cMap,
 				relatedWordsForWord,
 				revisedRelationsMap,
-				hvLemmas);	
+				hvLemmas,
+				false);	
 		boolean usegraph = !options.useGraph.get().equals("null");
 		SmoothedGraph sg = null;
 		if (usegraph) {

@@ -139,6 +139,7 @@ public class FrameIdentificationReleaseMulticore
 		ArrayList<String> inputForFrameId = ParseUtils.getRightInputForFrameIdentification(segs);	// Null\tTargetTokenNum(s)\tSentenceOffset
 		TObjectDoubleHashMap<String> paramList = parseParamFile(options.idParamFile.get());
 		Map<String, String> hvLemmas = r.getHvLemmaCache();
+		boolean nohv = options.noHV.get().equals("nohv");
 		FastFrameIdentifier idModel = new FastFrameIdentifier(
 				paramList, 
 				"reg", 
@@ -148,7 +149,8 @@ public class FrameIdentificationReleaseMulticore
 				cMap,
 				relatedWordsForWord,
 				revisedRelationsMap,
-				hvLemmas);
+				hvLemmas,
+				nohv);
 		boolean useClusters = options.clusterFeats.get().equals("true");
 		if(useClusters)
 		{

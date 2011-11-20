@@ -100,6 +100,7 @@ public class FrameIdentificationGoldTargets
 		ArrayList<String> idResult = new ArrayList<String>();
 		TObjectDoubleHashMap<String> paramList = parseParamFile(options.idParamFile.get());
 		Map<String, String> hvLemmas = r.getHvLemmaCache();
+		boolean nohv = options.noHV.get().equals("nohv");
 		FastFrameIdentifier idModel = new FastFrameIdentifier(
 				paramList, 
 				"reg", 
@@ -109,7 +110,8 @@ public class FrameIdentificationGoldTargets
 				cMap,
 				relatedWordsForWord,
 				revisedRelationsMap,
-				hvLemmas);
+				hvLemmas,
+				nohv);
 		System.out.println("Size of originalSentences list:"+originalIndices.size());
 		
 		boolean useClusters = options.clusterFeats.get().equals("true");

@@ -119,7 +119,7 @@ public class FrameIdentificationRelease
 		ArrayList<String> inputForFrameId = ParseUtils.getRightInputForFrameIdentification(segs);	// Null\tTargetTokenNum(s)\tSentenceOffset
 		ArrayList<String> idResult = new ArrayList<String>();
 		TObjectDoubleHashMap<String> paramList = parseParamFile(options.idParamFile.get());
-		
+		boolean nohv = options.noHV.get().equals("nohv");
 		Map<String, String> hvLemmas = r.getHvLemmaCache();
 		FastFrameIdentifier idModel = new FastFrameIdentifier(
 				paramList, 
@@ -130,7 +130,8 @@ public class FrameIdentificationRelease
 				cMap,
 				relatedWordsForWord,
 				revisedRelationsMap,
-				hvLemmas);
+				hvLemmas,
+				nohv);
 		System.out.println("Size of originalSentences list:"+originalIndices.size());
 		
 		boolean useClusters = options.clusterFeats.get().equals("true");
