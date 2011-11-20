@@ -148,4 +148,5 @@ public final class FNModelOptions extends CommandLineOptions
 	public StringOption excludesMap = new StringOption("excludesmap");
 	public DoubleOption argidWeight = new DoubleOption("argidweight");
 	public StringOption noHV = new StringOption("nohv");
+	public BoolOption supportedOnly = new BoolOption("supportedonly");
 }
