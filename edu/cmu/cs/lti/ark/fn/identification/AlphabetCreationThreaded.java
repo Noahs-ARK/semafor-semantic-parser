@@ -247,19 +247,22 @@ public class AlphabetCreationThreaded
 	}
 
 	private THashSet<String> getHiddenUnits(String frame, 
-											int[] intTokNums, 
-											String[][] data) {
-		THashSet<String> hus = mFrameMap.get(frame);
-		for (String hu: hus) {
-			System.out.println(hu);
-		}
-		if (true) {
-			System.exit(-1);
-		}
+											int[] mTokenNums, 
+											String[][] parseData) {
 		if (!mNoHV) {
 			return mFrameMap.get(frame);
 		} else {
-			return mFrameMap.get(frame);
+			String actualTokens = "";
+			for(int i = 0; i < mTokenNums.length; i ++)
+			{
+				String lexUnit = parseData[0][mTokenNums[i]];
+				String pos = parseData[1][mTokenNums[i]];	
+				actualTokens+=lexUnit+"_"+pos+" ";
+			}
+			actualTokens=actualTokens.trim();
+			THashSet<String> set = new THashSet<String>();
+			set.add(actualTokens);
+			return set;
 		}
 	}
 	
