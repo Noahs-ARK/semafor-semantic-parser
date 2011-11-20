@@ -650,17 +650,24 @@ public class FeatureExtractor implements IFeatureExtractor
 		Set<String> relations = null;
 		if(!relatedWordsForWord.containsKey(hiddenUnitTokens.toLowerCase())) {
 			System.out.println("Problem with hidden word:" + hiddenUnitTokens.toLowerCase() + 
-					". Not contained in cache. Exiting:");
-			System.exit(-1);
-		} 
-		Set<String> relatedWords = 
-			relatedWordsForWord.get(hiddenUnitTokens.toLowerCase());
-		if (!relatedWords.contains(actualTokens.toLowerCase())) {
-			relations = new THashSet<String>(); 
-			relations.add(WordNetRelations.NO_RELATION);
+					". Not contained in cache. Trying backup relations.");
+			if (hiddenUnitTokens.toLowerCase().equals(actualTokens.toLowerCase())) {
+				relations = new THashSet<String>();
+				relations.add("identity");
+			} else {
+				System.out.println("Identity relationship does not hold. Exiting.");
+				System.exit(-1);
+			}			
 		} else {
-			relations = 
-				revisedRelationsMap.get(hiddenUnitTokens.toLowerCase()).get(actualTokens.toLowerCase());
+			Set<String> relatedWords = 
+				relatedWordsForWord.get(hiddenUnitTokens.toLowerCase());
+			if (!relatedWords.contains(actualTokens.toLowerCase())) {
+				relations = new THashSet<String>(); 
+				relations.add(WordNetRelations.NO_RELATION);
+			} else {
+				relations = 
+					revisedRelationsMap.get(hiddenUnitTokens.toLowerCase()).get(actualTokens.toLowerCase());
+			}
 		}
 		
 		for(String relation: relations)
