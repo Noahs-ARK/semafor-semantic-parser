@@ -106,7 +106,8 @@ public class JointFNIDAndParsing {
 				cMap,
 				relatedWordsForWord,
 				revisedRelationsMap,
-				hvLemmas);
+				hvLemmas,
+				nohv);
 		System.out.println("Size of originalSentences list:"+originalIndices.size());
 		boolean usegraph = !options.useGraph.get().equals("null");
 		SmoothedGraph sg = null;
