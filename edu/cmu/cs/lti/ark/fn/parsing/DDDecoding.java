@@ -342,6 +342,14 @@ public class DDDecoding implements JDecoding {
 //		Collections.shuffle(slist);
 //		slist.toArray(slaves);
 		
+		List<Integer> slist = new ArrayList<Integer>();
+		for (int i = 0; i < slaves.length; i++) {
+			slist.add(i);
+		}
+		Collections.shuffle(slist);
+		Integer[] sarray = new Integer[slaves.length];
+		slist.toArray(sarray);
+		
 		while (true) {
 			// System.out.println("Rho: " + rho);
 			double eta = TAU * rho;
@@ -360,7 +368,8 @@ public class DDDecoding implements JDecoding {
 							  					  zs,
 							  					  slaves,
 							  					  i,
-							  					  slavelen));
+							  					  slavelen,
+							  					  sarray));
 				}
 				threadPool.join();
 			}			
@@ -470,7 +479,8 @@ public class DDDecoding implements JDecoding {
 									  final double[][] z,
 									  final Slave[] slave,
 									  final int i,
-									  final int slavelen)                                                                                                     
+									  final int slavelen,
+									  final Integer[] sarray)                                                                                                     
 	{                                                                                                                                                                           
 		return new Runnable() {                                                                                                                                             
 			public void run() {                                                                                                                                           
@@ -482,7 +492,7 @@ public class DDDecoding implements JDecoding {
 					end = slavelen;
 				}
 				for (int s = start; s < end; s++) {
-					zs[s] = slave[s].makeZUpdate(rho, us, lambdas[s], z[s]);
+					zs[s] = slave[sarray[s]].makeZUpdate(rho, us, lambdas[sarray[s]], z[sarray[s]]);
 				}
 				// System.out.println("Task " + s + " : end");                                                                                                             
 			}
