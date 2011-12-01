@@ -492,7 +492,7 @@ public class DDDecoding implements JDecoding {
 					end = slavelen;
 				}
 				for (int s = start; s < end; s++) {
-					zs[s] = slave[sarray[s]].makeZUpdate(rho, us, lambdas[sarray[s]], z[sarray[s]]);
+					zs[sarray[s]] = slave[sarray[s]].makeZUpdate(rho, us, lambdas[sarray[s]], z[sarray[s]]);
 				}
 				// System.out.println("Task " + s + " : end");                                                                                                             
 			}
