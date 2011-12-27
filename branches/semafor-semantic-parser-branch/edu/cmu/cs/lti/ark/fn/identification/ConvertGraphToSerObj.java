@@ -59,7 +59,7 @@ public class ConvertGraphToSerObj {
 		final String type = args[2];
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return name.startsWith(type) && !name.endsWith(".jobj");
+				return name.startsWith(type) && !name.endsWith(".jobj.gz");
 			}				
 		};		
 		File f = new File(smoothedGraphdir);
