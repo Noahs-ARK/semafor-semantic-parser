@@ -66,6 +66,7 @@ public class ConvertGraphToSerObj {
 		String[] files = f.list(filter);
 		for (int j = 0; j < files.length; j++) {
 			String filepath = smoothedGraphdir + "/" + files[j];
+			System.out.println("Processing file: " + files[j]);
 			int aIndex = files[j].indexOf("a.");
 			int muIndex = files[j].indexOf("mu.");
 			String infix = files[j].substring(aIndex, muIndex-1);

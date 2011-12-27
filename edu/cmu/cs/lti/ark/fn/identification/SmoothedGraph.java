@@ -61,7 +61,6 @@ public class SmoothedGraph implements Serializable {
 			String[] frameArr) {
 		fineMap = new THashMap<String, Set<String>>();
 		coarseMap = new THashMap<String, Set<String>>();
-		System.out.println("Reading graph file...");
 		for (String line: lines) {
 			String[] toks = line.split("\\s+");
 			if (toks.length == 1) {
