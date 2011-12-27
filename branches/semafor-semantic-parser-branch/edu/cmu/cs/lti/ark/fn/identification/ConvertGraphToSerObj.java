@@ -56,9 +56,10 @@ public class ConvertGraphToSerObj {
 		int i = new Integer(args[0]);
 		String smoothedGraphdir = dir + "/" + i + "/smoothedgraphs";
 		String graphdir = dir + "/" + i + "/sparsegraphs";
+		final String type = args[2];
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return name.contains("eslp") && !name.endsWith(".jobj");
+				return name.contains(type) && !name.endsWith(".jobj");
 			}				
 		};		
 		File f = new File(smoothedGraphdir);
