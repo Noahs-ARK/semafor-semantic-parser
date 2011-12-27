@@ -77,7 +77,7 @@ public class SmoothedGraph implements Serializable {
 				end = 2*t + 1;
 			}
 			for (int k= 1; k < end; k = k + 2) {
-				String frame = frameArr[new Integer(toks[k])];
+				String f	rame = frameArr[new Integer(toks[k])];
 				if (fineMap.containsKey(pred)) {
 					Set<String> fineSet = fineMap.get(pred);
 					fineSet.add(frame);
