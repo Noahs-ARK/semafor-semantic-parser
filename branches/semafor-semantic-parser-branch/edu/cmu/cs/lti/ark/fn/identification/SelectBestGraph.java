@@ -28,110 +28,115 @@ import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 
 public class SelectBestGraph {
 	public static void main(String[] args) {
-		if (args[0].equals("gslp")) {
-			chooseBestSLPGraph("gslp");
-		} else if (args[0].equals("ulp")) {
-			chooseBestSLPGraph("ulp");
-		} else if (args[0].equals("lp")) {
-			chooseBestLPGraph();
-		} else if (args[0].equals("eslp")) {
-			chooseBestSLPGraph("eslp");
+		String prefix = args[0];
+		String infix = null;
+		if (args.length > 1) {
+			infix = args[1];
 		}
+		chooseBestSLPGraph(prefix, infix);
 	}		
 	
-	public static void chooseBestSLPGraph(String prefix) {
+	public static void chooseBestSLPGraph(String prefix, String infix) {
 		String dir = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits";
 		String[] mu = {"0.01", "0.1", "0.3", "0.5", "1.0"};
-		String[] a = {"0.2", "0.5", "0.8"};
-		String[] t = {"2", "3", "5", "10"};
+		String[] a = {"0.2"};
+		String[] t = {"1", "2", "3"};
+		String[] nu = {"0.0", "0.000001", "0.0001", "0.1"};
 		String maxfile = null;
 		double maxacc = -Double.MAX_VALUE;
 		double maxPartialAcc = 0;
 		for (int al = 0; al < a.length; al++) {
-			for (int k = 5; k <= 10; k = k + 5) {
+			for (int k = 10; k <= 10; k = k + 5) {
 				for (int m = 0; m < mu.length; m++) {
 					for (int tl = 0; tl < t.length; tl++) {
-						String resultfile = 
-							prefix + ".a."+a[al]+".k."+k+".mu."+mu[m]+".nu.0.000001.t."+t[tl]+".jobj.gz_results";
-						System.out.println("Result file:"+resultfile);
-						boolean found = true;
-						for (int cv = 0; cv <= 4; cv++)	{
-							String file = dir + "/" + cv + "/sparseresults/" + resultfile;
-							File f = new File(file);
-							if (!f.exists()) {
-								found = false;
-								break;
+						for (int n = 0; n < nu.length; n++) {
+							String resultfile;
+							if (infix == null) {
+								resultfile = prefix + ".a."+a[al]+".k."+k+".mu."+mu[m]+
+								".nu."+nu[n]+".t."+t[tl]+".jobj.gz_results";
+							} else {
+								resultfile = prefix + ".a."+a[al]+".k."+k+".mu."+mu[m]+
+								".nu."+nu[n]+"." + infix + ".t."+t[tl]+".jobj.gz_results";
 							}
-						}
-						if (!found) {
-							continue;
-						}
-						double total = 0.0;
-						double correct = 0.0;
-						double ptotal = 0.0;
-						double pcorrect = 0.0;
-						found = true;
-						ArrayList<String> indresults = new ArrayList<String>();
-						for (int cv = 0; cv <= 4; cv++)	{
-							String file = dir + "/" + cv + "/sparseresults/" + resultfile;
-							ArrayList<String> sents = 
-								ParsePreparation.readSentencesFromFile(file);
-							int size = sents.size()-1;
-							double tot = 0.0;
-							double corr = 0.0;
-							double ptot = 0.0;
-							double pCorr = 0.0;
-							boolean marked = false;
-							for (int l = 0; l <= size; l++) {
-								if (sents.get(l).contains("Fscore")) {
-									String line = sents.get(l).trim();
-									String[] toks1 = line.split("\\(");
-									String last = ""+toks1[toks1.length-1];
-									toks1 = last.split("\\)");
-									String first = ""+toks1[0];
-									toks1 = first.split("/");
-									if (!marked) {
-										corr = new Double(toks1[0]);
-										tot = new Double(toks1[1]);
-										marked = true;
-									} else {
-										pCorr = new Double(toks1[0]);
-										ptot = new Double(toks1[1]);
-									}
+							System.out.println("Result file:"+resultfile);
+							boolean found = true;
+							for (int cv = 0; cv <= 4; cv++)	{
+								String file = dir + "/" + cv + "/sparseresults/" + resultfile;
+								File f = new File(file);
+								if (!f.exists()) {
+									found = false;
+									break;
 								}
 							}
-							if (corr == 0.0) {
-								System.out.println("Problem with:"+resultfile+" split="+cv);
-								found = false;
-								break;
+							if (!found) {
+								continue;
 							}
-							indresults.add(corr + " / " + tot);
-							correct += corr;
-							total += tot;
-							pcorrect += pCorr;
-							ptotal += ptot;
+							double total = 0.0;
+							double correct = 0.0;
+							double ptotal = 0.0;
+							double pcorrect = 0.0;
+							found = true;
+							ArrayList<String> indresults = new ArrayList<String>();
+							for (int cv = 0; cv <= 4; cv++)	{
+								String file = dir + "/" + cv + "/sparseresults/" + resultfile;
+								ArrayList<String> sents = 
+									ParsePreparation.readSentencesFromFile(file);
+								int size = sents.size()-1;
+								double tot = 0.0;
+								double corr = 0.0;
+								double ptot = 0.0;
+								double pCorr = 0.0;
+								boolean marked = false;
+								for (int l = 0; l <= size; l++) {
+									if (sents.get(l).contains("Fscore")) {
+										String line = sents.get(l).trim();
+										String[] toks1 = line.split("\\(");
+										String last = ""+toks1[toks1.length-1];
+										toks1 = last.split("\\)");
+										String first = ""+toks1[0];
+										toks1 = first.split("/");
+										if (!marked) {
+											corr = new Double(toks1[0]);
+											tot = new Double(toks1[1]);
+											marked = true;
+										} else {
+											pCorr = new Double(toks1[0]);
+											ptot = new Double(toks1[1]);
+										}
+									}
+								}
+								if (corr == 0.0) {
+									System.out.println("Problem with:"+resultfile+" split="+cv);
+									found = false;
+									break;
+								}
+								indresults.add(corr + " / " + tot);
+								correct += corr;
+								total += tot;
+								pcorrect += pCorr;
+								ptotal += ptot;
+							}
+							if (!found) {
+								continue;
+							}
+							double avg = correct / total;
+							if (avg>maxacc) {
+								maxacc = correct / total;
+								maxfile = resultfile;
+								maxPartialAcc = pcorrect / ptotal;
+							}
+							System.out.println("Done with:"+resultfile + " Avg:"+avg);
+							for (int i = 0; i < 5; i++) {
+								System.out.println(indresults.get(i));
+							}
 						}
-						if (!found) {
-							continue;
-						}
-						double avg = correct / total;
-						if (avg>maxacc) {
-							maxacc = correct / total;
-							maxfile = resultfile;
-							maxPartialAcc = pcorrect / ptotal;
-						}
-						System.out.println("Done with:"+resultfile + " Avg:"+avg);
-						for (int i = 0; i < 5; i++) {
-							System.out.println(indresults.get(i));
-						}
-					}
-					
+					}			
  				}
 			}
 		}
 		System.out.println("Maxfile:"+maxfile);
 		System.out.println("Maxacc:"+maxacc);
-		System.out.println("Max partial acc: " + maxPartialAcc);
+		// System.out.println("Max partial acc: " + maxPartialAcc);
 	}	
 	
 	public static void chooseBestLPGraph() {
