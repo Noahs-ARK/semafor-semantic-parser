@@ -34,15 +34,16 @@ import gnu.trove.TObjectIntHashMap;
 public class ConvertGraphToSerObj {
 	public static void main(String[] args) {
 		// variousMs(args);
-		allIndexedGraphs(args);
+		// allIndexedGraphs(args);
+		variousMs(args);
 	}
 
 	public static void variousMs(String[] args) {
 		String dir = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits";
 		int i = new Integer(args[0]);
 		String graphdir = dir + "/" + i;
-		String graphPrefix = "smoothed.graph.a.0.0.k.10.mu.0.1.nu.0.000001";
-		for (int m = 1; m < 11; m++) {
+		String graphPrefix = "smoothed.graph.a.0.2.k.10.mu.0.01.nu.0.000001";
+		for (int m = 1; m <= 1; m++) {
 			String filepath = graphdir + "/" + graphPrefix;
 			SmoothedGraph sg = new SmoothedGraph(filepath, m);
 			SerializedObjects.writeSerializedObject(sg, filepath + ".t." + m + ".jobj.gz");
