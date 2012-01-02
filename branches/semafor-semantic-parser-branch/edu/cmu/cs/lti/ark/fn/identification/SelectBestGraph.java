@@ -28,20 +28,20 @@ import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 
 public class SelectBestGraph {
 	public static void main(String[] args) {
-//		String prefix = args[0];
-//		String infix = null;
-//		if (args.length > 1) {
-//			infix = args[1];
-//		}
-//		chooseBestSLPGraph(prefix, infix);
-		chooseBestLPGraph();
+		String prefix = args[0];
+		String infix = null;
+		if (args.length > 1) {
+			infix = args[1];
+		}
+		chooseBestSLPGraph(prefix, infix);
+		// chooseBestLPGraph();
 	}		
 	
 	public static void chooseBestSLPGraph(String prefix, String infix) {
 		String dir = "/mal2/dipanjan/experiments/FramenetParsing/fndata-1.5/ACLSplits";
 		String[] mu = {"0.01", "0.1", "0.3", "0.5", "1.0"};
 		String[] a = {"0.2"};
-		String[] t = {"1", "2", "3"};
+		String[] t = {"2", "3"};
 		String[] nu = {"0.0", "0.000001", "0.0001", "0.1"};
 		String maxfile = null;
 		double maxacc = -Double.MAX_VALUE;
