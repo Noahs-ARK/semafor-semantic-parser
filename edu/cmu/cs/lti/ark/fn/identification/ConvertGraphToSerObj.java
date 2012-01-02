@@ -34,8 +34,8 @@ import gnu.trove.TObjectIntHashMap;
 public class ConvertGraphToSerObj {
 	public static void main(String[] args) {
 		// variousMs(args);
-		// allIndexedGraphs(args);
-		variousMs(args);
+		allIndexedGraphs(args);
+		// variousMs(args);
 	}
 
 	public static void variousMs(String[] args) {
