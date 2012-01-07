@@ -67,16 +67,16 @@ public class SignificanceTests
 	/** Number of samples to extract by randomly swapping sentences from the two system outputs (a.k.a. <i>nt</i>) */
 	private static final int TOTAL_TIMES = 10000;
 	
-	public static final String malRootDir="../testdata";
+	public static final String malRootDir="/home/dipanjan/work/fall2011/naacl2012sparsegp/sigtests/";
 	//public static final String malRootDir="/mal2/dipanjan/experiments/FramenetParsing/FrameStructureExtraction/evalscripts";
 	public static void main(String[] args)	
 	{
-		convertToNiceFormat();
+		// convertToNiceFormat();
 		//fullSigTests(2);
 		
 		//convertToNiceFormatSegmentation();
 		//frameIdenSigTests(0);
-		//frameIdenSigTests(2);
+		frameIdenSigTests(0);
 		
 		//fullSigTests(2);
 	}
@@ -90,9 +90,9 @@ public class SignificanceTests
 	public static void frameIdenSigTests(int flag)
 	{
 		Random r = new Random(new Date().getTime());
-		String system1File = malRootDir+"/fid_partial_johansson_targets_verbose_formatted";
+		String system1File = malRootDir+"/best_graph_partial_verbose_formatted";
 		ArrayList<String> system1Lines = ParsePreparation.readSentencesFromFile(system1File);
-		String system2File = malRootDir+"/fid_partial_johansson_verbose_formatted";
+		String system2File = malRootDir+"/fid_unseen_partial_graph_verbose_lin_best_formatted";
 		ArrayList<String> system2Lines = ParsePreparation.readSentencesFromFile(system2File);
 		double sys1Metric=getNumber(system1Lines,flag);
 		double sys2Metric=getNumber(system2Lines,flag);
@@ -345,37 +345,19 @@ public class SignificanceTests
 	}
 	
 	
-	public static void convertToNiceFormat()
-	{
-//		String[] files = {malRootDir+"/full_partial_joint_verbose",  
-//						  malRootDir+"/full_partial_joint_johansson_verbose", 
-//						  malRootDir+"/fid_partial_verbose", 
-//						  malRootDir+"/fid_partial_johansson_verbose",
-//						  malRootDir+"/fid_gt_partial_verbose"
-//						  };
-//		String[] formattedFiles = {malRootDir+"/full_partial_joint_verbose_formatted",  
-//								   malRootDir+"/full_partial_joint_johansson_verbose_formatted",
-//								   malRootDir+"/fid_partial_verbose_formatted", 
-//								   malRootDir+"/fid_partial_johansson_verbose_formatted",
-//								   malRootDir+"/fid_gt_partial_verbose_formatted"};
-//		
-//		String[] files = {malRootDir+"/fid_exact_verbose",  
-//				  malRootDir+"/fid_exact_johansson_verbose", 
-//				  malRootDir+"/full_exact_joint_verbose", 
-//				  malRootDir+"/full_exact_johansson_verbose"
-//				  };
-//		String[] formattedFiles = {malRootDir+"/fid_exact_verbose_formatted",  
-//				  malRootDir+"/fid_exact_johansson_verbose_formatted", 
-//				  malRootDir+"/full_exact_joint_verbose_formatted", 
-//				  malRootDir+"/full_exact_johansson_verbose_formatted"};
-
-		String[] files = {malRootDir+"/full_partial_joint_jtf_verbose",
-				malRootDir+"/full_exact_joint_jtf_verbose"
+	public static void convertToNiceFormat() {
+		String[] files = {malRootDir+"/best_graph_partial_verbose",
+						  malRootDir+"/best_graph_exact_verbose",
+						  malRootDir+"/baseline_partial_verbose",
+						  malRootDir+"/baseline_exact_verbose",
+						  malRootDir +"/fid_unseen_partial_graph_verbose_lin_best"
 				  };		
-		String[] formattedFiles = {malRootDir+"/full_partial_joint_jtf_verbose_formatted",
-				malRootDir+"/full_exact_joint_jtf_formatted"};
-		
-		for(int i = 0; i < 2; i ++)
+		String[] formattedFiles = {malRootDir+"/best_graph_partial_verbose_formatted",
+				  				   malRootDir+"/best_graph_exact_verbose_formatted",
+				                   malRootDir+"/baseline_partial_verbose_formatted",
+				                   malRootDir+"/baseline_exact_verbose_formatted",
+				                   malRootDir +"/fid_unseen_partial_graph_verbose_lin_best_formatted"};
+		for(int i = 0; i < 5; i ++)
 		{
 			ArrayList<String> resLines = new ArrayList<String>();
 			try
