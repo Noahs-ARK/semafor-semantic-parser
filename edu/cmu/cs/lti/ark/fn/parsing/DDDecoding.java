@@ -255,7 +255,7 @@ public class DDDecoding implements JDecoding {
 				bWriter.write(objVals.length + "\n");
 				bWriter.write(slavelen + "\n");
 				for (int i = 0; i < objVals.length; i++) {
-					bWriter.write(objVals.length + "\n");
+					bWriter.write(objVals[i] + "\n");
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
