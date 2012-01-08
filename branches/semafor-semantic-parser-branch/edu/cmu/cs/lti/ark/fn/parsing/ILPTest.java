@@ -9,6 +9,7 @@ import ilog.cplex.IloCplex;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,7 +32,10 @@ public class ILPTest {
 	public void decode() throws IOException, IloException {
 		BufferedReader bReader = new BufferedReader(new FileReader(mFactorFile));
 		String line = null;
+		int count = 0;
 		while ((line = bReader.readLine()) != null) {
+			System.out.println("Decoding index: " + (count+1));
+			count++;
 			int numVars = new Integer(line.trim());
 			line = bReader.readLine();
 			int numFactors = new Integer(line.trim());
@@ -78,6 +82,8 @@ public class ILPTest {
 	
 	public static void main(String[] args) {
 		ILPTest it = new ILPTest(args[0]);
+		Date sd = new Date();
+		long st = sd.getTime();
 		try {
 			it.decode();
 		} catch (IOException e) {
@@ -85,5 +91,9 @@ public class ILPTest {
 		} catch (IloException e) {
 			e.printStackTrace();
 		}
+		Date ed = new Date();
+		long et = ed.getTime();
+		long diff = et - st;
+		System.out.println("Total time taken: " + diff);
 	}
 }
