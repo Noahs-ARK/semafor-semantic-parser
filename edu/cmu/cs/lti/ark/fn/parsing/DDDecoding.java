@@ -1,7 +1,8 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
-import ilog.concert.IloNumExpr;
-
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +22,8 @@ public class DDDecoding implements JDecoding {
 	public static final double RHO_START = 0.03;
 	private int mNumThreads = 1;
 	private double[][] zs;
+	private String mFactorFile;
+	private static final boolean WRITE_FACTORS_TO_FILE = false;
 	
 	public DDDecoding() {
 	}
@@ -35,6 +38,15 @@ public class DDDecoding implements JDecoding {
 									  String frame,
 									  boolean costAugmented,
 									  FrameFeatures goldFF) {
+		BufferedWriter bWriter = null;
+		if (WRITE_FACTORS_TO_FILE) {
+			try {
+				bWriter = new BufferedWriter(new FileWriter(mFactorFile));
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		}
 		Map<String, Pair<String, Double>> res = new THashMap<String, Pair<String, Double>>();
 		if (scoreMap.size() == 0) {
 			return res;
@@ -186,6 +198,7 @@ public class DDDecoding implements JDecoding {
 			objVals[i] = 0.0;
 		}
 		
+		
 		// counting number of exclusion slaves
 		ArrayList<int[]> exclusionSets = new ArrayList<int[]>();
 		if (excludesMap.containsKey(frame)) {
@@ -234,7 +247,21 @@ public class DDDecoding implements JDecoding {
 		int[][] slaveparts = new int[slavelen][];
 		int[][] partslaves = new int[len][];
 		Arrays.fill(deltaarray, 0);
-				
+		
+		if (WRITE_FACTORS_TO_FILE) {
+			try {
+				bWriter.write(objVals.length + "\n");
+				bWriter.write(slavelen + "\n");
+				for (int i = 0; i < objVals.length; i++) {
+					bWriter.write(objVals.length + "\n");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Could not write length of variables");
+				System.exit(-1);
+			}
+		}
+		
 		// creating deltaarray
 		// for every unique span slave
 		for (int i = 0; i < keys.length; i++) {
@@ -279,12 +306,42 @@ public class DDDecoding implements JDecoding {
 			for (int j = 0; j < mappedIndices[i].length; j++) {
 				slaveparts[i][j] = mappedIndices[i][j];
 			}
+			if (WRITE_FACTORS_TO_FILE) {
+				try {
+					String line = "XOR ";
+					for (int j = mappedIndices[i][0]; 
+							 j < mappedIndices[i][mappedIndices[i].length-1] + 1; 
+							 j++) {
+						line += j + " ";
+					}
+					line = line.trim();
+					bWriter.write(line + "\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("Could not XOR factors");
+					System.exit(-1);
+				}
+			}
 		}
 		
 		for (int i = keys.length; i < keys.length + max + 1; i++) {
 			int[] vars = overlapArray[i-keys.length].toArray();
 			slaves[i] = new OverlapSlave(thetas, vars);
 			slaveparts[i] = Arrays.copyOf(vars, vars.length);
+			if (WRITE_FACTORS_TO_FILE) {
+				try {
+					String line = "XOR1 ";
+					for (int var: vars) {
+						line += var + " ";
+					}
+					line = line.trim();
+					bWriter.write(line + "\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("Could not write overlap factors");
+					System.exit(-1);
+				}
+			}
 		}
 		
 		for (int i = keys.length + max + 1; 
@@ -293,6 +350,20 @@ public class DDDecoding implements JDecoding {
 			int[] vars = exclusionSets.get(i - (keys.length + max + 1));
 			slaves[i] = new ExclusionSlave(thetas, vars);
 			slaveparts[i] = Arrays.copyOf(vars, vars.length);
+			if (WRITE_FACTORS_TO_FILE) {
+				try {
+					String line = "XOR1 ";
+					for (int var: vars) {
+						line += var + " ";
+					}
+					line = line.trim();
+					bWriter.write(line + "\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("Could not write exclusion set factors");
+					System.exit(-1);
+				}
+			}
 		}		
 		
 		for (int i = keys.length + max + 1 + numExclusionSlaves;
@@ -301,6 +372,31 @@ public class DDDecoding implements JDecoding {
 			int[] vars = requiredSets.get(i - (keys.length + max + 1 + numExclusionSlaves));
 			slaves[i] = new RequiredSlave(thetas, vars);
 			slaveparts[i] = Arrays.copyOf(vars, vars.length);
+			if (WRITE_FACTORS_TO_FILE) {
+				try {
+					String line = "XOR ";
+					for (int var: vars) {
+						line += var + " ";
+					}
+					line = line.trim();
+					bWriter.write(line + "\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("Could not write required factors");
+					System.exit(-1);
+				}
+			}
+		}
+		
+		if (WRITE_FACTORS_TO_FILE) {
+			try {
+				bWriter.write("\n");
+				bWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Could not write required factors");
+				System.exit(-1);
+			}
 		}
 		
 		for (int s = 0; s < slaveparts.length; s++) {
@@ -510,5 +606,11 @@ public class DDDecoding implements JDecoding {
 	public void setNumThreads(int nt) {
 		// TODO Auto-generated method stub
 		mNumThreads = nt;
+	}
+
+	@Override
+	public void setFactorFile(String factorFile) {
+		// TODO Auto-generated method stub
+		mFactorFile = factorFile;
 	}
 }

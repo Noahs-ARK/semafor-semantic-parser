@@ -43,6 +43,7 @@ public class JointDecodingMainArgs
 		String excludesMap = args[9];
 		int numThreads = new Integer(args[10]);
 		String secondModelFile = args[11];
+		String factorsFile = args[13];
 		double secondModelWeight = 0.0;
 		if (secondModelFile != null && !secondModelFile.equals("null") ) {
 			secondModelWeight = new Double(args[12]);
