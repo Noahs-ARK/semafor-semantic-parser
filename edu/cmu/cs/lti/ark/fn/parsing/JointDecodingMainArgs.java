@@ -69,6 +69,7 @@ public class JointDecodingMainArgs
 				numThreads
 				);
 		bpd.setMaps(requiresMap, excludesMap);
+		bpd.setFactorsFile(factorsFile);
 		if (secondModelFile != null && !secondModelFile.equals("null")) {
 			bpd.setSecondModel(secondModelFile, secondModelWeight);
 		}
