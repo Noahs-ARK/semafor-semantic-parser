@@ -124,7 +124,7 @@ public class DDDecoding implements JDecoding {
 					count++;
 				}
 				rSet1.add(totalCount);
-				requiredSets.add(rSet1.toArray());				
+				// requiredSets.add(rSet1.toArray());				
 				count = 0;
 				for (int j = 0; j < scoreMap.get(two).length; j++) {
 					if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
@@ -135,8 +135,8 @@ public class DDDecoding implements JDecoding {
 					count++;
 				}
 				rSet2.add(totalCount);
-				totalCount++;				
-				requiredSets.add(rSet2.toArray());
+				// totalCount++;				
+				// requiredSets.add(rSet2.toArray());
 				
 				int[] a1 = new int[2];
 				a1[0] = nullIndex1;
