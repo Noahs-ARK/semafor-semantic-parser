@@ -547,6 +547,7 @@ public class DDDecoding implements JDecoding {
 		}		
 		/** end of optimization procedure **/
 		count = 0;
+		double totalScore = 0.0;
 		for (int i = 0; i < keys.length; i++) {
 			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
 			double maxVal = -Double.MAX_VALUE;
@@ -565,11 +566,13 @@ public class DDDecoding implements JDecoding {
 			}
 			// System.out.println();
 			if (maxIndex != -1 && maxVal > 0) {
+				totalScore += score;
 				Pair<String, Double> p = 
 					new Pair<String, Double>(arr[maxIndex].getFirst()[0] + "_" + arr[maxIndex].getFirst()[1], score);
 				res.put(keys[i], p);
 			}  			
 		}
+		System.out.println("Solution value: " + totalScore);
 		return res;
 	}
 
