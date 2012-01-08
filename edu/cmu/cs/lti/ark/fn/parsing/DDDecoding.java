@@ -311,10 +311,13 @@ public class DDDecoding implements JDecoding {
 			if (WRITE_FACTORS_TO_FILE) {
 				try {
 					String line = "XOR ";
+					int numVars = mappedIndices[i][mappedIndices[i].length-1] + 1 - 
+								  mappedIndices[i][0];
+					line += numVars + " ";
 					for (int j = mappedIndices[i][0]; 
 							 j < mappedIndices[i][mappedIndices[i].length-1] + 1; 
 							 j++) {
-						line += j + " ";
+						line += (j+1) + " ";
 					}
 					line = line.trim();
 					bWriter.write(line + "\n");
@@ -332,9 +335,9 @@ public class DDDecoding implements JDecoding {
 			slaveparts[i] = Arrays.copyOf(vars, vars.length);
 			if (WRITE_FACTORS_TO_FILE) {
 				try {
-					String line = "XOR1 ";
+					String line = "XOR1 " + vars.length + " ";
 					for (int var: vars) {
-						line += var + " ";
+						line += (var+1) + " ";
 					}
 					line = line.trim();
 					bWriter.write(line + "\n");
@@ -354,9 +357,9 @@ public class DDDecoding implements JDecoding {
 			slaveparts[i] = Arrays.copyOf(vars, vars.length);
 			if (WRITE_FACTORS_TO_FILE) {
 				try {
-					String line = "XOR1 ";
+					String line = "XOR1 " + vars.length + " ";
 					for (int var: vars) {
-						line += var + " ";
+						line += (var+1) + " ";
 					}
 					line = line.trim();
 					bWriter.write(line + "\n");
@@ -376,9 +379,9 @@ public class DDDecoding implements JDecoding {
 			slaveparts[i] = Arrays.copyOf(vars, vars.length);
 			if (WRITE_FACTORS_TO_FILE) {
 				try {
-					String line = "XOR ";
+					String line = "XOR " + vars.length + " ";
 					for (int var: vars) {
-						line += var + " ";
+						line += (var+1) + " ";
 					}
 					line = line.trim();
 					bWriter.write(line + "\n");
