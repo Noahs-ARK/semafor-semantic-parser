@@ -24,6 +24,7 @@ public class DDDecoding implements JDecoding {
 	private double[][] zs;
 	private String mFactorFile;
 	private static final boolean WRITE_FACTORS_TO_FILE = true;
+	private BufferedWriter bWriter = null;
 	
 	public DDDecoding() {
 	}
@@ -38,10 +39,11 @@ public class DDDecoding implements JDecoding {
 									  String frame,
 									  boolean costAugmented,
 									  FrameFeatures goldFF) {
-		BufferedWriter bWriter = null;
 		if (WRITE_FACTORS_TO_FILE) {
 			try {
-				bWriter = new BufferedWriter(new FileWriter(mFactorFile));
+				if (bWriter == null) {
+					bWriter = new BufferedWriter(new FileWriter(mFactorFile));
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.exit(-1);
@@ -391,7 +393,6 @@ public class DDDecoding implements JDecoding {
 		if (WRITE_FACTORS_TO_FILE) {
 			try {
 				bWriter.write("\n");
-				bWriter.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.out.println("Could not write required factors");
@@ -599,7 +600,15 @@ public class DDDecoding implements JDecoding {
 	@Override
 	public void end() {
 		// TODO Auto-generated method stub
-		
+		if (bWriter != null) {
+			try { 
+				bWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Could not close file.");
+				System.exit(-1);
+			}
+		}
 	}
 
 	@Override
