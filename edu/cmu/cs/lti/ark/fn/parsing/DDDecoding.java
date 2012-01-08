@@ -23,7 +23,7 @@ public class DDDecoding implements JDecoding {
 	private int mNumThreads = 1;
 	private double[][] zs;
 	private String mFactorFile;
-	private static final boolean WRITE_FACTORS_TO_FILE = false;
+	private static final boolean WRITE_FACTORS_TO_FILE = true;
 	
 	public DDDecoding() {
 	}
