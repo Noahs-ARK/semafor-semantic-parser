@@ -71,6 +71,7 @@ public class ILPTest {
 				cplex.output().println("Solution value  = " + cplex.getObjValue());
 			}
 			cplex.clearModel();
+			line = bReader.readLine();
 		}
 		bReader.close();
 	}
