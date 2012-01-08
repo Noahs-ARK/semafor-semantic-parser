@@ -189,7 +189,7 @@ public class ILPDecoding implements JDecoding {
 						prods2[count] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
 						count++;
 					}
-					cplex.addEq(cplex.sum(prods1), cplex.sum(prods2));
+					// cplex.addEq(cplex.sum(prods1), cplex.sum(prods2));
 					cplex.addEq(x[nullIndex1], x[nullIndex2]);
 				}
 			}			
