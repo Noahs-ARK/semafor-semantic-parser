@@ -22,6 +22,7 @@ public class JointDecoding extends Decoding {
 	public static final String ILP_DECODING = "ilp";
 	public static final String DD_DECODING = "dd";
 	private int mNumThreads = 1;
+	protected String mFactorFile;
 
 	public JointDecoding(String jointType) {
 		if (jointType.equals(ILP_DECODING)) {
@@ -48,6 +49,11 @@ public class JointDecoding extends Decoding {
 		mIgnoreNullSpansWhileJointDecoding = false;
 	}
 
+	public void setFactorsFile(String factorsFile) {
+		mFactorFile = factorsFile;
+		jd.setFactorFile(mFactorFile);
+	}
+	
 	public void init(String modelFile, 
 			String alphabetFile,
 			String predictionFile,

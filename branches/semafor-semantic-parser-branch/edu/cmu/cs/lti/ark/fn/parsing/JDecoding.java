@@ -14,4 +14,5 @@ public interface JDecoding {
 			  FrameFeatures goldFF);
 	public void end();
 	public void setNumThreads(int nt);
+	public void setFactorFile(String factorFile);
 }

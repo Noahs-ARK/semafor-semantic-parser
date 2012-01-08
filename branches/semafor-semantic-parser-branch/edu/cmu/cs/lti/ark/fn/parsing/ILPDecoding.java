@@ -16,6 +16,7 @@ public class ILPDecoding implements JDecoding {
 	private IloCplex cplex = null;
 	private Map<String, Set<Pair<String, String>>> excludesMap;
 	private Map<String, Set<Pair<String, String>>> requiresMap;
+	private String mFactorFile;
 	
 	public ILPDecoding() {
 		try {
@@ -308,5 +309,11 @@ public class ILPDecoding implements JDecoding {
 	public void setNumThreads(int nt) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setFactorFile(String factorFile) {
+		// TODO Auto-generated method stub
+		mFactorFile = factorFile;
 	}
 }
