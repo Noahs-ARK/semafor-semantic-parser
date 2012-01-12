@@ -219,18 +219,18 @@ public class ILPDecoding implements JDecoding {
 					for (int j = 0; j < scoreMap.get(one).length; j++) {
 						if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
 							nullIndex1 = mappedIndices[oneIndex][j];
-							continue;
+							break;
 						}
 						// prods[count] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
-						count++;
+						// count++;
 					}
 					for (int j = 0; j < scoreMap.get(two).length; j++) {
 						if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
 							nullIndex2 = mappedIndices[twoIndex][j];
-							continue;
+							break;
 						}
 						// prods[count] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
-						count++;
+						// count++;
 					}
 					prods[0] = cplex.prod(1.0, x[nullIndex1]);
 					prods[1] = cplex.prod(1.0, x[nullIndex2]);
