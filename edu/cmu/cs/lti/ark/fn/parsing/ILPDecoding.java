@@ -209,7 +209,8 @@ public class ILPDecoding implements JDecoding {
 						continue;
 					}
 					System.out.println("Found two mutually exclusive FEs: " + one + "\t" + two);
-					IloNumExpr[] prods = new IloNumExpr[2*scoreMap.get(one).length-2];
+					// IloNumExpr[] prods = new IloNumExpr[2*scoreMap.get(one).length-2];
+					IloNumExpr[] prods = new IloNumExpr[2];
 					int nullIndex1 = -1;
 					int nullIndex2 = -1;
 					count = 0;
@@ -220,7 +221,7 @@ public class ILPDecoding implements JDecoding {
 							nullIndex1 = mappedIndices[oneIndex][j];
 							continue;
 						}
-						prods[count] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
+						// prods[count] = cplex.prod(1.0, x[mappedIndices[oneIndex][j]]);
 						count++;
 					}
 					for (int j = 0; j < scoreMap.get(two).length; j++) {
@@ -228,10 +229,12 @@ public class ILPDecoding implements JDecoding {
 							nullIndex2 = mappedIndices[twoIndex][j];
 							continue;
 						}
-						prods[count] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
+						// prods[count] = cplex.prod(1.0, x[mappedIndices[twoIndex][j]]);
 						count++;
 					}
-					cplex.addLe(cplex.sum(prods), 1.0);
+					prods[0] = cplex.prod(1.0, x[nullIndex1]);
+					prods[1] = cplex.prod(1.0, x[nullIndex2]);
+					cplex.addGe(cplex.sum(prods), 1.0);
 				}
 			}
 			
