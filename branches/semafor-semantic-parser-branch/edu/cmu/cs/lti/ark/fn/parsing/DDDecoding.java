@@ -140,15 +140,15 @@ public class DDDecoding implements JDecoding {
 				
 				int[] a1 = new int[2];
 				a1[0] = nullIndex1;
-				a1[1] = totalCount;
+				a1[1] = nullIndex2;
 				requiredSets.add(a1);
 				
-				
-				int[] a2 = new int[2];
-				a2[0] = nullIndex2;
-				a2[1] = totalCount;
-				totalCount++;
-				requiredSets.add(a2);
+//				
+//				int[] a2 = new int[2];
+//				a2[0] = nullIndex2;
+//				a2[1] = totalCount;
+//				totalCount++;
+//				requiredSets.add(a2);
 			}
 		}
 		
@@ -217,25 +217,27 @@ public class DDDecoding implements JDecoding {
 					continue;
 				}
 				System.out.println("Found two mutually exclusive FEs: " + one + "\t" + two);
-				TIntHashSet eSet = new TIntHashSet();
+				int nullIndex1 = -1;
+				int nullIndex2 = -1;
 				count = 0;
 				Pair<int[], Double>[] arr1 = scoreMap.get(one);
 				Pair<int[], Double>[] arr2 = scoreMap.get(two);
 				for (int j = 0; j < scoreMap.get(one).length; j++) {
 					if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
-						continue;
+						nullIndex1 = mappedIndices[oneIndex][j];
+						break;
 					}
-					eSet.add(mappedIndices[oneIndex][j]);
-					count++;
 				}
 				for (int j = 0; j < scoreMap.get(two).length; j++) {
 					if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
-						continue;
+						nullIndex2 = mappedIndices[twoIndex][j];
+						break;
 					}
-					eSet.add(mappedIndices[twoIndex][j]);
 					count++;
 				}
-				int[] arr = eSet.toArray();
+				int[] arr = new int[2];
+				arr[0] = nullIndex1;
+				arr[1] = nullIndex2;
 				exclusionSets.add(arr);
 			}
 		}
@@ -357,7 +359,7 @@ public class DDDecoding implements JDecoding {
 			slaveparts[i] = Arrays.copyOf(vars, vars.length);
 			if (WRITE_FACTORS_TO_FILE) {
 				try {
-					String line = "XOR1 " + vars.length + " ";
+					String line = "OR " + vars.length + " ";
 					for (int var: vars) {
 						line += (var+1) + " ";
 					}
@@ -380,9 +382,11 @@ public class DDDecoding implements JDecoding {
 			if (WRITE_FACTORS_TO_FILE) {
 				try {
 					String line = "XOR " + vars.length + " ";
-					for (int var: vars) {
-						line += (var+1) + " ";
+					if (vars.length != 2) {
+						System.out.println("Problem. Required set's size is more than 2. Exiting");
+						System.exit(-1);
 					}
+					line += vars[0] + " -" + vars[1];
 					line = line.trim();
 					bWriter.write(line + "\n");
 				} catch (IOException e) {
