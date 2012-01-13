@@ -38,6 +38,7 @@ public class FindStructuralViolations {
 					span[0] = new Integer(toks1[0]);
 					span[1] = new Integer(toks1[1]);
 				}
+				spans.add(span);
 			}
 			// overlap
 			int totalfes = fes.size();
