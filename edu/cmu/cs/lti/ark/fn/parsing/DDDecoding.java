@@ -386,7 +386,7 @@ public class DDDecoding implements JDecoding {
 						System.out.println("Problem. Required set's size is more than 2. Exiting");
 						System.exit(-1);
 					}
-					line += vars[0] + " -" + vars[1];
+					line += (vars[0]+1) + " -" + (vars[1]+1);
 					line = line.trim();
 					bWriter.write(line + "\n");
 				} catch (IOException e) {
