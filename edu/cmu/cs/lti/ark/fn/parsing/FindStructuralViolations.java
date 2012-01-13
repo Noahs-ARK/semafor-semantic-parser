@@ -18,6 +18,14 @@ public class FindStructuralViolations {
 		Map<String, Set<Pair<String, String>>> requiresMap = 
 			(Map<String, Set<Pair<String, String>>>) SerializedObjects.readSerializedObject(requiresMapFile);
 		
+		System.out.println(exclusionMap.size());
+		System.out.println(requiresMap.size());
+		
+		
+		if (true) {
+			System.exit(-1);
+		}
+		
 		ArrayList<String> lines = ParsePreparation.readSentencesFromFile(inputFile);
 		System.out.println("Total number of lines: " + lines.size());
 		int overlapViolations = 0;
