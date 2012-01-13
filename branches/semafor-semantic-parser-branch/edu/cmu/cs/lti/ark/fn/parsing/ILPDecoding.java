@@ -319,4 +319,10 @@ public class ILPDecoding implements JDecoding {
 		// TODO Auto-generated method stub
 		mFactorFile = factorFile;
 	}
+
+	@Override
+	public void setFlag(String flag) {
+		// TODO Auto-generated method stub
+		
+	}
 }
