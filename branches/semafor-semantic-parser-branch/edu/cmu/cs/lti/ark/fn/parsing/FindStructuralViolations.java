@@ -62,7 +62,7 @@ public class FindStructuralViolations {
 					String two = p.getSecond();
 					if (fes.contains(one) && fes.contains(two)) {
 						excludesViolations++;
-						System.out.println("Excludes problem: " + line);
+						System.out.println("Excludes problem: " + one + " " + two + " " + line);
 					}
 				}
 			}
@@ -75,10 +75,10 @@ public class FindStructuralViolations {
 					String two = p.getSecond();
 					if (fes.contains(one) && !fes.contains(two)) {
 						requiresViolations++;
-						System.out.println("Requires problem: " + line);
+						System.out.println("Requires problem: " + one + " " + two + " " +  line);
 					} else if (fes.contains(two) && !fes.contains(one)) {
 						requiresViolations++;
-						System.out.println("Requires problem: " + line);
+						System.out.println("Requires problem: " + one + " " + two + " " +  line);
 					}					
 				}
 			}
