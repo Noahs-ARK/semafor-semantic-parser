@@ -15,4 +15,5 @@ public interface JDecoding {
 	public void end();
 	public void setNumThreads(int nt);
 	public void setFactorFile(String factorFile);
+	public void setFlag(String flag);
 }

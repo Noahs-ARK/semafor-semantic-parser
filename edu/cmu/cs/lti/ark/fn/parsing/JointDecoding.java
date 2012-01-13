@@ -21,14 +21,21 @@ public class JointDecoding extends Decoding {
 	private double secondModelWeight = 0.0;
 	public static final String ILP_DECODING = "ilp";
 	public static final String DD_DECODING = "dd";
+	public static final String FILE_DECODING_ADMM = "file_admm";
+	public static final String FILE_DECODING_LP = "file_lp";
+	public static final String FILE_DECODING_ILP = "file_ilp";
 	private int mNumThreads = 1;
 	protected String mFactorFile;
 
 	public JointDecoding(String jointType) {
 		if (jointType.equals(ILP_DECODING)) {
 			jd = new ILPDecoding();
-		} else {
+		} else if (jointType.equals(DD_DECODING)) {
 			jd = new DDDecoding();
+		} else {
+			jd = new JointDecodingUsingLPFiles();
+			String[] toks = jointType.split("_");
+			jd.setFlag(toks[1]);
 		}
 		mIgnoreNullSpansWhileJointDecoding = false;
 	}
