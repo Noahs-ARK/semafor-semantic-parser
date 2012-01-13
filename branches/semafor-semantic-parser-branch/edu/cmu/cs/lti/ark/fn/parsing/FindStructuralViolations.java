@@ -27,7 +27,7 @@ public class FindStructuralViolations {
 			String frame = toks[5];
 			ArrayList<String> fes = new ArrayList<String>();
 			ArrayList<int[]> spans = new ArrayList<int[]>();
-			for (int i = 7; i < toks.length; i++) {
+			for (int i = 7; i < toks.length; i = i + 2) {
 				fes.add(toks[i]);
 				String[] toks1 = toks[i+1].split(":");
 				int[] span = new int[2];
