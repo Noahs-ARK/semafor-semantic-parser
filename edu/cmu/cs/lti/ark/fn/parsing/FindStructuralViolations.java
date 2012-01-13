@@ -41,13 +41,15 @@ public class FindStructuralViolations {
 			}
 			// overlap
 			int totalfes = fes.size();
-			for (int i = 1; i < totalfes; i++) {
-				for (int j = 0; j < i; j++) {
-					int[] span1 = spans.get(i);
-					int[] span2 = spans.get(j);
-					if (checkOverlap(span1, span2)) {
-						overlapViolations++;
-					}					
+			if (totalfes > 1) {
+				for (int i = 1; i < totalfes; i++) {
+					for (int j = 0; j < i; j++) {
+						int[] span1 = spans.get(i);
+						int[] span2 = spans.get(j);
+						if (checkOverlap(span1, span2)) {
+							overlapViolations++;
+						}					
+					}
 				}
 			}
 			// excludes
