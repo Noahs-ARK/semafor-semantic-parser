@@ -190,7 +190,7 @@ public class JointDecodingUsingLPFiles implements JDecoding {
 			objVals[i] = 0.0;
 		}
 		
-		if (bReader != null) {
+		if (bReader == null) {
 			try {
 				bReader = new BufferedReader(new FileReader(mFactorFile));
 			} catch (IOException e) {
