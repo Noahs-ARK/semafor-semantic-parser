@@ -57,12 +57,9 @@ public class FindStructuralViolations {
 			// excludes
 			if (exclusionMap.containsKey(frame)) {
 				Set<Pair<String, String>> set = exclusionMap.get(frame);
-				System.out.println("Frame with exclusion sets: " + frame);
 				for (Pair<String, String> p: set) {
 					String one = p.getFirst();
 					String two = p.getSecond();
-					System.out.println(one + "\t" + two);
-					System.out.println(fes);
 					if (fes.contains(one) && fes.contains(two)) {
 						excludesViolations++;
 					}
