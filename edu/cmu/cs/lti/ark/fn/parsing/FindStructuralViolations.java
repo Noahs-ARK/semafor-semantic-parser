@@ -18,14 +18,6 @@ public class FindStructuralViolations {
 		Map<String, Set<Pair<String, String>>> requiresMap = 
 			(Map<String, Set<Pair<String, String>>>) SerializedObjects.readSerializedObject(requiresMapFile);
 		
-		System.out.println(exclusionMap.size());
-		System.out.println(requiresMap.size());
-		
-		
-		if (true) {
-			System.exit(-1);
-		}
-		
 		ArrayList<String> lines = ParsePreparation.readSentencesFromFile(inputFile);
 		System.out.println("Total number of lines: " + lines.size());
 		int overlapViolations = 0;
@@ -70,6 +62,7 @@ public class FindStructuralViolations {
 					String two = p.getSecond();
 					if (fes.contains(one) && fes.contains(two)) {
 						excludesViolations++;
+						System.out.println("Excludes problem: " + line);
 					}
 				}
 			}
@@ -82,8 +75,10 @@ public class FindStructuralViolations {
 					String two = p.getSecond();
 					if (fes.contains(one) && !fes.contains(two)) {
 						requiresViolations++;
+						System.out.println("Requires problem: " + line);
 					} else if (fes.contains(two) && !fes.contains(one)) {
 						requiresViolations++;
+						System.out.println("Requires problem: " + line);
 					}					
 				}
 			}
