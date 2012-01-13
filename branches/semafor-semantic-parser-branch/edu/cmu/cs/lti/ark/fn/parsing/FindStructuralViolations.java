@@ -59,6 +59,8 @@ public class FindStructuralViolations {
 				for (Pair<String, String> p: set) {
 					String one = p.getFirst();
 					String two = p.getSecond();
+					System.out.println(one + "\t" + two);
+					System.out.println(fes);
 					if (fes.contains(one) && fes.contains(two)) {
 						excludesViolations++;
 					}
