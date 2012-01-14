@@ -29,6 +29,7 @@ public class JointDecodingUsingLPFiles implements JDecoding {
 	private BufferedReader bReader = null;
 	private String decoderFlag = null; 
 	private static final String admm = "admm";
+	private static final String admmilp = "admmilp";
 	private static final String cplexlp = "lp";
 	private static final String cplexilp = "ilp";
 	
@@ -211,10 +212,12 @@ public class JointDecodingUsingLPFiles implements JDecoding {
 			String[] toks = line.trim().split("\\s");
 			if (decoderFlag.equals(admm)) {
 				u[i] = new Double(toks[0]);
-			} else if (decoderFlag.equals(cplexlp)) {
+			} else if (decoderFlag.equals(admmilp)) {
 				u[i] = new Double(toks[1]);
-			} else {
+			} else if (decoderFlag.equals(cplexlp)) {
 				u[i] = new Double(toks[2]);
+			} else {
+				u[i] = new Double(toks[3]);
 			}
 		}		
 		
