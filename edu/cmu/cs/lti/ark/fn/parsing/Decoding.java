@@ -459,7 +459,7 @@ public class Decoding
 			}
 			vs.put(frameElements.get(i), valMap);
 		}				
-		THashMap<String,String> nonOMap = getCubePruningDecoding(oMap, mFF.fElements, vs, 2, seenSpans);
+		THashMap<String,String> nonOMap = getCubePruningDecoding(oMap, mFF.fElements, vs, 10000, seenSpans);
 		keySet = nonOMap.keySet();
 		for(String key:keySet) {
 			feMap.put(key, nonOMap.get(key));
