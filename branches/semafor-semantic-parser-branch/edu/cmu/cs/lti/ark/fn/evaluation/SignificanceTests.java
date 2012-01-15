@@ -72,16 +72,15 @@ public class SignificanceTests
 	public static void main(String[] args)	
 	{
 		// convertToNiceFormat();
+		// convertToNiceFormatWithoutFrames();
 		//fullSigTests(2);
 		
 		//convertToNiceFormatSegmentation();
 		//frameIdenSigTests(0);
-		frameIdenSigTests(0);
+		// frameIdenSigTests(0);
 		
-		//fullSigTests(2);
-	}
-
-	
+		fullSigTests(0);
+	}	
 
 	/**
 	 * Perform significance testing for a pair of frame identification results.
@@ -138,9 +137,9 @@ public class SignificanceTests
 	public static void fullSigTests(int flag)
 	{
 		Random r = new Random(new Date().getTime());
-		String system1File = malRootDir+"/full_partial_joint_verbose_formatted";
+		String system1File = malRootDir+"/argid_1.0_test_ll_beam_10000_exact_verbose_formatted";
 		ArrayList<String> system1Lines = ParsePreparation.readSentencesFromFile(system1File);
-		String system2File = malRootDir+"/full_partial_joint_jtf_verbose_formatted";
+		String system2File = malRootDir+"/argid_1.0_test_file_admmilp_ll_exact_verbose_formatted";
 		ArrayList<String> system2Lines = ParsePreparation.readSentencesFromFile(system2File);
 		double sys1Metric=getNumber(system1Lines,flag);
 		double sys2Metric=getNumber(system2Lines,flag);
@@ -346,18 +345,25 @@ public class SignificanceTests
 	
 	
 	public static void convertToNiceFormat() {
-		String[] files = {malRootDir+"/best_graph_partial_verbose",
-						  malRootDir+"/best_graph_exact_verbose",
-						  malRootDir+"/baseline_partial_verbose",
-						  malRootDir+"/baseline_exact_verbose",
-						  malRootDir +"/fid_unseen_partial_graph_verbose_lin_best"
-				  };		
-		String[] formattedFiles = {malRootDir+"/best_graph_partial_verbose_formatted",
-				  				   malRootDir+"/best_graph_exact_verbose_formatted",
-				                   malRootDir+"/baseline_partial_verbose_formatted",
-				                   malRootDir+"/baseline_exact_verbose_formatted",
-				                   malRootDir +"/fid_unseen_partial_graph_verbose_lin_best_formatted"};
-		for(int i = 0; i < 5; i ++)
+//		String[] files = {malRootDir+"/best_graph_partial_verbose",
+//						  malRootDir+"/best_graph_exact_verbose",
+//						  malRootDir+"/baseline_partial_verbose",
+//						  malRootDir+"/baseline_exact_verbose",
+//						  malRootDir +"/fid_unseen_partial_graph_verbose_lin_best"
+//				  };		
+//		String[] formattedFiles = {malRootDir+"/best_graph_partial_verbose_formatted",
+//				  				   malRootDir+"/best_graph_exact_verbose_formatted",
+//				                   malRootDir+"/baseline_partial_verbose_formatted",
+//				                   malRootDir+"/baseline_exact_verbose_formatted",
+//				                   malRootDir +"/fid_unseen_partial_graph_verbose_lin_best_formatted"};
+		String[] files = {malRootDir+"/argid_1.0_test_ll_beam_10000_exact_verbose",
+				  malRootDir+"/argid_1.0_test_file_admmilp_ll_exact_verbose",
+		  };		
+		String[] formattedFiles = {malRootDir+"/argid_1.0_test_ll_beam_10000_exact_verbose_formatted",
+				  				   malRootDir+"/argid_1.0_test_file_admmilp_ll_exact_verbose_formatted"};
+
+		
+		for(int i = 0; i < 2; i ++)
 		{
 			ArrayList<String> resLines = new ArrayList<String>();
 			try
@@ -399,6 +405,72 @@ public class SignificanceTests
 			System.out.print("Precision:"+prec+" ");
 			System.out.print("Recall:"+recall+" ");
 			System.out.print("F1 score:"+f+"\n");
+			ParsePreparation.writeSentencesToTempFile(formattedFiles[i], resLines);
+		}		
+	}
+	
+	public static void convertToNiceFormatWithoutFrames() {
+		String[] files = {malRootDir+"/argid_1.0_test_ll_local_exact_verbose",
+						  malRootDir+"/argid_1.0_test_ll_beam_2_exact_verbose",
+						  malRootDir+"/argid_1.0_test_ll_beam_10000_exact_verbose",
+						  malRootDir+"/argid_1.0_test_file_lp_ll_exact_verbose",
+						  malRootDir+"/argid_1.0_test_file_ilp_ll_exact_verbose",
+						  malRootDir+"/argid_1.0_test_file_admm_ll_exact_verbose",
+						  malRootDir+"/argid_1.0_test_file_admmilp_ll_exact_verbose"
+		  };		
+		
+		String[] formattedFiles = {malRootDir+"/argid_1.0_test_ll_local_exact_verbose_formatted",
+					malRootDir+"/argid_1.0_test_ll_beam_2_exact_verbose_formatted",
+				  malRootDir+"/argid_1.0_test_ll_beam_10000_exact_verbose_formatted",
+				  malRootDir+"/argid_1.0_test_file_lp_ll_exact_verbose_formatted",
+				  malRootDir+"/argid_1.0_test_file_ilp_ll_exact_verbose_formatted",
+				  malRootDir+"/argid_1.0_test_file_admm_ll_exact_verbose_formatted",
+				  malRootDir+"/argid_1.0_test_file_admmilp_ll_exact_verbose_formatted"};
+		for(int i = 0; i < 7; i ++)
+		{
+			double totalFrames = 0.0;
+			double totalMatched = 0.0;
+			double totalGold = 0.0;
+			double totalFound = 0.0;
+			ArrayList<String> resLines = new ArrayList<String>();
+			ArrayList<String> allLines = ParsePreparation.readSentencesFromFile(files[i]);
+			int lastSentenceIndex = -1;
+			int size = allLines.size();
+			for (int j = 0; j < size; j ++) {
+				String trimmedLine = allLines.get(j);
+				if (trimmedLine.startsWith("Total:")) {
+					String scorePart = trimmedLine.substring(7).trim();
+					String[] toks = scorePart.split("/");
+					double m = new Double(toks[0].trim());
+					double f = new Double(toks[1].trim());
+					double g = new Double(toks[2].trim());
+					for (int k = j - 1; k > lastSentenceIndex; k--) {
+						if (allLines.get(k).startsWith("matching:") && 
+						    !allLines.get(k).contains("=FE") && 
+						    allLines.get(k).contains("1.00000 / 1.00000 / 1.00000")) {
+							m -= 1;
+							f -= 1;
+							g -= 1;
+							totalFrames++;
+						}
+					}
+					String resLine = m +" / " + f + " / " + g;
+					resLines.add(resLine);
+					lastSentenceIndex = j;
+					totalMatched += m;
+					totalFound += f;
+					totalGold += g;
+				} else {
+					continue;
+				}
+			}
+			double prec = totalMatched/totalFound;
+			double recall = totalMatched/totalGold;
+			double f = 2*prec*recall/(prec+recall);
+			System.out.print("Precision:"+prec+" ");
+			System.out.print("Recall:"+recall+" ");
+			System.out.print("F1 score:"+f+"\n");
+			System.out.println("Total number of frames: " + totalFrames);
 			ParsePreparation.writeSentencesToTempFile(formattedFiles[i], resLines);
 		}		
 	}
