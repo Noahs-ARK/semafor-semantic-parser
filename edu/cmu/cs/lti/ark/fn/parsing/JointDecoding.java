@@ -24,6 +24,8 @@ public class JointDecoding extends Decoding {
 	public static final String FILE_DECODING_ADMM = "file_admm";
 	public static final String FILE_DECODING_LP = "file_lp";
 	public static final String FILE_DECODING_ILP = "file_ilp";
+	public static final String FILE_DECODING_ADMMILP = "file_admmilp";
+	
 	private int mNumThreads = 1;
 	protected String mFactorFile;
 
