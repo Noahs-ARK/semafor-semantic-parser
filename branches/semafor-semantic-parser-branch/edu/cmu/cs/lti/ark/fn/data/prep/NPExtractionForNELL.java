@@ -81,6 +81,9 @@ public class NPExtractionForNELL {
 					if (np1.equals(np2)) {
 						continue;
 					}
+					if (fe1.equals(fe2)) {
+						continue;
+					}
 					if (fe1.compareTo(fe2) > 0) {
 						pair = np2 + "\t" + fe2 + "__" + fe1 + "\t" + np1;
 					} else {
