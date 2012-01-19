@@ -83,7 +83,6 @@ public class NPExtractionForNELL {
 					} else {
 						pair = np1 + " " + fe1 + "__" + frame + "__" + fe2 + " " + np2;
 					}
-					System.out.println(pair);
 					relations.add(pair);
 				}
 			}
