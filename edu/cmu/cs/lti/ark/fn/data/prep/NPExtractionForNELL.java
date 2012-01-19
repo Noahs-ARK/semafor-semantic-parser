@@ -85,9 +85,9 @@ public class NPExtractionForNELL {
 						continue;
 					}
 					if (fe1.compareTo(fe2) > 0) {
-						pair = np2 + "\t" + fe2 + "__" + fe1 + "\t" + np1;
+						pair = np2.toLowerCase() + "\t" + fe2 + "__" + fe1 + "\t" + np1.toLowerCase();
 					} else {
-						pair = np1 + "\t" + fe1 + "__" + fe2 + "\t" + np2;
+						pair = np1.toLowerCase() + "\t" + fe1 + "__" + fe2 + "\t" + np2.toLowerCase();
 					}
 					relations.add(pair);
 				}
