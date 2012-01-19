@@ -56,7 +56,7 @@ public class NPExtractionForNELL {
 				}
 				DependencyParse node = DependencyParse.getHeuristicHead(sortedNodes, mTokenNums);
 				String pos = node.getPOS();
-				if (pos.startsWith("N")) {
+				if (pos.startsWith("N") && mTokenNums.length < 5) {
 					selected.add(i);
 					tokArray.add(mTokenNums);
 				}
