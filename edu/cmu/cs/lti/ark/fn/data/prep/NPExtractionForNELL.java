@@ -4,6 +4,7 @@ import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 import gnu.trove.THashSet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -12,6 +13,7 @@ public class NPExtractionForNELL {
 	public static void main(String[] args) {
 		String parseFile = args[0];
 		String feFile = args[1];
+		String outFile = args[2];
 		ArrayList<String> parses = 
 			ParsePreparation.readSentencesFromFile(parseFile);
 		ArrayList<String> feLines = 
@@ -85,6 +87,12 @@ public class NPExtractionForNELL {
 					relations.add(pair);
 				}
 			}
-		}		
+		}
+		int totalSize = relations.size();
+		String[] arr = new String[totalSize];
+		arr = relations.toArray(arr);
+		Arrays.sort(arr);
+		ArrayList<String> list = new ArrayList<String>(Arrays.asList(arr));
+		ParsePreparation.writeSentencesToTempFile(outFile, list);
 	}
 }
