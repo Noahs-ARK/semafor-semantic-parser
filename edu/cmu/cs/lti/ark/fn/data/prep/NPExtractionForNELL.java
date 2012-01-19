@@ -79,9 +79,9 @@ public class NPExtractionForNELL {
 					np2 = np2.trim();
 					String pair = "";
 					if (fe1.compareTo(fe2) > 0) {
-						pair = np2 + "\t" + fe2 + "__" + frame + "__" + fe1 + "\t" + np1;
+						pair = np2 + "\t" + fe2 + "__" + fe1 + "\t" + np1;
 					} else {
-						pair = np1 + "\t" + fe1 + "__" + frame + "__" + fe2 + "\t" + np2;
+						pair = np1 + "\t" + fe1 + "__" + fe2 + "\t" + np2;
 					}
 					relations.add(pair);
 				}
