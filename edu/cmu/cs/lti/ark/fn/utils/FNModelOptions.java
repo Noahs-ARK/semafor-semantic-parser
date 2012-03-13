@@ -149,4 +149,5 @@ public final class FNModelOptions extends CommandLineOptions
 	public DoubleOption argidWeight = new DoubleOption("argidweight");
 	public StringOption noHV = new StringOption("nohv");
 	public BoolOption supportedOnly = new BoolOption("supportedonly");
+	public StringOption startEndFile = new StringOption("startendfile");
 }
