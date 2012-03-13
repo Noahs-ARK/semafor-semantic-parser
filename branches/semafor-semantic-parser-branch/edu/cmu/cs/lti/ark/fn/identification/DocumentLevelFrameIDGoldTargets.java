@@ -35,16 +35,19 @@ import java.util.StringTokenizer;
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
 import edu.cmu.cs.lti.ark.util.SerializedObjects;
+import edu.cmu.cs.lti.ark.util.nlp.parse.DependencyParse;
 import edu.cmu.cs.lti.ark.util.optimization.LDouble;
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
 import gnu.trove.TObjectDoubleHashMap;
 
-
-public class FrameIdentificationGoldTargets
-{
-	public static void main(String[] args)
-	{
+/*
+ * This does not work if start and end are not all the lines in the 
+ * input file. 
+ * TODO: change this
+ */
+public class DocumentLevelFrameIDGoldTargets {
+	public static void main(String[] args) {
 		FNModelOptions options = new FNModelOptions(args);
 		ArrayList<String> parses = new ArrayList<String>();
 		int start = options.startIndex.get();
@@ -53,17 +56,14 @@ public class FrameIdentificationGoldTargets
 		ArrayList<String> tokenNums = new ArrayList<String>();
 		ArrayList<String> orgSentenceLines = new ArrayList<String>();
 		ArrayList<String> originalIndices = new ArrayList<String>();
-		try
-		{
+		try {
 			BufferedReader inParses = new BufferedReader(new FileReader(options.testParseFile.get()));
 			BufferedReader inOrgSentences = new BufferedReader(new FileReader(options.testTokenizedFile.get()));
 			String line = null;
 			int dummy = 0;
-			while((line=inParses.readLine())!=null)
-			{
+			while((line=inParses.readLine())!=null) {
 				String line2 = inOrgSentences.readLine().trim();
-				if(count<start)	// skip sentences prior to the specified range
-				{
+				if(count<start)	{
 					count++;
 					continue;
 				}
@@ -78,10 +78,7 @@ public class FrameIdentificationGoldTargets
 			}				
 			inParses.close();
 			inOrgSentences.close();
-		}
-		
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			e.printStackTrace();
 		}		
 		RequiredDataForFrameIdentification r = (RequiredDataForFrameIdentification)SerializedObjects.readSerializedObject(options.fnIdReqDataFile.get());
@@ -112,8 +109,7 @@ public class FrameIdentificationGoldTargets
 		System.out.println("Size of originalSentences list:"+originalIndices.size());
 		
 		boolean useClusters = options.clusterFeats.get().equals("true");
-		if(useClusters)
-		{
+		if(useClusters) {
 			System.out.println("Using cluster based features...");
 			THashMap<String, THashSet<String>> clusterMap= (THashMap<String, THashSet<String>>)SerializedObjects.readSerializedObject(options.synClusterMap.get());
 			int K = options.clusterK.get();
@@ -125,9 +121,11 @@ public class FrameIdentificationGoldTargets
 		if (usegraph) {
 			sg = (SmoothedGraph)SerializedObjects.readSerializedObject(options.useGraph.get());
 		}
+		String startEndFile = options.startEndFile.get();
+		getPredicateGroups(inputForFrameId, startEndFile, parses);
+		
 		System.out.println("Start Time:"+(new Date()));
-		for(String input: inputForFrameId)
-		{
+		for(String input: inputForFrameId) {
 			String[] toks = input.split("\t");
 			int sentNum = new Integer(toks[2]);	// offset of the sentence within the loaded data (relative to options.startIndex)
 			String bestFrame = null;
@@ -144,9 +142,88 @@ public class FrameIdentificationGoldTargets
 		}
 		System.out.println("End Time:"+(new Date()));
 		String feFile = options.frameElementsOutputFile.get();
-		ParsePreparation.writeSentencesToTempFile(feFile, idResult);
-		
+		ParsePreparation.writeSentencesToTempFile(feFile, idResult);	
 	}	
+	
+	public static void getPredicateGroups(ArrayList<String> inputForFrameId,
+			                              String startEndFile,
+			                              ArrayList<String> parses) {
+		ArrayList<String> startsAndEnds = ParsePreparation.readSentencesFromFile(startEndFile);
+		int size = startsAndEnds.size();
+		int[][] ses = new int[size][];
+		for (int i = 0; i < size; i++) {
+			String[] toks = startsAndEnds.get(i).split("\t");
+			ses[i] = new int[2];
+			ses[i][0] = new Integer(toks[0]);
+			ses[i][1] = new Integer(toks[1]);
+		}
+		
+		size = inputForFrameId.size();
+		for (int i = 0; i < size; i++) {
+			String frameLine = inputForFrameId.get(i);
+			String[] toks = frameLine.split("\t");
+			int sentNum = new Integer(toks[2]);
+			int group = getGroup(ses, sentNum);
+			
+			String parseLine = parses.get(sentNum);
+			String[] tokNums = toks[1].split("_");
+			int[] intTokNums = new int[tokNums.length];
+			for(int j = 0; j < tokNums.length; j ++)
+				intTokNums[j] = new Integer(tokNums[j]);
+			Arrays.sort(intTokNums);
+			StringTokenizer st = new StringTokenizer(parseLine,"\t");
+			int tokensInFirstSent = new Integer(st.nextToken());
+			String[][] data = new String[6][tokensInFirstSent];
+			for(int k = 0; k < 6; k ++)
+			{
+				data[k]=new String[tokensInFirstSent];
+				for(int j = 0; j < tokensInFirstSent; j ++)
+				{
+					data[k][j]=""+st.nextToken().trim();
+				}
+			}	
+			String lemmatizedTokens = "";
+			for(int j = 0; j < intTokNums.length; j ++)
+			{
+				lemmatizedTokens+=data[5][intTokNums[j]]+" ";
+			}
+			lemmatizedTokens=lemmatizedTokens.trim();
+			DependencyParse parse = DependencyParse.processFN(data, 0.0);
+			DependencyParse[] sortedNodes = DependencyParse.getIndexSortedListOfNodes(parse);
+			DependencyParse head = DependencyParse.getHeuristicHead(sortedNodes, intTokNums);
+			String pos = head.getPOS();
+			if (pos.startsWith("N")) {
+				pos = "n";
+			} else if (pos.startsWith("V")) {
+				pos = "v";
+			} else if (pos.startsWith("J")) {
+				pos = "a";
+			} else if (pos.startsWith("RB")) {
+				pos = "adv";
+			} else if (pos.startsWith("I") || pos.startsWith("TO")) {
+				pos = "prep";
+			} else {
+				pos = null;
+			}
+			if (pos == null) {
+				System.out.println("Problem. Cannot handle null POS. Exiting.");
+				System.exit(-1);
+			}
+			String predicate = lemmatizedTokens + "." + pos;
+			
+		}
+	}
+	
+	public static int getGroup(int[][] ses, int sentNum) {
+		for (int i = 0; i < ses.length; i++) {
+			if (sentNum >= ses[i][0] && sentNum < ses[i][1]) {
+				return i;
+			}
+		}
+		System.out.println("Problem. Could not find span.");
+		System.exit(-1);
+		return ses.length;
+	}
 	
 	public static TObjectDoubleHashMap<String> parseParamFile(String paramsFile)
 	{
