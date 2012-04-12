@@ -23,7 +23,7 @@ public class DDDecoding implements JDecoding {
 	private int mNumThreads = 1;
 	private double[][] zs;
 	private String mFactorFile;
-	private static final boolean WRITE_FACTORS_TO_FILE = true;
+	private boolean WRITE_FACTORS_TO_FILE = false;
 	private BufferedWriter bWriter = null;
 	
 	public DDDecoding() {
@@ -630,7 +630,12 @@ public class DDDecoding implements JDecoding {
 	@Override
 	public void setFactorFile(String factorFile) {
 		// TODO Auto-generated method stub
-		mFactorFile = factorFile;
+		if (factorFile != null && !factorFile.equals("null")) {
+			WRITE_FACTORS_TO_FILE = true;
+			mFactorFile = factorFile;
+		} else {
+			mFactorFile = null;
+		}
 	}
 
 	@Override
