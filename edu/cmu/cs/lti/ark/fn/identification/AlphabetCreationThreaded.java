@@ -177,7 +177,7 @@ public class AlphabetCreationThreaded
 		if (end > mEndIndex) {
 			end = mEndIndex;
 		}
-		Map<String, Integer> alphabet = new THashMap<String, Integer>();
+		TObjectIntHashMap<String> alphabet = new TObjectIntHashMap<String>();
 		mLogger.info("Thread " + i + ": start:" + start +" end:" + end);
 		// System.out.println("Thread " + i + ": start:" + start +" end:" + end);
 		int count = 0;
@@ -223,14 +223,15 @@ public class AlphabetCreationThreaded
 	}
 	
 
-	private void writeAlphabetFile(Map<String, Integer> alphabet, String file)
+	private void writeAlphabetFile(TObjectIntHashMap<String> alphabet, String file)
 	{
 		try
 		{
 			BufferedWriter bWriter = new BufferedWriter(new FileWriter(file));
 			bWriter.write(alphabet.size()+"\n");
-			Set<String> set = alphabet.keySet();
-			for(String key:set)
+			String[] keys = new String[alphabet.size()];
+			keys = alphabet.keys(keys);
+			for(String key:keys)
 			{
 				bWriter.write(key+"\t"+alphabet.get(key)+"\n");
 			}
@@ -277,7 +278,7 @@ public class AlphabetCreationThreaded
 	private int[][] getFeatures(String frame, 
 								int[] intTokNums, 
 								String[][] data, 
-								Map<String, Integer> alphabet)
+								TObjectIntHashMap<String> alphabet)
 	{
 		THashSet<String> hiddenUnits = getHiddenUnits(frame, intTokNums, data);
 		DependencyParse parse = DependencyParse.processFN(data, 0.0);
@@ -330,7 +331,7 @@ public class AlphabetCreationThreaded
 
 	private Pair<String, Integer> processLine(String line, int index, 
 			String parseLine, int parseOffset, BufferedReader parseReader,
-			Map<String, Integer> alphabet,
+			TObjectIntHashMap<String> alphabet,
 			int threadIndex) {
 		String[] toks = line.split("\t");
 		int sentNum = new Integer(toks[5]);
