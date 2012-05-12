@@ -37,6 +37,9 @@ public class UniqueSpanSlave implements Slave {
 			double a = us[i] + (1.0 / rho) * (mObjVals[i-mStart] + lambdas[i]);
 			as[i-mStart] = a;
 		}
+		if (checkEquals(as)) {
+			return oldZs;
+		}
 		Double[] bs = new Double[as.length];
 		for (int i = 0; i < bs.length; i++) {
 			bs[i] = as[i];
@@ -76,4 +79,14 @@ public class UniqueSpanSlave implements Slave {
 		oldAs = Arrays.copyOf(as, as.length);
 		oldZs = Arrays.copyOf(zs, zs.length);
 	}
+
+	@Override
+	public boolean checkEquals(double[] as) {
+		// TODO Auto-generated method stub
+		if (oldAs == null) {
+			return false;
+		}
+		return Arrays.equals(as, oldAs);
+	}
+
 }

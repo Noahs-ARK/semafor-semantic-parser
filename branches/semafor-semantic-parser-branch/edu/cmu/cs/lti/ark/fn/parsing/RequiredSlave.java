@@ -27,6 +27,9 @@ public class RequiredSlave implements Slave {
 					   (1.0 / rho) * (mObjVals[mIndices[i]] + lambdas[mIndices[i]]);
 			as[i] = a;
 		}		
+		if (checkEquals(as)) {
+			return oldZs;
+		}
 		double[] aprimes = Arrays.copyOf(as, as.length);
 		aprimes[aprimes.length-1] = 1 - as[aprimes.length-1];		
 		
@@ -70,5 +73,14 @@ public class RequiredSlave implements Slave {
 	public void cache(double[] as, double[] zs) {
 		oldAs = Arrays.copyOf(as, as.length);
 		oldZs = Arrays.copyOf(zs, zs.length);
+	}
+	
+	@Override
+	public boolean checkEquals(double[] as) {
+		// TODO Auto-generated method stub
+		if (oldAs == null) {
+			return false;
+		}
+		return Arrays.equals(as, oldAs);
 	}
 }
