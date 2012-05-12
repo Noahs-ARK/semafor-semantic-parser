@@ -490,12 +490,12 @@ public class DDDecoding implements JDecoding {
 				double rat = 0;
 				if (pr == 0) {
 					if (dr != 0) {
-						rat = 110.0;
+						rat = 11.0;
 					}
 				} else {
 					rat = dr / pr;
 				}
-				if (rat > 100.0) {
+				if (rat > 10.0) {
 					rho = rho / 2.0;
 				}
 			}			
