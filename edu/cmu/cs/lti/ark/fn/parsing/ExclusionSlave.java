@@ -28,6 +28,9 @@ public class ExclusionSlave implements Slave {
 					   (1.0 / rho) * (mObjVals[mIndices[i]] + lambdas[mIndices[i]]);
 			as[i] = a;
 		}
+		if (checkEquals(as)) {
+			return oldZs;
+		}
 		double[] updZs = new double[mObjVals.length];
 		Arrays.fill(updZs, 0);
 		double sum = 0.0;
@@ -77,5 +80,14 @@ public class ExclusionSlave implements Slave {
 	public void cache(double[] as, double[] zs) {
 		oldAs = Arrays.copyOf(as, as.length);
 		oldZs = Arrays.copyOf(zs, zs.length);
+	}
+	
+	@Override
+	public boolean checkEquals(double[] as) {
+		// TODO Auto-generated method stub
+		if (oldAs == null) {
+			return false;
+		}
+		return Arrays.equals(as, oldAs);
 	}
 }
