@@ -418,20 +418,7 @@ public class DDDecoding implements JDecoding {
 		}		
 		double rho = RHO_START;
 		int itr = 0;		
-		
-		
-//		List<Slave> slist = Arrays.asList(slaves);
-//		Collections.shuffle(slist);
-//		slist.toArray(slaves);
-		
-		List<Integer> slist = new ArrayList<Integer>();
-		for (int i = 0; i < slaves.length; i++) {
-			slist.add(i);
-		}
-		Collections.shuffle(slist);
-		Integer[] sarray = new Integer[slaves.length];
-		slist.toArray(sarray);
-		
+				
 		while (true) {
 			// System.out.println("Rho: " + rho);
 			double eta = TAU * rho;
