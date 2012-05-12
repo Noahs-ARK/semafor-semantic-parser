@@ -60,7 +60,8 @@ public class RequiredSlave implements Slave {
 		for (int i = 0; i < mIndices.length; i++) {
 			updZs[mIndices[i]] = Math.max(aprimes[i] - tau, 0);
 		}
-		updZs[as.length-1] = 1 - updZs[as.length-1];
+		double lastZ = updZs[mIndices[mIndices.length-1]];
+		updZs[mIndices[mIndices.length-1]] = 1 - lastZ;
 		cache(as, updZs);
 		return updZs;
 	}
