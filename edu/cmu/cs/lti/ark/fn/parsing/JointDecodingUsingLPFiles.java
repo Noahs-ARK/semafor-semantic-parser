@@ -215,7 +215,7 @@ public class JointDecodingUsingLPFiles implements JDecoding {
 			} else if (decoderFlag.equals(admmilp)) {
 				u[i] = new Double(toks[1]);
 			} else if (decoderFlag.equals(cplexlp)) {
-				u[i] = new Double(toks[2]);
+				u[i] = new Double(toks[2]);	
 			} else {
 				u[i] = new Double(toks[3]);
 			}

@@ -9,6 +9,8 @@ public class UniqueSpanSlave implements Slave {
 	public int mStart;
 	public int mEnd;
 	public int mTotLen;
+	public double[] oldAs;
+	public double[] oldZs;
 	
 	public UniqueSpanSlave(double[] objVals, 
 						   int start, 
@@ -20,19 +22,25 @@ public class UniqueSpanSlave implements Slave {
 		mStart = start;
 		mEnd = end;
 		mTotLen = objVals.length;
+		oldAs = null;
+		oldZs = null;
 	}
 	
 	@Override
+	// XOR factor
 	public double[] makeZUpdate(double rho, 
 						   double[] us, 
 						   double[] lambdas,
 						   double[] zs) {
-		Double[] as = new Double[mEnd - mStart];
+		double[] as = new double[mEnd - mStart];
 		for (int i = mStart; i < mEnd; i++) {
 			double a = us[i] + (1.0 / rho) * (mObjVals[i-mStart] + lambdas[i]);
 			as[i-mStart] = a;
 		}
-		Double[] bs = Arrays.copyOf(as, as.length);
+		Double[] bs = new Double[as.length];
+		for (int i = 0; i < bs.length; i++) {
+			bs[i] = as[i];
+		}
 		Arrays.sort(bs, Collections.reverseOrder());
 		double[] sums = new double[bs.length];
 		Arrays.fill(sums, 0);
@@ -59,6 +67,13 @@ public class UniqueSpanSlave implements Slave {
 		for (int i = mStart; i < mEnd; i++) {
 			updZs[i] = Math.max(as[i-mStart] - tau, 0);
 		}
+		cache(as, updZs);
 		return updZs;
+	}
+	
+	@Override
+	public void cache(double[] as, double[] zs) {
+		oldAs = Arrays.copyOf(as, as.length);
+		oldZs = Arrays.copyOf(zs, zs.length);
 	}
 }

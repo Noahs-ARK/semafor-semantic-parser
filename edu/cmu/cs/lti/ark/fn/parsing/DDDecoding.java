@@ -110,45 +110,24 @@ public class DDDecoding implements JDecoding {
 				
 				int nullIndex1 = -1;
 				int nullIndex2 = -1;
-				count = 0;
-				TIntHashSet rSet1 = new TIntHashSet();
-				TIntHashSet rSet2 = new TIntHashSet();
 				Pair<int[], Double>[] arr1 = scoreMap.get(one);
 				Pair<int[], Double>[] arr2 = scoreMap.get(two);
 				for (int j = 0; j < scoreMap.get(one).length; j++) {
 					if (arr1[j].getFirst()[0] == -1 && arr1[j].getFirst()[1] == -1) {
 						nullIndex1 = mappedIndices[oneIndex][j];
-						continue;
+						break;
 					}
-					rSet1.add(mappedIndices[oneIndex][j]);
-					count++;
-				}
-				rSet1.add(totalCount);
-				// requiredSets.add(rSet1.toArray());				
-				count = 0;
+				}				
 				for (int j = 0; j < scoreMap.get(two).length; j++) {
 					if (arr2[j].getFirst()[0] == -1 && arr2[j].getFirst()[1] == -1) {
 						nullIndex2 = mappedIndices[twoIndex][j];
-						continue;
+						break;
 					}
-					rSet2.add(mappedIndices[twoIndex][j]);
-					count++;
 				}
-				rSet2.add(totalCount);
-				// totalCount++;				
-				// requiredSets.add(rSet2.toArray());
-				
 				int[] a1 = new int[2];
 				a1[0] = nullIndex1;
 				a1[1] = nullIndex2;
 				requiredSets.add(a1);
-				
-//				
-//				int[] a2 = new int[2];
-//				a2[0] = nullIndex2;
-//				a2[1] = totalCount;
-//				totalCount++;
-//				requiredSets.add(a2);
 			}
 		}
 		
@@ -195,11 +174,10 @@ public class DDDecoding implements JDecoding {
 				count++;
 			}
 		}
-		
+		// fixing the rest of the variables to zero
 		for (int i = count; i < objVals.length; i++) {
 			objVals[i] = 0.0;
-		}
-		
+		}	
 		
 		// counting number of exclusion slaves
 		ArrayList<int[]> exclusionSets = new ArrayList<int[]>();
@@ -242,7 +220,6 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		
-		// finished adding costs
 		int len = objVals.length;
 		int[] deltaarray = new int[len];
 		int numExclusionSlaves = exclusionSets.size();
@@ -293,8 +270,7 @@ public class DDDecoding implements JDecoding {
 			}
 		}		
 		// end of creation of deltaarray
-		
-		
+				
 		double[] thetas = new double[objVals.length];
 		for (int i = 0; i < len; i++) {
 			thetas[i] = objVals[i] / (double)deltaarray[i];
@@ -459,25 +435,9 @@ public class DDDecoding implements JDecoding {
 			double eta = TAU * rho;
 			// System.out.println("Eta: " + eta);
 			// making z-update
-			if (this.mNumThreads == 1) {
-				for (int s = 0; s < slavelen; s++) {
-					zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
-				}
-			} else { // does not work
-				ThreadPool threadPool = new ThreadPool(mNumThreads);
-				for (int i = 0; i < mNumThreads; i++) {
-					threadPool.runTask(createTask(rho, 
-							  					  u, 
-							  					  lambdas, 
-							  					  zs,
-							  					  slaves,
-							  					  i,
-							  					  slavelen,
-							  					  sarray));
-				}
-				threadPool.join();
-			}			
-			
+			for (int s = 0; s < slavelen; s++) {
+				zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
+			}
 			// making u update
 			double[] oldus = Arrays.copyOf(u, u.length);
 			for (int i = 0; i < len; i++) {
