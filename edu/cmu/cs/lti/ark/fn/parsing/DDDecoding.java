@@ -489,11 +489,11 @@ public class DDDecoding implements JDecoding {
 				}
 			}			
 			itr++;
-			if (itr >= 10000) {
+			if (itr >= 1000) {
 				System.out.println("Optimization did not converge in 1000 iterations: " + pr + " " + dr);
 				break;
 			}
-			if (pr < 0.0000001 && dr < 0.0000001) {
+			if (pr < 0.000001 && dr < 0.000001) {
 				System.out.println("Optimization converged: " + pr + " " + dr);
 				break;
 			}
