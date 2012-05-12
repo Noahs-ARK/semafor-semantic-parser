@@ -18,7 +18,7 @@ import gnu.trove.TIntHashSet;
 public class DDDecoding implements JDecoding {
 	private Map<String, Set<Pair<String, String>>> excludesMap;
 	private Map<String, Set<Pair<String, String>>> requiresMap;
-	public static final double TAU = 1.5;
+	public static final double TAU = 1.0;
 	public static final double RHO_START = 0.03;
 	private int mNumThreads = 1;
 	private double[][] zs;
@@ -479,23 +479,23 @@ public class DDDecoding implements JDecoding {
 			if (pr > dr) {
 				double rat;
 				if (dr == 0.0) {
-					rat = 20.0;
+					rat = 110.0;
 				} else {
 					rat = pr / dr;
 				}
-				if (rat > 10.0) {
+				if (rat > 100.0) {
 					rho = rho * 2.0;
 				}
 			} else {
 				double rat = 0;
 				if (pr == 0) {
 					if (dr != 0) {
-						rat = 20.0;
+						rat = 110.0;
 					}
 				} else {
 					rat = dr / pr;
 				}
-				if (rat > 10.0) {
+				if (rat > 100.0) {
 					rho = rho / 2.0;
 				}
 			}			
