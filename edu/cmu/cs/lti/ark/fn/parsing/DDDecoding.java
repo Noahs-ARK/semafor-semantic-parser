@@ -275,7 +275,7 @@ public class DDDecoding implements JDecoding {
 				
 		double[] thetas = new double[objVals.length];
 		for (int i = 0; i < len; i++) {
-			thetas[i] = objVals[i] / (double)deltaarray[i];
+			thetas[i] = objVals[i] / (double) deltaarray[i];
 		}
 		
 		// creating slaves
@@ -489,7 +489,7 @@ public class DDDecoding implements JDecoding {
 				}
 			}			
 			itr++;
-			if (itr >= 100) {
+			if (itr >= 1000) {
 				System.out.println("Optimization did not converge in 100 iterations: " + pr + " " + dr);
 				break;
 			}
