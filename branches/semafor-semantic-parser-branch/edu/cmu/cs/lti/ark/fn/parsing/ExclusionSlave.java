@@ -7,16 +7,22 @@ public class ExclusionSlave implements Slave {
 
 	public double[] mObjVals;
 	public int[] mIndices;
+	public double[] oldAs;
+	public double[] oldZs;
+	
 	
 	public ExclusionSlave(double[] objVals, 
 						  int[] indices) {
 		mObjVals = objVals;
 		mIndices = indices;
+		oldAs = null;
+		oldZs = null;
 	}
 
+	// OR factor
 	public double[] makeZUpdate(double rho, double[] us, double[] lambdas,
 			double[] zs) {
-		Double[] as = new Double[mIndices.length];
+		double[] as = new double[mIndices.length];
 		for (int i = 0; i < as.length; i++) {
 			double a = us[mIndices[i]] + 
 					   (1.0 / rho) * (mObjVals[mIndices[i]] + lambdas[mIndices[i]]);
@@ -29,10 +35,13 @@ public class ExclusionSlave implements Slave {
 			updZs[mIndices[i]] = Math.min(1.0, Math.max(as[i], 0));
 			sum += updZs[mIndices[i]];
 		}
-		if (sum <= 1.0) {
+		if (sum >= 1.0) {
 			return updZs;
 		}		
-		Double[] bs = Arrays.copyOf(as, mIndices.length);
+		Double[] bs = new Double[as.length];
+		for (int i = 0; i < bs.length; i++) {
+			bs[i] = as[i];
+		}
 		Arrays.sort(bs, Collections.reverseOrder());
 		double[] sums = new double[as.length];
 		Arrays.fill(sums, 0);
@@ -60,6 +69,13 @@ public class ExclusionSlave implements Slave {
 			updZs[mIndices[i]] = Math.max(as[i] - tau, 0);
 			sum += updZs[mIndices[i]];
 		}
+		cache(as, updZs);
 		return updZs;
+	}
+	
+	@Override
+	public void cache(double[] as, double[] zs) {
+		oldAs = Arrays.copyOf(as, as.length);
+		oldZs = Arrays.copyOf(zs, zs.length);
 	}
 }

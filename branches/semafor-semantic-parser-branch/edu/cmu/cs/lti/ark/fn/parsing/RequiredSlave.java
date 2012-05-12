@@ -7,23 +7,34 @@ public class RequiredSlave implements Slave {
 
 	public double[] mObjVals;
 	public int[] mIndices;
+	public double[] oldAs;
+	public double[] oldZs;
 	
 	public RequiredSlave(double[] objVals, 
 						  int[] indices) {
 		mObjVals = objVals;
 		mIndices = indices;
+		oldAs = null;
+		oldZs = null;
 	}
-
+	
+	// XOR with output, last variable is negated
 	public double[] makeZUpdate(double rho, double[] us, double[] lambdas,
 			double[] zs) {
-		Double[] as = new Double[mIndices.length];
+		double[] as = new double[mIndices.length];
 		for (int i = 0; i < as.length; i++) {
 			double a = us[mIndices[i]] + 
 					   (1.0 / rho) * (mObjVals[mIndices[i]] + lambdas[mIndices[i]]);
 			as[i] = a;
-		}
+		}		
+		double[] aprimes = Arrays.copyOf(as, as.length);
+		aprimes[aprimes.length-1] = 1 - as[aprimes.length-1];		
+		
 		double[] updZs = new double[mObjVals.length];
-		Double[] bs = Arrays.copyOf(as, mIndices.length);
+		Double[] bs = new Double[as.length];
+		for (int i = 0; i < bs.length; i++) {
+			bs[i] = aprimes[i];
+		}
 		Arrays.sort(bs, Collections.reverseOrder());
 		double[] sums = new double[as.length];
 		Arrays.fill(sums, 0);
@@ -47,8 +58,16 @@ public class RequiredSlave implements Slave {
 		double tau = (1.0 / (double)(tempRho+1)) * (sums[tempRho] - 1.0);
 		Arrays.fill(updZs, 0);
 		for (int i = 0; i < mIndices.length; i++) {
-			updZs[mIndices[i]] = Math.max(as[i] - tau, 0);
+			updZs[mIndices[i]] = Math.max(aprimes[i] - tau, 0);
 		}
+		updZs[as.length-1] = 1 - updZs[as.length-1];
+		cache(as, updZs);
 		return updZs;
+	}
+	
+	@Override
+	public void cache(double[] as, double[] zs) {
+		oldAs = Arrays.copyOf(as, as.length);
+		oldZs = Arrays.copyOf(zs, zs.length);
 	}
 }
