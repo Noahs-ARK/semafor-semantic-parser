@@ -21,6 +21,22 @@ public class OverlapSlave implements Slave {
 		oldAs = null;
 		oldZs = null;
 	}
+	
+	@Override
+	public void setObjVals(double[] objVals) {
+		mObjVals = objVals;
+	}
+	
+	public double computeDual(double rho, double[] us, double[] lambdas,
+			double[] zs) {
+		double value = 0.0;
+		for (int i = 0; i < mIndices.length; i++) {
+			value += zs[mIndices[i]] * (mObjVals[mIndices[i]] + lambdas[mIndices[i]]);
+			value -= lambdas[mIndices[i]] * us[mIndices[i]];
+			value -= (zs[mIndices[i]] - us[mIndices[i]]) * (zs[mIndices[i]] - us[mIndices[i]]) * rho / 2.0;
+		}	
+		return value;
+	}
 
 	public double[] makeZUpdate(double rho, double[] us, double[] lambdas,
 			double[] zs) {

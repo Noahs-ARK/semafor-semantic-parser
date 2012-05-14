@@ -7,7 +7,6 @@ import edu.cmu.cs.lti.ark.fn.utils.BitOps;
 import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
 
 public class RequiredSlave implements Slave {
-
 	public double[] mObjVals;
 	public int[] mIndices;
 	public double[] oldAs;
@@ -19,6 +18,22 @@ public class RequiredSlave implements Slave {
 		mIndices = indices;
 		oldAs = null;
 		oldZs = null;
+	}
+	
+	@Override
+	public void setObjVals(double[] objVals) {
+		mObjVals = objVals;
+	}
+	
+	public double computeDual(double rho, double[] us, double[] lambdas,
+			double[] zs) {
+		double value = 0.0;
+		for (int i = 0; i < mIndices.length; i++) {
+			value += zs[mIndices[i]] * (mObjVals[mIndices[i]] + lambdas[mIndices[i]]);
+			value -= lambdas[mIndices[i]] * us[mIndices[i]];
+			value -= (zs[mIndices[i]] - us[mIndices[i]]) * (zs[mIndices[i]] - us[mIndices[i]]) * rho / 2.0;
+		}	
+		return value;
 	}
 	
 	// XOR with output, last variable is negated

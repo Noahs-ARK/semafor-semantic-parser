@@ -309,12 +309,6 @@ public class ILPDecoding implements JDecoding {
 	}
 
 	@Override
-	public void setNumThreads(int nt) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void setFactorFile(String factorFile) {
 		// TODO Auto-generated method stub
 		mFactorFile = factorFile;

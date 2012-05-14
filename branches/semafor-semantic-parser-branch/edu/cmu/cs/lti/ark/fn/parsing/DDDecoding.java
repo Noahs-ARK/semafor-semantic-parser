@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.cmu.cs.lti.ark.fn.utils.BitOps;
+import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
 import edu.cmu.cs.lti.ark.fn.utils.ThreadPool;
 import edu.cmu.cs.lti.ark.util.ds.Pair;
 import gnu.trove.THashMap;
@@ -22,11 +24,18 @@ public class DDDecoding implements JDecoding {
 	public static final double RHO_START = 0.03;
 	public static final double MAX_RHO = 66.67;
 	public static final double MIN_RHO = 0.00067;
-	private int mNumThreads = 1;
-	private double[][] zs;
+	public static final int TOTAL_AD3_ITERATIONS = 1000;
 	private String mFactorFile;
 	private boolean WRITE_FACTORS_TO_FILE = false;
 	private BufferedWriter bWriter = null;
+	public static final int STATUS_OPTIMAL_INTEGER = 1;
+	public static final int STATUS_OPTIMAL_FRACTIONAL = 2;
+	public static final int STATUS_INFEASIBLE = 3;
+	public static final int STATUS_UNSOLVED = 4;
+	public static final double RESIDUAL_THRESH = 0.000001;
+	public static final int NUM_ITERATIONS_COMPUTE_DUAL = 50;
+	private double mUpperBound = 0;
+	private double mLowerBound = 0;
 	
 	public DDDecoding() {
 	}
@@ -393,8 +402,7 @@ public class DDDecoding implements JDecoding {
 		TIntHashSet[] partslavessets = new TIntHashSet[len];
 		for (int i = 0; i < len; i++) {
 			totalDelta += deltaarray[i];
-			partslavessets[i] = new TIntHashSet();
-			
+			partslavessets[i] = new TIntHashSet();			
 			for (int s = 0; s < slavelen; s++) {
 				if (Arrays.binarySearch(slaveparts[s], i) >= 0) {
 					partslavessets[i].add(s);
@@ -403,23 +411,69 @@ public class DDDecoding implements JDecoding {
 			partslaves[i] = partslavessets[i].toArray();
 			Arrays.sort(partslaves[i]);
 		}		
+		double[] u = new double[len];
+		Arrays.fill(u, 0.5);
+				
+		double lowerBound = -Double.MAX_VALUE;
+		runAD3(len, slavelen, u, slaves, totalDelta, 
+			   slaveparts, partslaves, deltaarray, TOTAL_AD3_ITERATIONS,
+			   objVals,
+			   lowerBound);
 		
-		/** starting optimization procedure **/		
-		double[] u = new double[len]; 
-		zs = new double[slavelen][len]; 
+		count = 0;
+		double totalScore = 0.0;
+		for (int i = 0; i < keys.length; i++) {
+			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
+			double maxVal = -Double.MAX_VALUE;
+			int maxIndex = -1;
+			// System.out.println(keys[i]);
+			double score = 0.0;
+			for (int j = 0; j < arr.length; j++) {
+				// String span = arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1];
+				// System.out.println(span + " " + u[count]);
+				if (u[count] > maxVal) {
+					maxVal = u[count];
+					maxIndex = j;
+					score = objVals[count];
+				}
+				count++;
+			}
+			// System.out.println();
+			if (maxIndex != -1 && maxVal > 0) {
+				totalScore += score;
+				Pair<String, Double> p = 
+					new Pair<String, Double>(arr[maxIndex].getFirst()[0] + "_" + arr[maxIndex].getFirst()[1], score);
+				res.put(keys[i], p);
+			}  			
+		}
+		System.out.println("Solution value: " + totalScore);
+		return res;
+	}
+	
+	public int runAD3(int len, int slavelen, double[] mU,
+						  Slave[] slaves, double totalDelta,
+						  int[][] slaveparts, int[][] partslaves,
+						  int[] deltaarray,
+						  int niters,
+						  double[] objVals,
+						  double lowerBound) {
+		boolean optimal = false;
+		boolean reachedLowerBound = false;
+		double dualObjBest = Double.MAX_VALUE;
+		double primalRelObjBest = -Double.MAX_VALUE;
+				
+		double[][] zs = new double[slavelen][len];
 		double[][] lambdas = new double[slavelen][len];
-		
+		double[] u = new double[len];
 		Arrays.fill(u, 0.5);
 		for (int i = 0; i < slavelen; i++) {
 			lambdas[i] = new double[len];
 			Arrays.fill(lambdas[i], 0.0);
 			zs[i] = new double[len];
 			Arrays.fill(zs[i], 0.0);
-		}		
+		}			
 		double rho = RHO_START;
-		int itr = 0;		
-				
-		while (true) {
+		for (int itr = 0; itr < niters; itr++) {
 			// System.out.println("Rho: " + rho);
 			double eta = TAU * rho;
 			// System.out.println("Eta: " + eta);
@@ -487,74 +541,84 @@ public class DDDecoding implements JDecoding {
 				if (rat > 10.0 && rho > MIN_RHO) {
 					rho = rho / 2.0;
 				}
-			}			
-			itr++;
-			if (itr >= 1000) {
-				System.out.println("Optimization did not converge in 1000 iterations: " + pr + " " + dr);
-				break;
 			}
-			if (pr < 0.000001 && dr < 0.000001) {
+			
+			// If primal residual is low enough or enough iterations                                                                                                 
+		    // have passed, compute the dual.                                                                                                                        
+		    boolean computeDual = false;
+		    boolean computePrimalRel = false;                                                                                                          
+		    if (pr < RESIDUAL_THRESH) {
+		    	computeDual = true;
+		    	computePrimalRel = true;
+		    } else if (itr > 0 && 0 == (itr % NUM_ITERATIONS_COMPUTE_DUAL)) {
+		    	computeDual = true;
+		    }
+		    
+		    // computing dual objective
+		    double dualObjective = Double.MAX_VALUE;
+		    if (computeDual) {
+		    	dualObjective = 0.0;
+		    	for (int j = 0; j < slaves.length; ++j) {
+		    		dualObjective += slaves[j].computeDual(rho, u, lambdas[j], zs[j]);
+		      }
+		    }			
+			
+		    // computing relaxed primal objective
+		    double primalRelObjective = -Double.MAX_VALUE;
+		    if (computePrimalRel) {
+		    	primalRelObjective = 0.0;
+		    	for (int j = 0; j < u.length; j++) {
+		    		primalRelObjective += u[j] * objVals[j];
+		    	}
+		    	// no higher order potentials, hence summing up only over unary factors
+		    }
+		    
+		    if (dualObjBest > dualObjective) {
+		    	dualObjBest = dualObjective;
+		    	for (int j = 0; j < u.length; j++) {
+		    		mU[j] = u[j];
+		    	}
+		    	if (dualObjBest < lowerBound) {
+		    		reachedLowerBound = true;
+		    		break;
+		    	}
+		    }
+		    
+		    if (primalRelObjBest < primalRelObjective) {
+		    	primalRelObjBest = primalRelObjective;
+		    }		    
+		    
+			if (pr < RESIDUAL_THRESH && dr < RESIDUAL_THRESH) {
 				System.out.println("Optimization converged: " + pr + " " + dr);
+				for (int j = 0; j < u.length; j++) {
+		    		mU[j] = u[j];
+		    	}
+				optimal = true;
 				break;
 			}
-		}		
-		/** end of optimization procedure **/
-		count = 0;
-		double totalScore = 0.0;
-		for (int i = 0; i < keys.length; i++) {
-			Pair<int[], Double>[] arr = scoreMap.get(keys[i]);
-			double maxVal = -Double.MAX_VALUE;
-			int maxIndex = -1;
-			// System.out.println(keys[i]);
-			double score = 0.0;
-			for (int j = 0; j < arr.length; j++) {
-				// String span = arr[j].getFirst()[0] + "_" + arr[j].getFirst()[1];
-				// System.out.println(span + " " + u[count]);
-				if (u[count] > maxVal) {
-					maxVal = u[count];
-					maxIndex = j;
-					score = objVals[count];
-				}
-				count++;
-			}
-			// System.out.println();
-			if (maxIndex != -1 && maxVal > 0) {
-				totalScore += score;
-				Pair<String, Double> p = 
-					new Pair<String, Double>(arr[maxIndex].getFirst()[0] + "_" + arr[maxIndex].getFirst()[1], score);
-				res.put(keys[i], p);
-			}  			
 		}
-		System.out.println("Solution value: " + totalScore);
-		return res;
+		boolean fractional = false;
+		for (int i = 0; i < u.length; i++) {
+			if (!BitOps.nearlyBinary(u[i], FNModelOptions.TOL)) fractional = true;
+		}
+		if (optimal) {
+		    if (!fractional) {
+		      System.out.println("Solution is integer.");
+		      return STATUS_OPTIMAL_INTEGER;
+		    } else {
+		      System.out.println("Solution is fractional.");
+		      return STATUS_OPTIMAL_FRACTIONAL;
+		    }
+		  } else {
+		    if (reachedLowerBound) {
+		      System.out.println("Reached lower bound: " + lowerBound);
+		      return STATUS_INFEASIBLE;
+		    } else {
+		      System.out.println("Solution is only approximate.");
+		      return STATUS_UNSOLVED;
+		    }
+		  }		
 	}
-
-	public Runnable createTask(final double rho, 
-									  final double[] us, 
-									  final double[][] lambdas, 
-									  final double[][] z,
-									  final Slave[] slave,
-									  final int i,
-									  final int slavelen,
-									  final Integer[] sarray)                                                                                                     
-	{                                                                                                                                                                           
-		return new Runnable() {                                                                                                                                             
-			public void run() {                                                                                                                                           
-				// System.out.println("Task " + s + " : start");
-				int batchSize = (int)(Math.ceil((double) slavelen / (double) mNumThreads));
-				int start = i * batchSize;
-				int end = start + batchSize;
-				if (end > slavelen) {
-					end = slavelen;
-				}
-				for (int s = start; s < end; s++) {
-					zs[sarray[s]] = slave[sarray[s]].makeZUpdate(rho, us, lambdas[sarray[s]], z[sarray[s]]);
-				}
-				// System.out.println("Task " + s + " : end");                                                                                                             
-			}
-		};
-	}
-
 	
 	@Override
 	public void end() {
@@ -568,12 +632,6 @@ public class DDDecoding implements JDecoding {
 				System.exit(-1);
 			}
 		}
-	}
-
-	@Override
-	public void setNumThreads(int nt) {
-		// TODO Auto-generated method stub
-		mNumThreads = nt;
 	}
 
 	@Override
