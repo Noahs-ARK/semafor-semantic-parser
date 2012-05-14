@@ -32,7 +32,7 @@ public class DDDecoding implements JDecoding {
 	public static final int STATUS_OPTIMAL_FRACTIONAL = 2;
 	public static final int STATUS_INFEASIBLE = 3;
 	public static final int STATUS_UNSOLVED = 4;
-	public static final double RESIDUAL_THRESH = 0.000001;
+	public static final double RESIDUAL_THRESH = 0.0000001;
 	public static final int NUM_ITERATIONS_COMPUTE_DUAL = 50;
 	private double mUpperBound = 0;
 	private double mLowerBound = 0;
