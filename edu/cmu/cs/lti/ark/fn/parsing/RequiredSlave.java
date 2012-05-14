@@ -3,6 +3,9 @@ package edu.cmu.cs.lti.ark.fn.parsing;
 import java.util.Arrays;
 import java.util.Collections;
 
+import edu.cmu.cs.lti.ark.fn.utils.BitOps;
+import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
+
 public class RequiredSlave implements Slave {
 
 	public double[] mObjVals;
@@ -81,6 +84,6 @@ public class RequiredSlave implements Slave {
 		if (oldAs == null) {
 			return false;
 		}
-		return Arrays.equals(as, oldAs);
+		return BitOps.nearlyEquals(as, oldAs, FNModelOptions.TOL);
 	}
 }

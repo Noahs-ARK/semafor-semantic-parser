@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
+import edu.cmu.cs.lti.ark.fn.utils.BitOps;
+import edu.cmu.cs.lti.ark.fn.utils.FNModelOptions;
+
 public class UniqueSpanSlave implements Slave {
 	public double[] mObjVals;
 	public int mStart;
@@ -86,7 +89,7 @@ public class UniqueSpanSlave implements Slave {
 		if (oldAs == null) {
 			return false;
 		}
-		return Arrays.equals(as, oldAs);
+		return BitOps.nearlyEquals(as, oldAs, FNModelOptions.TOL);
 	}
 
 }
