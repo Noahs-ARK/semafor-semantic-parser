@@ -299,13 +299,7 @@ public class JointDecodingUsingLPFiles implements JDecoding {
 			}
 		}
 	}
-
-	@Override
-	public void setNumThreads(int nt) {
-		// TODO Auto-generated method stub
-		mNumThreads = nt;
-	}
-
+	
 	@Override
 	public void setFactorFile(String factorFile) {
 		// TODO Auto-generated method stub

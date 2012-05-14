@@ -30,6 +30,25 @@ public class UniqueSpanSlave implements Slave {
 	}
 	
 	@Override
+	public void setObjVals(double[] objVals) {
+		for (int i = mStart; i < mEnd; i++) {
+			mObjVals[i-mStart] = objVals[i];
+		}
+	}
+	
+	@Override
+	public double computeDual(double rho, double[] us, double[] lambdas,
+			double[] zs) {
+		double value = 0.0;
+		for (int i = mStart; i < mEnd; i++) {
+			value += zs[i] * (mObjVals[i-mStart] + lambdas[i]);
+			value -= lambdas[i] * us[i];
+			value -= (zs[i] - us[i]) * (zs[i] - us[i]) * rho / 2.0;
+		}	
+		return value;
+	}
+	
+	@Override
 	// XOR factor
 	public double[] makeZUpdate(double rho, 
 						   double[] us, 
@@ -91,5 +110,4 @@ public class UniqueSpanSlave implements Slave {
 		}
 		return BitOps.nearlyEquals(as, oldAs, FNModelOptions.TOL);
 	}
-
 }
