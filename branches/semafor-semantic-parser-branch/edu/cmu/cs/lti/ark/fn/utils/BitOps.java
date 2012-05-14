@@ -55,6 +55,16 @@ public class BitOps {
 		}
 		return true;
 	}
+	
+	public static boolean nearlyBinary(double a1, double tol) {
+		if (a1*a1 < tol) {
+			return true;
+		} else if ((a1 - 1.0)*(a1 - 1.0) < tol) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 		
 	public static void writeInt(int a, OutputStream ps) {
 		byte byteout[] = { (byte) ((a >> 24) & 0xff),
