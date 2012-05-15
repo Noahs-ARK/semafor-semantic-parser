@@ -616,7 +616,7 @@ public class DDDecoding implements JDecoding {
 			// System.out.println("Eta: " + eta);
 			// making z-update
 			for (int s = 0; s < slavelen; s++) {
-				zs[s] = slaves[s].makeZUpdate(rho, u, lambdas[s], zs[s]);
+				zs[s] = slaves[s].makeZUpdate(objVals, rho, u, lambdas[s], zs[s]);
 			}
 			// making u update
 			double[] oldus = Arrays.copyOf(u, u.length);
@@ -696,7 +696,7 @@ public class DDDecoding implements JDecoding {
 		    if (computeDual) {
 		    	dualObjective = 0.0;
 		    	for (int j = 0; j < slaves.length; ++j) {
-		    		dualObjective += slaves[j].computeDual(rho, u, lambdas[j], zs[j]);
+		    		dualObjective += slaves[j].computeDual(objVals, rho, u, lambdas[j], zs[j]);
 		      }
 		    }			
 			

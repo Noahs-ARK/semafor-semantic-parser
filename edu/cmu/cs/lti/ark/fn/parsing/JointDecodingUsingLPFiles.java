@@ -258,33 +258,6 @@ public class JointDecodingUsingLPFiles implements JDecoding {
 		System.out.println("Solution value: " + totalScore);
 		return res;
 	}
-
-	public Runnable createTask(final double rho, 
-									  final double[] us, 
-									  final double[][] lambdas, 
-									  final double[][] z,
-									  final Slave[] slave,
-									  final int i,
-									  final int slavelen,
-									  final Integer[] sarray)                                                                                                     
-	{                                                                                                                                                                           
-		return new Runnable() {                                                                                                                                             
-			public void run() {                                                                                                                                           
-				// System.out.println("Task " + s + " : start");
-				int batchSize = (int)(Math.ceil((double) slavelen / (double) mNumThreads));
-				int start = i * batchSize;
-				int end = start + batchSize;
-				if (end > slavelen) {
-					end = slavelen;
-				}
-				for (int s = start; s < end; s++) {
-					zs[sarray[s]] = slave[sarray[s]].makeZUpdate(rho, us, lambdas[sarray[s]], z[sarray[s]]);
-				}
-				// System.out.println("Task " + s + " : end");                                                                                                             
-			}
-		};
-	}
-
 	
 	@Override
 	public void end() {
