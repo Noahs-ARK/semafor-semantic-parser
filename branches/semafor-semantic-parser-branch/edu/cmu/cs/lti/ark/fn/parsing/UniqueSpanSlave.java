@@ -37,8 +37,9 @@ public class UniqueSpanSlave implements Slave {
 	}
 	
 	@Override
-	public double computeDual(double rho, double[] us, double[] lambdas,
+	public double computeDual(double[] objVals, double rho, double[] us, double[] lambdas,
 			double[] zs) {
+		setObjVals(objVals);
 		double value = 0.0;
 		for (int i = mStart; i < mEnd; i++) {
 			value += zs[i] * (mObjVals[i-mStart] + lambdas[i]);
@@ -50,10 +51,11 @@ public class UniqueSpanSlave implements Slave {
 	
 	@Override
 	// XOR factor
-	public double[] makeZUpdate(double rho, 
+	public double[] makeZUpdate(double[] objVals, double rho, 
 						   double[] us, 
 						   double[] lambdas,
 						   double[] zs) {
+		setObjVals(objVals);
 		double[] as = new double[mEnd - mStart];
 		for (int i = mStart; i < mEnd; i++) {
 			double a = us[i] + (1.0 / rho) * (mObjVals[i-mStart] + lambdas[i]);

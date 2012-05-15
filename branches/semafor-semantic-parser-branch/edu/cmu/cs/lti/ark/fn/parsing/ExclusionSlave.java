@@ -27,8 +27,9 @@ public class ExclusionSlave implements Slave {
 		mObjVals = objVals;
 	}
 	
-	public double computeDual(double rho, double[] us, double[] lambdas,
+	public double computeDual(double[] objVals, double rho, double[] us, double[] lambdas,
 			double[] zs) {
+		setObjVals(objVals);
 		double value = 0.0;
 		for (int i = 0; i < mIndices.length; i++) {
 			value += zs[mIndices[i]] * (mObjVals[mIndices[i]] + lambdas[mIndices[i]]);
@@ -39,8 +40,9 @@ public class ExclusionSlave implements Slave {
 	}
 	
 	// OR factor
-	public double[] makeZUpdate(double rho, double[] us, double[] lambdas,
+	public double[] makeZUpdate(double[] objVals, double rho, double[] us, double[] lambdas,
 			double[] zs) {
+		setObjVals(objVals);
 		double[] as = new double[mIndices.length];
 		for (int i = 0; i < as.length; i++) {
 			double a = us[mIndices[i]] + 
