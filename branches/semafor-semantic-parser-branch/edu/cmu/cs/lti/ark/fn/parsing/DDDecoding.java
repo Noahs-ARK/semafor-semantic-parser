@@ -418,19 +418,19 @@ public class DDDecoding implements JDecoding {
 		lowerBound0[0] = -Double.MAX_VALUE;
 		double[] upperBound0 = new double[1];
 		double[] value0 = new double[1];
-//		runAD3(len, slavelen, u, slaves, totalDelta, 
-//			   slaveparts, partslaves, deltaarray, TOTAL_AD3_ITERATIONS,
-//			   objVals,
-//			   lowerBound0,
-//			   value0,
-//			   upperBound0);
-		
-		runAD3ILP(len, slavelen, u, slaves, totalDelta, 
+		runAD3(len, slavelen, u, slaves, totalDelta, 
 			   slaveparts, partslaves, deltaarray, TOTAL_AD3_ITERATIONS,
 			   objVals,
-			   upperBound0,
+			   lowerBound0,
 			   value0,
-			   lowerBound0[0]);
+			   upperBound0);
+		
+//		runAD3ILP(len, slavelen, u, slaves, totalDelta, 
+//			   slaveparts, partslaves, deltaarray, TOTAL_AD3_ITERATIONS,
+//			   objVals,
+//			   upperBound0,
+//			   value0,
+//			   lowerBound0[0]);
 		
 		
 		count = 0;
