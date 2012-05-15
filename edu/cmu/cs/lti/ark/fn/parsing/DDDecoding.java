@@ -414,11 +414,16 @@ public class DDDecoding implements JDecoding {
 		double[] u = new double[len];
 		Arrays.fill(u, 0.5);
 				
-		double lowerBound = -Double.MAX_VALUE;
+		double[] lowerBound0 = new double[1];
+		lowerBound0[0] = -Double.MAX_VALUE;
+		double[] upperBound0 = new double[1];
+		double[] value0 = new double[1];
 		runAD3(len, slavelen, u, slaves, totalDelta, 
 			   slaveparts, partslaves, deltaarray, TOTAL_AD3_ITERATIONS,
 			   objVals,
-			   lowerBound);
+			   lowerBound0,
+			   value0,
+			   upperBound0);
 		
 		count = 0;
 		double totalScore = 0.0;
@@ -450,13 +455,137 @@ public class DDDecoding implements JDecoding {
 		return res;
 	}
 	
+	public int runAD3ILP(int len, int slavelen, double[] mU,
+			  Slave[] slaves, double totalDelta,
+			  int[][] slaveparts, int[][] partslaves,
+			  int[] deltaarray,
+			  int niters,
+			  double[] objVals,
+			  double[] upperBound0,
+			  double[] value0,
+			  double lowerBound) {
+		double[] bestLowerBound0 = new double[1];
+		bestLowerBound0[0] = lowerBound;
+		boolean[] branchedVariables = new boolean[mU.length];
+		Arrays.fill(branchedVariables, false);
+		int status = runBranchAndBound(len, slavelen, mU, slaves, totalDelta, slaveparts,
+				                       partslaves, deltaarray, niters, objVals,
+				                       upperBound0, value0, bestLowerBound0, branchedVariables,
+				                       0.0);
+		System.out.println("Solution value of AD3 ILP: " + value0[0]);
+		return status;
+	}
+	
+	public int runBranchAndBound(int len, int slavelen, double[] mU,
+			  					 Slave[] slaves, double totalDelta,
+			                     int[][] slaveparts, int[][] partslaves,
+			                     int[] deltaarray,
+			                     int niters,
+			                     double[] objVals,
+			                     double[] bestUpperBound0,
+			                     double[] value0,
+			                     double[] bestLowerBound0,
+			                     boolean[] branchedVariables,
+			                     double cumulativeValue) {
+		bestLowerBound0[0] += cumulativeValue;
+		// solve the LP relaxation
+		int status = runAD3(len, slavelen, mU, slaves, totalDelta, slaveparts, partslaves,
+							deltaarray, niters, objVals, bestLowerBound0, value0,
+							bestUpperBound0);
+		value0[0] -= cumulativeValue;
+		bestUpperBound0[0] -= cumulativeValue;
+		if (status == STATUS_OPTIMAL_INTEGER) {
+			if (value0[0] > bestLowerBound0[0]) {
+				bestLowerBound0[0] = value0[0];
+			}
+			return status;
+		} else if (status == STATUS_INFEASIBLE) {
+			value0[0] = -Double.MAX_VALUE;
+			bestUpperBound0[0] = -Double.MAX_VALUE;
+			return status;
+		}
+		
+		// look for the most fractional component
+		int variableToBranch = -1;
+		double mostFractionalValue = 1.0;
+		for (int i = 0; i < mU.length; i++) {
+			if (branchedVariables[i]) continue;
+			double diff = mU[i] - 0.5;
+			diff *= diff;
+			if (variableToBranch < 0 || diff < mostFractionalValue) {
+				variableToBranch = i;
+				mostFractionalValue = diff;
+			}
+		}
+		if (variableToBranch < 0) {
+			System.out.println("Branched all variables.");
+			return STATUS_UNSOLVED;
+		}
+		branchedVariables[variableToBranch] = true;
+		System.out.println("Branching on variable " + variableToBranch);
+		System.out.println("Value: " + mU[variableToBranch]);
+		
+		double infinitePotential = 1000.0;
+		double originalPotential = objVals[variableToBranch];
+		objVals[variableToBranch] -= infinitePotential;
+		
+		
+		double[] value00 = new double[1];
+		double[] posteriors0 = new double[mU.length];
+		// zero branch
+		int status0 = runBranchAndBound(len, slavelen, posteriors0, slaves, totalDelta, slaveparts,
+				          partslaves, deltaarray, niters, objVals,
+				          bestUpperBound0, value00, bestLowerBound0, branchedVariables,
+				          cumulativeValue);
+		objVals[variableToBranch] = originalPotential;
+		if (status0 != STATUS_OPTIMAL_INTEGER && status0 != STATUS_INFEASIBLE) {
+			return STATUS_UNSOLVED;
+		}
+		
+		// one branch
+		double[] posteriors1 = new double[mU.length];
+		double[] value01 = new double[1];
+		objVals[variableToBranch] += infinitePotential;
+		int status1 = runBranchAndBound(len, slavelen, posteriors1, slaves, totalDelta, slaveparts,
+									partslaves, deltaarray, niters, objVals,
+									bestUpperBound0, value01, bestLowerBound0, branchedVariables,
+									cumulativeValue + infinitePotential);
+		objVals[variableToBranch] = originalPotential;
+		if (status1 != STATUS_OPTIMAL_INTEGER && status1 != STATUS_INFEASIBLE) {
+			return STATUS_UNSOLVED;
+		}
+		
+		
+		if (status0 == STATUS_INFEASIBLE && status1 == STATUS_INFEASIBLE) {
+			value0[0] = -Double.MAX_VALUE;
+			return STATUS_INFEASIBLE;
+		}
+		
+		if (value00[0] >= value01[0]) {
+			value0[0] = value00[0];
+			for (int i = 0; i < mU.length; i++) {
+				mU[i] = posteriors0[i];
+			}
+		} else {
+			value0[0] = value01[0];
+			for (int i = 0; i < mU.length; i++) {
+				mU[i] = posteriors1[i];
+			}
+		}
+		
+		return STATUS_OPTIMAL_INTEGER;
+	}
+	
+	
 	public int runAD3(int len, int slavelen, double[] mU,
 						  Slave[] slaves, double totalDelta,
 						  int[][] slaveparts, int[][] partslaves,
 						  int[] deltaarray,
 						  int niters,
 						  double[] objVals,
-						  double lowerBound) {
+						  double[] lowerBound0,
+						  double[] value0,
+						  double[] upperBound0) {
 		boolean optimal = false;
 		boolean reachedLowerBound = false;
 		double dualObjBest = Double.MAX_VALUE;
@@ -578,7 +707,7 @@ public class DDDecoding implements JDecoding {
 		    	for (int j = 0; j < u.length; j++) {
 		    		mU[j] = u[j];
 		    	}
-		    	if (dualObjBest < lowerBound) {
+		    	if (dualObjBest < lowerBound0[0]) {
 		    		reachedLowerBound = true;
 		    		break;
 		    	}
@@ -598,9 +727,13 @@ public class DDDecoding implements JDecoding {
 			}
 		}
 		boolean fractional = false;
+		value0[0] = 0.0;
 		for (int i = 0; i < u.length; i++) {
 			if (!BitOps.nearlyBinary(u[i], FNModelOptions.TOL)) fractional = true;
+			value0[0] += u[i] * objVals[i]; 
 		}
+		upperBound0[0] = dualObjBest;
+		
 		if (optimal) {
 		    if (!fractional) {
 		      System.out.println("Solution is integer.");
@@ -611,7 +744,7 @@ public class DDDecoding implements JDecoding {
 		    }
 		  } else {
 		    if (reachedLowerBound) {
-		      System.out.println("Reached lower bound: " + lowerBound);
+		      System.out.println("Reached lower bound: " + lowerBound0[0]);
 		      return STATUS_INFEASIBLE;
 		    } else {
 		      System.out.println("Solution is only approximate.");
