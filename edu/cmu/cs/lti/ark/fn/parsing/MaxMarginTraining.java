@@ -77,7 +77,7 @@ public class MaxMarginTraining
 		mFrameLines = ParsePreparation.readSentencesFromFile(frFile);
 		numDataPoints = mFrameList.size();
 		mNumThreads = 1;
-		mJd = new JointDecoding(mDecodingType);
+		mJd = new JointDecoding(mDecodingType, true);
 	}
 
 	public void init(String modelFile, 
@@ -93,7 +93,7 @@ public class MaxMarginTraining
 		mFrameLines = ParsePreparation.readSentencesFromFile(frFile);
 		numDataPoints = mFrameList.size();
 		mNumThreads = numThreads;
-		mJd = new JointDecoding(mDecodingType);
+		mJd = new JointDecoding(mDecodingType, true);
 	}
 	
 	private void initModel()

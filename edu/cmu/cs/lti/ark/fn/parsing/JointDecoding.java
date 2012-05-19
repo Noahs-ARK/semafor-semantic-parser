@@ -29,11 +29,11 @@ public class JointDecoding extends Decoding {
 	private int mNumThreads = 1;
 	protected String mFactorFile;
 
-	public JointDecoding(String jointType) {
+	public JointDecoding(String jointType, boolean exact) {
 		if (jointType.equals(ILP_DECODING)) {
 			jd = new ILPDecoding();
 		} else if (jointType.equals(DD_DECODING)) {
-			jd = new DDDecoding();
+			jd = new DDDecoding(exact);
 		} else {
 			jd = new JointDecodingUsingLPFiles();
 			String[] toks = jointType.split("_");

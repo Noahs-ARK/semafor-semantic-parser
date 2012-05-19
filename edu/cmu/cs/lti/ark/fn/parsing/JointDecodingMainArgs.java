@@ -44,11 +44,12 @@ public class JointDecodingMainArgs
 		int numThreads = new Integer(args[10]);
 		String secondModelFile = args[11];
 		String factorsFile = args[13];
+		boolean exact = args[14].equals("exact");
 		double secondModelWeight = 0.0;
 		if (secondModelFile != null && !secondModelFile.equals("null") ) {
 			secondModelWeight = new Double(args[12]);
 		}
-		JointDecoding bpd = new JointDecoding(decodingType);
+		JointDecoding bpd = new JointDecoding(decodingType, exact);
 		LocalFeatureReading lfr = new LocalFeatureReading(eventsFile, spanFile, frFile);
 		try
 		{
