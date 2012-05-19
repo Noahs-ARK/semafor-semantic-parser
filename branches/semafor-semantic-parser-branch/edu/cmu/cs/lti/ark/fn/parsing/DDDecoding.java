@@ -34,10 +34,10 @@ public class DDDecoding implements JDecoding {
 	public static final int STATUS_UNSOLVED = 4;
 	public static final double RESIDUAL_THRESH = 0.0000001;
 	public static final int NUM_ITERATIONS_COMPUTE_DUAL = 50;
-	private double mUpperBound = 0;
-	private double mLowerBound = 0;
+	public static boolean mExact = false;
 	
-	public DDDecoding() {
+	public DDDecoding(boolean exact) {
+		mExact = exact;
 	}
 	
 	public void setMaps(Map<String, Set<Pair<String, String>>> excludesMap, 
@@ -418,21 +418,23 @@ public class DDDecoding implements JDecoding {
 		lowerBound0[0] = -Double.MAX_VALUE;
 		double[] upperBound0 = new double[1];
 		double[] value0 = new double[1];
-//		runAD3(len, slavelen, u, slaves, totalDelta, 
-//			   slaveparts, partslaves, deltaarray, TOTAL_AD3_ITERATIONS,
-//			   objVals,
-//			   thetas,
-//			   lowerBound0,
-//			   value0,
-//			   upperBound0);
 		
-		runAD3ILP(len, slavelen, u, slaves, totalDelta, 
+		if (!mExact) {
+			runAD3(len, slavelen, u, slaves, totalDelta, 
 			   slaveparts, partslaves, deltaarray, TOTAL_AD3_ITERATIONS,
-			   objVals, thetas,
-			   upperBound0,
+			   objVals,
+			   thetas,
+			   lowerBound0,
 			   value0,
-			   lowerBound0[0]);
-		
+			   upperBound0);
+		} else {			
+			runAD3ILP(len, slavelen, u, slaves, totalDelta, 
+				   slaveparts, partslaves, deltaarray, TOTAL_AD3_ITERATIONS,
+				   objVals, thetas,
+				   upperBound0,
+				   value0,
+				   lowerBound0[0]);
+		}	
 		
 		count = 0;
 		double totalScore = 0.0;

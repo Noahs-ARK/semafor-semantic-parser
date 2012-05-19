@@ -120,7 +120,7 @@ public class JointFNIDAndParsing {
 										options.frameNetElementsMapFile.get(),
 										options.eventsFile.get(),
 										options.spansFile.get());
-		JointDecoding decoding = new JointDecoding("ilp");
+		JointDecoding decoding = new JointDecoding("ilp", true);
 		decoding.init(options.modelFile.get(), 
 					  options.alphabetFile.get());
 		decoding.setMaps(options.requiresMap.get(), options.excludesMap.get());		
