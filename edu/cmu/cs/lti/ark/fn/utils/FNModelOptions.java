@@ -139,4 +139,7 @@ public final class FNModelOptions extends CommandLineOptions
 	public StringOption goldSegFile = new StringOption("goldsegfile");
 	public StringOption posTaggedFile = new StringOption("posfile");
 	public StringOption outAllLemmaTagsFile = new StringOption("alllemmatagsfile");
+	public StringOption requiresMapFile = new StringOption("requiresmap");
+	public StringOption excludesMapFile = new StringOption("excludesmap");
+	public StringOption decodingType = new StringOption("decoding");
 }

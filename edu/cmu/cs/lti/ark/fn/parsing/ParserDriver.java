@@ -79,6 +79,7 @@ public class ParserDriver {
 	 *  useGraph
 	 *  frameelementsoutputfile
 	 *  alllemmatagsfile
+	 *  decodingtype
 	 */
 	
 	public static void main(String[] args) {
@@ -171,16 +172,27 @@ public class ParserDriver {
 			System.out.println("Read graph successfully from: " + options.useGraph.get());
 		}
 		// initializing argument identification
+		// reading requires and excludes map
+		String requiresMapFile = options.requiresMapFile.get();
+		String excludesMapFile = options.excludesMapFile.get();
 		System.out.println("Initializing alphabet for argument identification..");
 		CreateAlphabet.setDataFileNames(options.alphabetFile.get(), 
 										options.frameNetElementsMapFile.get(),
 										options.eventsFile.get(),
-										options.spansFile.get());		
-		Decoding decoding = new Decoding();
-		decoding.init(options.modelFile.get(), 
-					  options.alphabetFile.get());
-		
-		
+										options.spansFile.get());
+		String decodingType = options.decodingType.get();
+		Decoding decoding = null;
+		if (decodingType.equals("beam")) {
+			decoding = new Decoding();
+			decoding.init(options.modelFile.get(), 
+						  options.alphabetFile.get());
+		} else {
+			decoding = new JointDecoding(true); // exact decoding
+			decoding.init(options.modelFile.get(),
+						  options.alphabetFile.get());
+			((JointDecoding)decoding).setMaps(requiresMapFile, excludesMapFile);
+		}
+			
 		String goldSegFile = options.goldSegFile.get();
 		BufferedReader goldSegReader = null;
 		// 0 == gold, 1 == strict, 2 == relaxed
@@ -367,7 +379,11 @@ public class ParserDriver {
 		} catch (IOException e) {
 			System.err.println("Could not read line from pos file. Exiting.");
 			System.exit(-1);
-		}		
+		}
+		// wrapping up joint decoding
+		if (!decodingType.equals("beam")) {
+			((JointDecoding)decoding).wrapUp();
+		}
 	}
 
 	private static ArrayList<String> getAllLemmaTagsSentences(
