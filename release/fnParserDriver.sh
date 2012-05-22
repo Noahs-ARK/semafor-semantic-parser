@@ -19,8 +19,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-source config
+source "$(dirname `readlink -f ${0}`)/config"
 
 if [ $# -lt 1 -o $# -gt 2 ]; then
    echo "USAGE: `basename "${0}"` <input-file> [<output-file>]"
@@ -131,7 +130,7 @@ fi
 
 if [ "${USE_GRAPH_FILE}" == "yes" ]
 then
-    GRAPH_FILE=${MODEL_DIR}/graph.gz
+    GRAPH_FILE=${MODEL_DIR}/sparsegraph.gz
 else
     GRAPH_FILE=null
 fi
@@ -165,7 +164,10 @@ ${JAVA_HOME_BIN}/java \
     model:${MODEL_DIR}/argmodel.dat \
     useGraph:${GRAPH_FILE} \
     frameelementsoutputfile:${INPUT_FILE}.fes \
-    alllemmatagsfile:${ALL_LEMMA_TAGS_FILE}
+    alllemmatagsfile:${ALL_LEMMA_TAGS_FILE} \
+    requiresmap:${MODEL_DIR}/requires.map \
+    excludesmap:${MODEL_DIR}/excludes.map \
+    decoding:${DECODING_TYPE}
 
 end=`wc -l ${INPUT_FILE}.tokenized`
 end=`expr ${end% *}`
