@@ -31,6 +31,8 @@ import edu.cmu.cs.lti.ark.util.CommandLineOptions;
  */
 public final class FNModelOptions extends CommandLineOptions
 {
+	public static final double TOL = 0.00000001;
+	
 	public FNModelOptions(String[] args) {
 		this(args,false);
 	}

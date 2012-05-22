@@ -1,0 +1,9 @@
+package edu.cmu.cs.lti.ark.fn.parsing;
+
+public interface Slave {
+	public double[] makeZUpdate(double[] objVals, double rho, double[] us, double[] lambdas, double[] zs);
+	public void cache(double[] as, double[] zs);
+	public boolean checkEquals(double[] as);
+	public void setObjVals(double[] objVals);
+	public double computeDual(double[] objVals, double rho, double[] us, double[] lambdas, double[] zs);
+}
