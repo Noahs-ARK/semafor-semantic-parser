@@ -10,7 +10,7 @@ TEMP_DIR=${SEMAFOR_HOME}/release/temp
 
 # This indicates whether MST parser should run in the server mode or not
 # Modes are "server" and "noserver"
-MST_MODE=server
+MST_MODE=noserver
 
 # Location of the MST parser root directory: Please change the 
 # following path to the place where you decompressed stackedParserServer
@@ -51,8 +51,15 @@ GOLD_TARGET_FILE=null
 AUTO_TARGET_ID_MODE=strict
 
 # If you want to use the smoothed graph for frame identification (see 
-# Das and Smith's ACL 2011 paper), use "yes", else use "no"
+# Das and Smith's ACL 2011 & NAACL 2012 papers), use "yes", else use "no"
 USE_GRAPH_FILE=yes
+
+# If you want to use beam decoding for argument identification, which 
+# only prevents argument overlap, use "beam", else if you want exact
+# decoding in the form AD^3 (see Das et al. *SEM 2012 paper) that respects
+# multiple constraints, use "ad3". Note that results may not match *SEM 2012
+# because of different Java implementation (paper used C++).
+DECODING_TYPE=ad3
 
 ######################## END ENVIRONMENT VARIABLES #########################
 
@@ -68,3 +75,4 @@ echo "MODEL_DIR=${MODEL_DIR}"
 echo "GOLD_TARGET_FILE=${GOLD_TARGET_FILE}"
 echo "AUTO_TARGET_ID_MODE=${AUTO_TARGET_ID_MODE}"
 echo "USE_GRAPH_FILE=${USE_GRAPH_FILE}"
+echo "DECODING_TYPE=${DECODING_TYPE}"
