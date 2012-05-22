@@ -1,6 +1,6 @@
     SEMAFOR (a frame-semantic parser for English)
-    Copyright (C) 2011
-    Dipanjan Das, Nathan Schneider, Desai Chen, & Noah A. Smith
+    Copyright (C) 2012
+    Dipanjan Das, Andre Martins, Nathan Schneider, Desai Chen, & Noah A. Smith
     Language Technologies Institute, Carnegie Mellon University
     http://www.ark.cs.cmu.edu/SEMAFOR
 
@@ -19,7 +19,7 @@
 
 
 
-This is a README for SEMAFOR v2.0
+This is a README for SEMAFOR v2.1
 =================================
 
 SEMAFOR: Semantic Analysis of Frame Representations is a tool for automatic analysis of the frame-semantic structure of English text.
@@ -38,7 +38,8 @@ This tool attempts to find which words in text evoke which semantic frames, and 
      A log-linear model, trained on FrameNet 1.5 data with full-text frame annotations, produces for each target a probability distribution over frames in the FrameNet lexicon (optionally constrained by a semi-supervised filter). The target is then labeled with the highest-scoring frame.
 
   3. Argument identification
-     A second log-linear model, trained on the same data, considers every role of each labeled frame instance and identifies a span of words in the sentence--or NULL--as filling that role. A subsequent step ensures that none of a frame's overt arguments overlap.
+     A second log-linear model, trained on the same data, considers every role of each labeled frame instance and identifies a span of words in the sentence--or NULL--as filling that role. A subsequent step ensures that none of a frame's overt arguments overlap using beam search; an alternate strategy
+using AD^3 (or Alternating Directions Dual Decomposition) uses two other constraints used in FrameNet for argument identification.
 
   4. Output
      An XML file is produced containing the text of the input sentences, augmented with the frame-semantic information (target-frame and argument-role pairings) predicted by the system. See the papers listed below ("Further Reading") for algorithmic details and experimental evaluation of the components of this system.
@@ -92,7 +93,7 @@ README
     This file.
 
 
-2.1. Included Libraries
+2. Included Libraries
 =======================
 The lib/ directory contains the following library:
 
@@ -104,12 +105,12 @@ semafor-deps.jar: It contains all the required libraries that SEMAFOR needs to r
 
 ==Downloads==
 
-SEMAFOR v2.0 can be downloaded from http://semafor-semantic-parser.googlecode.com/files/SEMAFOR-2.0.tgz
+SEMAFOR v2.1 can be downloaded from http://semafor-semantic-parser.googlecode.com/files/SEMAFOR-2.1.tgz
 
 In preprocessing, SEMAFOR uses the MST Parser, a syntactic dependency parser created by Ryan McDonald. Download and unpack the following packaged version: http://semafor-semantic-parser.googlecode.com/files/stackedParserServer.tgz
 The original MST parser has been modified to add an option of running it in server mode, for ease of use.
 
-Download the model files both for the MST parser and SEMAFOR from here: http://www.ark.cs.cmu.edu/SEMAFOR/SEMAFOR-2.0-models.tgz (~400MB)
+Download the model files both for the MST parser and SEMAFOR from here: http://www.ark.cs.cmu.edu/SEMAFOR/SEMAFOR-2.1-models.tgz (~400MB)
 The model file for the MST parser was trained on sections 02-21 of the WSJ section of the Penn Treebank, and the model files 
 for SEMAFOR were trained on the FrameNet 1.5 datasets.
 
@@ -117,7 +118,7 @@ for SEMAFOR were trained on the FrameNet 1.5 datasets.
 ==Environment Variables==
 The file named "config" under release/ lists a set of variables which should be modified within the file before running SEMAFOR:
 
-SEMAFOR_HOME : absolute path where semaforV2.0.tgz has been decompressed.
+SEMAFOR_HOME : absolute path where semaforV2.1.tgz has been decompressed.
 
 TEMP_DIR : absolute path to a temporary directory for SEMAFOR to use.
 
@@ -134,14 +135,19 @@ MST_PORT : the port at which the MST parser is running on ${MST_MACHINE}.
 JAVA_HOME_BIN : the absolute path to the bin directory under which the executables javac and java can be found. If the environment variable ${JAVA_HOME} is set, 
 ${JAVA_HOME_BIN} should be ${JAVA_HOME}/bin.
 
-MODEL_DIR : the absolute path where the tarball SEMAFOR-2.0-models.tgz has been decompressed.
+MODEL_DIR : the absolute path where the tarball SEMAFOR-2.1-models.tgz has been decompressed.
 
 GOLD_TARGET_FILE : the current version of SEMAFOR has a setting where input targets can be provided to it -- this is beneficial for users who are interested 
 in a specific set of targets instead of all targets that SEMAFOR identifies using inbuilt heuristics (the target identification stage of the pipeline). To do this, this variable should be set to the absolute path of a file that contains space separated target spans for each sentence, per line. Take a look a ${SEMAFOR_HOME}/samples/sample_gold_targets.txt which corresponds to the input targets for sentences in ${SEMAFOR_HOME}/samples/sample_tokenized.txt. For best results, if an input target file is used, the user should provide tokenized sentences to SEMAFOR, because in this mode, SEMAFOR does not run inbuilt tokenization. If there is no input target file, this variable should be set to null.
 
 AUTO_TARGET_ID_MODE : SEMAFOR has two automatic target identification models: "strict" and "relaxed". The "strict" mode uses morphological variants of all the targets seen in the FrameNet 1.5 lexicon and its training data. The "relaxed" mode labels all content words other than proper nouns as frame-evoking targets. Default is the "strict" mode.
 
-USE_GRAPH_FILE : this should be set to "yes" or "no" depending on whether the user wants to used semi-supervised constraints for frame identification (see Das and Smith, 2011). This flag does not matter much when strict target identification is used. However, if the user uses an input target file and there are several targets which SEMAFOR did not see during supervised training, then setting the value of this environment variable will yield better results.
+USE_GRAPH_FILE : this should be set to "yes" or "no" depending on whether the user wants to used semi-supervised constraints for frame identification (see Das and Smith, 2011, 2012). This flag does not matter much when strict target identification is used. However, if the user uses an input target file and there are several targets which SEMAFOR did not see during supervised training, then setting the value of this environment variable will yield better results. 
+The current release uses the better graph-based semi-supervised learning technique presented by Das and Smith (2012) for the filter.
+
+DECODING_TYPE : this should be "beam" or "ad3" depending on whether the user wants fast inexact beam search that prevents argument overlap
+or AD^3, which is an exact dual decomposition algorithm that respects the overlap constraints, as well as two other linguistic constraints.
+For more details, see Das et al. (*SEM 2012).
 
 
 ==Compilation==
@@ -182,25 +188,44 @@ view raw text versions of SEMAFOR output is possible.
 
 5. Further Reading
 ==================
-If this parser is used, please cite the following papers:
+If this parser is used, please cite the following papers, depending on the components used:
 
-1. Semi-Supervised Frame-Semantic Parsing for Unknown Predicates
+1. An Exact Dual Decomposition Algorithm for Shallow Semantic Parsing with Constraints
+      Dipanjan Das, André F. T. Martins, and Noah A. Smith
+      Proceedings of *SEM 2012
+(Please cite the above paper if you use AD^3 within SEMAFOR.)
+
+
+2. Graph-Based Lexicon Expansion with Sparsity-Inducing Penalties
+      Dipanjan Das and Noah A. Smith
+      Proceedings of NAACL 2012
+
+
+3. Semi-Supervised Frame-Semantic Parsing for Unknown Predicates
 	Dipanjan Das and Noah A. Smith
 	Proceedings of ACL 2011
+(Please cite the above two papers if you use the graph-based filters within SEMAFOR.)
 
-2. Probabilistic Frame-Semantic Parsing
+
+4. Probabilistic Frame-Semantic Parsing
 	Dipanjan Das, Nathan Schneider, Desai Chen, and Noah A. Smith
 	Proceedings of NAACL-HLT 2010
+(The first paper describing SEMAFOR.)
+
 
 For further information, please read:
-3. SEMAFOR 1.0: A Probabilistic Frame-Semantic Parser
+5. SEMAFOR 1.0: A Probabilistic Frame-Semantic Parser
 	Dipanjan Das, Nathan Schneider, Desai Chen, and Noah A. Smith
 	CMU Technical Report, CMU-LTI-10-001
 
+6. Semi-Supervised and Latent Variable Models of Natural Language Semantics
+        Dipanjan Das
+        Ph.D. Thesis, Carnegie Mellon University, May 2012
+
 Details of the training and test sections of the FrameNet 1.5 datasets can be 
-found in paper 1. The supplementary 
+found in paper 3. The supplementary 
 material document for this paper lists the names of the test documents, 
-and can be found here: http://www.cs.cmu.edu/~dipanjan/Papers_files/acl-hlt2011-suppl-semafor.pdf
+and can be found here: http://www.dipanjandas.com/files/acl-hlt2011-suppl-semafor.pdf
 
 
 6. Contact
@@ -235,3 +260,14 @@ If you find any bugs or have questions, please email Dipanjan Das (dipanjan@cs.c
     6) Previous releases could not handle large set of sentences; that has been fixed.
     7) Added source to googlecode.com for open source development.
     8) Semi-supervised graph-based constraints have been added for frame identification.
+
+2.1 Fourth public release (2012-05-22)
+    New features:
+    1) Beam width for beam search was reduced after noticing that it makes no difference empirically
+       in FrameNet datasets. This made argument identification much faster. Current beam width=100.
+    2) Added a new graph filter based on the NAACL 2012 paper by Das and Smith. This makes frame
+       identification more accurate than before.
+    3) Finally, added AD^3, a dual decomposition algorithm for argument identitification. See Das et al.
+       (*SEM 2012) for more details. Note that the results using the released code will not match
+       the results reported in the *SEM paper, because of a new Java implementation different
+       from the implementation used for the paper.
