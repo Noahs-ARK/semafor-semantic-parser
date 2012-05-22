@@ -22,6 +22,7 @@
 package edu.cmu.cs.lti.ark.fn.parsing;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import edu.cmu.cs.lti.ark.fn.data.prep.ParsePreparation;
 
@@ -55,6 +56,6 @@ public class DecodingMainArgs
 				list,
 				ParsePreparation.readSentencesFromFile(frFile)
 				);
-		bpd.decodeAll(overlap, 0);		
+		bpd.decodeAll(overlap, 0);
 	}		
 }

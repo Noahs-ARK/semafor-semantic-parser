@@ -37,14 +37,14 @@ import edu.cmu.cs.lti.ark.fn.optimization.*;
 
 public class Decoding
 {
-	private int numLocalFeatures;
-	private double[] localW;
+	protected int numLocalFeatures;
+	protected double[] localW;
 	private String mLocalAlphabetFile;
 	private String mLocalModelFile;
 	public static long count=0;
-	private ArrayList<FrameFeatures> mFrameList;
-	private String mPredictionFile;	
-	private ArrayList<String> mFrameLines; 
+	protected ArrayList<FrameFeatures> mFrameList;
+	protected String mPredictionFile;	
+	protected ArrayList<String> mFrameLines; 
 	
 	public Decoding()
 	{
@@ -92,7 +92,8 @@ public class Decoding
 		}
 	}
 	
-	public ArrayList<String> decodeAll(String overlapCheck, int offset)
+	public ArrayList<String> decodeAll(String overlapCheck, 
+									   int offset)
 	{
 		int size = mFrameList.size();
 		ArrayList<String> result = new ArrayList<String>();
@@ -119,14 +120,14 @@ public class Decoding
 		return dec;
 	}
 	
-	public double getWeightSum(int[] feats)
+	public double getWeightSum(int[] feats, double[] w)
 	{
-		double weightSum = localW[0];
+		double weightSum = w[0];
 		for (int k = 0; k < feats.length; k++)
 		{
 			if(feats[k]!=0)
 			{
-				weightSum+=localW[feats[k]];
+				weightSum+=w[feats[k]];
 			}
 		}
 		return weightSum;
@@ -155,7 +156,7 @@ public class Decoding
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				double weightSum=getWeightSum(feats);
+				double weightSum=getWeightSum(feats, localW);
 				double expVal = Math.exp(weightSum);
 				if(expVal>maxSum)
 				{
@@ -405,7 +406,7 @@ public class Decoding
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				weiFeatSum[j]=getWeightSum(feats);
+				weiFeatSum[j]=getWeightSum(feats, localW);
 				if(weiFeatSum[j]>maxSum)
 				{
 					maxSum = weiFeatSum[j];
@@ -450,7 +451,7 @@ public class Decoding
 			for(int j = 0; j < featArrLen; j ++)
 			{
 				int[] feats = featureArray[j].features;
-				weiFeatSum[j]=getWeightSum(feats);
+				weiFeatSum[j]=getWeightSum(feats, localW);
 				double expVal = Math.exp(weiFeatSum[j]);
 				LDouble lVal = LDouble.convertToLogDomain(expVal);
 				String span = featureArray[j].span[0]+"_"+featureArray[j].span[1];
@@ -458,10 +459,9 @@ public class Decoding
 			}
 			vs.put(frameElements.get(i), valMap);
 		}				
-		THashMap<String,String> nonOMap = getCubePruningDecoding(oMap, mFF.fElements, vs, 10000,seenSpans);
+		THashMap<String,String> nonOMap = getCubePruningDecoding(oMap, mFF.fElements, vs, 100, seenSpans);
 		keySet = nonOMap.keySet();
-		for(String key:keySet)
-		{
+		for(String key:keySet) {
 			feMap.put(key, nonOMap.get(key));
 		}		
 		keySet = feMap.keySet();
