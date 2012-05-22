@@ -27,7 +27,7 @@ public class JointDecoding extends Decoding {
 	public static final String FILE_DECODING_ADMMILP = "file_admmilp";
 	
 	private int mNumThreads = 1;
-	protected String mFactorFile;
+	protected String mFactorFile = null;
 
 	public JointDecoding(boolean exact) {
 		jd = new DDDecoding(exact);
@@ -130,7 +130,24 @@ public class JointDecoding extends Decoding {
 			ParsePreparation.writeSentencesToTempFile(mPredictionFile, result);
 		}
 		return result;
-			}
+	}
+	
+	// does not return scores
+	public ArrayList<String> decodeAll(String overlapCheck, 
+			int offset) {
+		int size = mFrameList.size();
+		ArrayList<String> result = new ArrayList<String>();
+		for(int i = 0; i < size; i ++)
+		{
+			System.out.println("Decoding index:"+i);
+			String decisionLine = decode(i,overlapCheck, offset, false);
+			result.add(decisionLine);
+		}
+		if (mPredictionFile != null) {
+			ParsePreparation.writeSentencesToTempFile(mPredictionFile, result);
+		}
+		return result;
+	}
 
 	public String decode(int index, String overlapCheck, int offset, boolean returnScores)
 	{
