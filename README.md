@@ -19,14 +19,15 @@
 
 
 
-This is a README for SEMAFOR v2.1
-=================================
+SEMAFOR v2.1
+============
 
 SEMAFOR: Semantic Analysis of Frame Representations is a tool for automatic analysis of the frame-semantic structure of English text.
 
 FrameNet (http://framenet.icsi.berkeley.edu) is a lexical resource that groups predicates in a hierarchy of structured concepts, known as *frames*. Each frame in the lexicon in turn defines several named *roles* corresponding to aspects of that concept (e.g. participants in an event).
 
-This tool attempts to find which words in text evoke which semantic frames, and to find and label each frame's *arguments*--portions of the sentence that fill a role associated with the frame. It takes as input a file with English sentences, one per line, and performs the following steps:
+This tool attempts to find which words in text evoke which semantic frames, and to find and label each frame's *arguments*--portions of the sentence that fill a role associated with the frame.
+It takes as input a file with English sentences, one per line, and performs the following steps:
 
   0. Preprocessing
      The sentences are lemmatized, part-of-speech tagged, and syntactically parsed (optionally using a syntactic parsing running in server mode.)
@@ -43,6 +44,16 @@ using AD^3 (or Alternating Directions Dual Decomposition) uses two other constra
 
   4. Output
      An XML file is produced containing the text of the input sentences, augmented with the frame-semantic information (target-frame and argument-role pairings) predicted by the system. See the papers listed below ("Further Reading") for algorithmic details and experimental evaluation of the components of this system.
+
+An example frame-semantic parse of a sentence is shown below:
+
+![An example frame-semantic parse](http://www.ark.cs.cmu.edu/SEMAFOR/img/g3109.png)
+
+Each row under the sentence correponds to a semantic frame and its set of corresponding arguments.
+Thick lines indicate targets that evoke frames;
+thin solid/dotted lines with labels indicate arguments.
+N_m under “bells” is short for the Noise_maker role of the NOISE_MAKERS frame.
+
 
 What follows is an overview of the organization of SEMAFOR's directory structure, and how it can be installed and run on new data.
 
