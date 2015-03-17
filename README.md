@@ -58,16 +58,14 @@ N_m under “bells” is short for the Noise_maker role of the NOISE_MAKERS fram
 What follows is an overview of the organization of SEMAFOR's directory structure, and how it can be installed and run on new data.
 
 
-1. Requirements
-===============
-Running the SEMAFOR tool *requires* Java 1.6. It should run on any platform (Windows, Unix, or Mac OS).
+Requirements
+============
+
+Running the SEMAFOR tool *requires* Java 1.6 or later. It should run on any platform (Windows, Unix, or Mac OS).
 
 
-2. Contents
-===========
-This tarball contains a folder called semafor-semantic-parser, which we 
-will refer to as the "root" folder. Underneath it, there are the following 
-files and folders:
+Contents
+========
 
 dict/
     WordNet data files. License information can be viewed at: 
@@ -104,29 +102,34 @@ README
     This file.
 
 
-2. Included Libraries
-=======================
+Included Libraries
+==================
+
 The lib/ directory contains the following library:
 
 semafor-deps.jar: It contains all the required libraries that SEMAFOR needs to run.
 
 
-3. Installation
-===============
+Installation
+============
 
-==Downloads==
+Downloads
+---------
 
-SEMAFOR v2.1 can be downloaded from http://semafor-semantic-parser.googlecode.com/files/SEMAFOR-2.1.tgz
+SEMAFOR v2.1 can be downloaded from http://www.ark.cs.cmu.edu/SEMAFOR/SEMAFOR-2.1.tgz (~56MB).
 
-In preprocessing, SEMAFOR uses the MST Parser, a syntactic dependency parser created by Ryan McDonald. Download and unpack the following packaged version: http://semafor-semantic-parser.googlecode.com/files/stackedParserServer.tgz
+In preprocessing, SEMAFOR uses the MST Parser, a syntactic dependency parser created by Ryan McDonald. Download and unpack the following packaged version:
+http://www.ark.cs.cmu.edu/SEMAFOR/stackedParserServer.tgz (~4MB).
 The original MST parser has been modified to add an option of running it in server mode, for ease of use.
 
-Download the model files both for the MST parser and SEMAFOR from here: http://www.ark.cs.cmu.edu/SEMAFOR/SEMAFOR-2.1-models.tgz (~400MB)
+Download the model files both for the MST parser and SEMAFOR from here: http://www.ark.cs.cmu.edu/SEMAFOR/SEMAFOR-2.1-models.tgz (~400MB).
 The model file for the MST parser was trained on sections 02-21 of the WSJ section of the Penn Treebank, and the model files 
 for SEMAFOR were trained on the FrameNet 1.5 datasets.
 
 
-==Environment Variables==
+Environment Variables
+---------------------
+
 The file named "config" under release/ lists a set of variables which should be modified within the file before running SEMAFOR:
 
 SEMAFOR_HOME : absolute path where semaforV2.1.tgz has been decompressed.
@@ -161,7 +164,9 @@ or AD^3, which is an exact dual decomposition algorithm that respects the overla
 For more details, see Das et al. (*SEM 2012).
 
 
-==Compilation==
+Compilation
+-----------
+
 Although Java 1.6 class files are included in this release both for SEMAFOR and the MST parser, one can compile both packages anew.
 Assuming that the user is at the root of the directory where SEMAFOR was decompressed, run:
 
@@ -169,8 +174,8 @@ $  cd release/
 $  ./cleanAndCompile.sh
 
 
-4. Running the Frame-Semantic Parser
-====================================
+Running the Frame-Semantic Parser
+=================================
 
 If the MST parser is to be run in server mode, in other words, if MST_MODE=server, then before running SEMAFOR, 
 the user should log on to the chosen server machine (MST_MACHINE), install SEMAFOR exactly as described above and run:
@@ -188,8 +193,9 @@ $ cd release/
 $ ./fnParserDriver.sh <absolute-path-to-input-file-with-one-sentence-per-line> [<output-file>]
 
 
-5. Known Issues:
-================
+Known Issues
+============
+
 1. Currently, SEMAFOR requires 8GB of RAM to execute because of its dependence on the MST parser,
 which loads a large model trained on the English Penn Treebank.	
 2. The output of SEMAFOR is an XML file. If there are several thousand sentences to be parsed
@@ -197,8 +203,9 @@ by SEMAFOR, then it becomes cumbersome to view the XML file. Modifying fnParserD
 view raw text versions of SEMAFOR output is possible.
 
 
-5. Further Reading
-==================
+Further Reading
+===============
+
 If this parser is used, please cite the following papers, depending on the components used:
 
 1. An Exact Dual Decomposition Algorithm for Shallow Semantic Parsing with Constraints
@@ -239,13 +246,15 @@ material document for this paper lists the names of the test documents,
 and can be found here: http://www.dipanjandas.com/files/acl-hlt2011-suppl-semafor.pdf
 
 
-6. Contact
-==========
+Contact
+=======
+
 If you find any bugs or have questions, please email Dipanjan Das (dipanjan@cs.cmu.edu, dipanjand@gmail.com) or Nathan Schneider (nschneid@cs.cmu.edu, neatnate@gmail.com).
 
 
-7. Version History
-==================
+Version History
+===============
+
 1.0 - First public release (2010-04-26)
 1.0.1 - Second public release (2010-09-02)
      Now includes compiled Java .class files for SEMAFOR, so compiling from source is 
