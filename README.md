@@ -63,6 +63,8 @@ Requirements
 
 Running the SEMAFOR tool *requires* Java 1.6 or later. It should run on any platform (Windows, Unix, or Mac OS).
 
+For Mac:
+Install "brew install coreutils"
 
 Contents
 ========
@@ -173,6 +175,7 @@ Assuming that the user is at the root of the directory where SEMAFOR was decompr
 $  cd release/
 $  ./cleanAndCompile.sh
 
+For OSX: Before compiling change, we need to update the "readlink" in all the scripts in the "release/" folder with "greadlink". You can also "alias" the "readlink" with "greadlink".
 
 Running the Frame-Semantic Parser
 =================================
