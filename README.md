@@ -18,6 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+This version of SEMAFOR is no longer maintained.
+Please see https://github.com/Noahs-ARK/semafor for a fork that is more actively maintained.
+===
 
 SEMAFOR v2.1
 ============
